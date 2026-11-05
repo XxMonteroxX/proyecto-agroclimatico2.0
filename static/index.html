@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -272,6 +273,15 @@
           <svg class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
           Vaciar memoria RAM / Reiniciar pruebas
         </button>
+        <!-- INNOVACIÓN 3: SELECTOR DE ESCENARIO -->
+        <div class="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#070a0d] px-2.5 py-1">
+          <label class="font-mono text-[11px] text-slate-400">Escenario:</label>
+          <select id="selCasoPrueba" class="bg-transparent font-mono text-xs text-phosphor-400 focus:outline-none cursor-pointer">
+            <option value="aleatorio" class="bg-[#10161b] text-slate-300">Aleatorio (Original)</option>
+            <option value="mejor" class="bg-[#10161b] text-bio-400">Mejor Caso (Pre-ordenado)</option>
+            <option value="peor" class="bg-[#10161b] text-red-400">Peor Caso (Inverso)</option>
+          </select>
+        </div>
         <button id="btn11" class="btn-deck btn-bio">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           1.1 Cargar 15,000 Registros a RAM
@@ -356,6 +366,20 @@
       </div>
       <div id="alfa" class="space-y-2.5 text-xs font-mono text-slate-500">
         Aún no hay ejecuciones de ordenamiento registradas.
+      </div>
+    </div>
+
+    <!-- INNOVACIÓN 1: GRÁFICA COMPARATIVA INTERACTIVA -->
+    <div class="rounded-xl border border-white/10 bg-[#070a0d]/70 p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-atmo-300 flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-atmo-400"></span>
+          Telemetría en Vivo: Latencia (ms) y Evaluaciones Lógicas
+        </h3>
+        <span class="text-[10px] font-mono text-slate-500">Historial dinámico en RAM</span>
+      </div>
+      <div class="h-56 w-full">
+        <canvas id="chartBenchmarking"></canvas>
       </div>
     </div>
   </section>
@@ -635,6 +659,33 @@ async function mockApi(path, method, body) {
       comparaciones: /binari/i.test(body.metodo) ? 14 : 4320,
       indice_ram: isMatch ? 1 : 0,
       registro: isMatch ? found : null
+    };
+  }
+  if (path === "/api/benchmarking/configurar-caso") {
+    const campo = body?.campo || "id_estacion";
+    const baseP = st.origP.length ? st.origP : st.p;
+    const baseU = st.origU.length ? st.origU : st.u;
+    let sortedP = [...baseP];
+    let sortedU = [...baseU];
+    if (body?.tipo === "mejor") {
+      sortedP.sort((a, b) => (a[campo] > b[campo] ? 1 : -1));
+      sortedU.sort((a, b) => (a[campo] > b[campo] ? 1 : -1));
+    } else if (body?.tipo === "peor") {
+      sortedP.sort((a, b) => (a[campo] > b[campo] ? -1 : 1));
+      sortedU.sort((a, b) => (a[campo] > b[campo] ? -1 : 1));
+    } else {
+      sortedP = [...baseP].sort(() => Math.random() - 0.5);
+      sortedU = [...baseU].sort(() => Math.random() - 0.5);
+    }
+    const etiquetas = {
+      aleatorio: "Escenario Aleatorio (Original) aplicado a la muestra en RAM.",
+      mejor: `Mejor Caso: datos pre-ordenados por [${campo}] para minimizar comparaciones.`,
+      peor: `Peor Caso: datos en orden inverso por [${campo}] para maximizar comparaciones.`
+    };
+    return {
+      mensaje: etiquetas[body?.tipo] || etiquetas.aleatorio,
+      muestra_primeros_30: sortedP,
+      muestra_ultimos_30: sortedU
     };
   }
 }
@@ -1042,6 +1093,7 @@ async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
     cardMetric("Movimientos en RAM", fmt(m), "intercambios / escrituras", "text-bio-400");
 
   log("Ordenación", met, campo, ns, c, m);
+  updateChart(met, ns, c);
   notify(`Ordenamiento completado con ${met} por el campo [${campo}].`, "success");
 
   // Si hay un sorteo de búsqueda binaria activo esperando este campo, refrescar su panel
@@ -1258,9 +1310,20 @@ async function ejecutarBusqueda() {
     </div>
   `;
 
+  const semaforo = evaluarRiesgoAgroclimatico(reg);
+
   $("res3").innerHTML = `
     <div class="term-box !border-phosphor-500/30 !text-phosphor-300">
       [TELEMETRY_LOCK] Se realizó la búsqueda en 15,000 registros por el campo [${esc(campo)}] usando el método [${esc(s.met)}] en [${fmt(ns)}] nanosegundos (${ms(ns)} ms). Comparaciones realizadas: [${fmt(c)}]
+    </div>
+
+    <!-- BANNER SEMÁFORO AGROCLIMÁTICO (INNOVACIÓN 2) -->
+    <div class="rounded-xl border p-4 font-mono text-xs flex items-start gap-3.5 shadow-lg ${semaforo.color}">
+      <span class="text-2xl select-none">${semaforo.icon}</span>
+      <div class="space-y-0.5">
+        <div class="font-bold tracking-wider text-sm">${esc(semaforo.nivel)}</div>
+        <div class="text-slate-300 leading-relaxed">${esc(semaforo.detalle)}</div>
+      </div>
     </div>
 
     <!-- Credencial / Ficha Técnica de Sensor Telemétrico -->
@@ -1359,6 +1422,151 @@ window.addEventListener("keydown", e => {
     $("resetModal").classList.replace("flex", "hidden");
   }
 });
+
+/* ===============================================================
+   LÓGICA INNOVACIÓN 1: GRÁFICA COMPARATIVA (CHART.JS)
+   =============================================================== */
+let benchChart = null;
+const chartData = { labels: [], tiemposMs: [], comparaciones: [] };
+
+function initChart() {
+  const ctx = document.getElementById("chartBenchmarking");
+  if (!ctx) return;
+  benchChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: "Tiempo (ms)",
+          data: chartData.tiemposMs,
+          backgroundColor: "rgba(6, 182, 212, 0.6)",
+          borderColor: "#22d3ee",
+          borderWidth: 1,
+          yAxisID: "y"
+        },
+        {
+          label: "Comparaciones (K)",
+          data: chartData.comparaciones,
+          backgroundColor: "rgba(163, 230, 53, 0.6)",
+          borderColor: "#a3e635",
+          borderWidth: 1,
+          yAxisID: "y1"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: "#94a3b8", font: { family: "monospace", size: 10 } } },
+        y: {
+          type: "linear",
+          position: "left",
+          title: { display: true, text: "Latencia (ms)", color: "#22d3ee", font: { size: 10 } },
+          ticks: { color: "#94a3b8", font: { size: 10 } }
+        },
+        y1: {
+          type: "linear",
+          position: "right",
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: "Comparaciones (Miles)", color: "#a3e635", font: { size: 10 } },
+          ticks: { color: "#94a3b8", font: { size: 10 } }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: "#cbd5e1", font: { family: "monospace", size: 11 } } }
+      }
+    }
+  });
+}
+
+function updateChart(metodo, tiempoNs, comparaciones) {
+  if (!benchChart) initChart();
+  if (!benchChart) return;
+  const msVal = Number((Number(tiempoNs) / 1e6).toFixed(2));
+  const kComp = Number((Number(comparaciones) / 1000).toFixed(1));
+
+  chartData.labels.push(metodo);
+  chartData.tiemposMs.push(msVal);
+  chartData.comparaciones.push(kComp);
+
+  if (chartData.labels.length > 7) {
+    chartData.labels.shift();
+    chartData.tiemposMs.shift();
+    chartData.comparaciones.shift();
+  }
+  benchChart.update();
+}
+
+window.addEventListener("DOMContentLoaded", initChart);
+if (document.readyState !== "loading") initChart();
+
+/* ===============================================================
+   LÓGICA INNOVACIÓN 2: SEMÁFORO DE ALERTA AGROCLIMÁTICA
+   =============================================================== */
+function evaluarRiesgoAgroclimatico(r) {
+  const temp = Number(r.temperatura_promedio);
+  const prec = Number(r.precipitacion_mm);
+  const hum = Number(r.humedad_relativa);
+  const cultivo = String(r.tipo_cultivo_predominante || "");
+
+  if (temp <= 12) {
+    return {
+      nivel: "CRÍTICO // RIESGO DE HELADA",
+      color: "border-red-500/60 bg-red-500/15 text-red-200",
+      icon: "❄️",
+      detalle: `Temperatura registrada (${temp}°C) por debajo del umbral térmico foliar para ${cultivo}. Activar medidas preventivas.`
+    };
+  }
+  if (prec < 15 && temp > 32) {
+    return {
+      nivel: "ADVERTENCIA // ESTRÉS HÍDRICO",
+      color: "border-phosphor-500/60 bg-phosphor-500/15 text-phosphor-200",
+      icon: "☀️",
+      detalle: `Precipitación escasa (${prec} mm) y temperatura elevada (${temp}°C). Riesgo de deshidratación en ${cultivo}.`
+    };
+  }
+  if (hum > 85 && temp >= 22 && temp <= 28) {
+    return {
+      nivel: "PRECAUCIÓN // INCIDENCIA DE PLAGAS",
+      color: "border-yellow-500/60 bg-yellow-500/15 text-yellow-200",
+      icon: "🦗",
+      detalle: `Humedad de ${hum}% y ${temp}°C favorece patógenos (antracnosis en aguacate o gusano cogollero en maíz).`
+    };
+  }
+  return {
+    nivel: "ESTABLE // BIOCLIMA ÓPTIMO",
+    color: "border-bio-500/60 bg-bio-500/15 text-bio-200",
+    icon: "🌱",
+    detalle: `Variables microclimáticas estables para el rendimiento de ${cultivo}.`
+  };
+}
+
+/* ===============================================================
+   LÓGICA INNOVACIÓN 3: EVENTO DE CAMBIO DE ESCENARIO
+   =============================================================== */
+const selCaso = document.getElementById("selCasoPrueba");
+if (selCaso) {
+  selCaso.onchange = async () => {
+    if (!st.cargado) {
+      notify("Primero realiza la carga de 15,000 registros en RAM.", "warning");
+      selCaso.value = "aleatorio";
+      return;
+    }
+    try {
+      const resp = await api("/api/benchmarking/configurar-caso", "POST", {
+        tipo: selCaso.value,
+        campo: st.ordenadoPor || "id_estacion"
+      });
+      setMuestra(resp, false);
+      renderMuestra();
+      notify(resp.mensaje, "info");
+    } catch (e) {
+      notify("Fallo al aplicar escenario: " + e.message, "error");
+    }
+  };
+}
 
 refresh();
 </script>
