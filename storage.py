@@ -136,11 +136,13 @@ def ejecutar_ordenamiento(campo, metodo):
     estado.ultimo_metodo = metodo
     estado.conteo_metodos[metodo] = estado.conteo_metodos.get(metodo, 0) + 1
 
+    total_reg = len(estado.registros)
     linea = (
-        f"Se ordenaron 15,000 registros por el campo [{campo}] usando el método "
+        f"Se ordenaron {total_reg:,} registros por el campo [{campo}] usando el método "
         f"[{metodo}] en [{tiempo_ns}] nanosegundos. Comparaciones: [{comparaciones}], "
         f"Asignaciones/Movimientos de Memoria: [{movimientos}]\n"
     )
+
     with open(BITACORA_ORDEN_PATH, "a", encoding="utf-8") as f:
         f.write(linea)
 
@@ -149,7 +151,6 @@ def ejecutar_ordenamiento(campo, metodo):
         estado.primera_ordenacion_hecha = True
 
     return comparaciones, movimientos, tiempo_ns
-
 
 def guardar_backup():
     """Respaldo de la primera ordenación: los 15,000 registros ordenados en
@@ -183,15 +184,16 @@ def ejecutar_busqueda(metodo, campo, valor):
             )
         idx, comparaciones, tiempo_ns = binary_search(estado.registros, campo, valor_casteado)
     elif metodo in ("Búsqueda Lineal", "Búsqueda Secuencial"):
-     idx, comparaciones, tiempo_ns = linear_search(estado.registros, campo, valor_casteado)
+        idx, comparaciones, tiempo_ns = linear_search(estado.registros, campo, valor_casteado)
     else:
         raise ValueError(f"Método de búsqueda no reconocido: '{metodo}'")
 
     encontrado = idx != -1
     registro = estado.registros[idx] if encontrado else None
 
+    total_reg = len(estado.registros)
     linea = (
-        f"Se realizó la búsqueda en 15,000 registros por el campo [{campo}] usando "
+        f"Se realizó la búsqueda en {total_reg:,} registros por el campo [{campo}] usando "
         f"el método de búsqueda [{metodo}] en [{tiempo_ns}] nanosegundos. "
         f"Comparaciones: [{comparaciones}]\n"
     )
