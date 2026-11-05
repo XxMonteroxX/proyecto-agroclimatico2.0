@@ -190,9 +190,9 @@
           </span>
           <span id="ramPct" class="text-phosphor-400 font-bold">0%</span>
         </div>
-        <div id="sumReg" class="mt-1 font-mono text-xl font-bold text-white">0 / 15,000</div>
-        <!-- 15 bloques representando 1,000 registros cada uno -->
-        <div id="ramBlocks" class="mt-3 grid grid-cols-15 gap-1" style="grid-template-columns: repeat(15, minmax(0, 1fr));"></div>
+        <div id="sumReg" class="mt-1 font-mono text-xl font-bold text-white">0 / 30,000</div>
+        <!-- 30 bloques representando 1,000 registros cada uno -->
+        <div id="ramBlocks" class="mt-3 grid gap-1" style="grid-template-columns: repeat(30, minmax(0, 1fr));"></div>
       </div>
 
       <!-- Estado del Ordenamiento -->
@@ -269,7 +269,7 @@
         <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-bio-500/15 border border-bio-500/30 font-mono text-sm font-bold text-bio-400">F1</span>
         <div>
           <h2 class="text-lg font-bold text-white">Fase 1: Infraestructura e Ingesta en Memoria RAM</h2>
-          <p class="text-xs text-slate-400 font-mono">Alocación directa de 15,000 vectores agroclimáticos (10 atributos por estación)</p>
+          <p class="text-xs text-slate-400 font-mono">Alocación directa de 30,000 vectores agroclimáticos (10 atributos por estación)</p>
         </div>
       </div>
 
@@ -289,7 +289,7 @@
         </div>
         <button id="btn11" class="btn-deck btn-bio">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          1.1 Cargar 15,000 Registros a RAM
+          1.1 Cargar 30,000 Registros a RAM
         </button>
       </div>
     </div>
@@ -341,7 +341,7 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <button id="btnUndoSort" class="btn-deck btn-ghost text-xs hidden" title="Restaurar los 15,000 registros al estado original sin ordenar">
+        <button id="btnUndoSort" class="btn-deck btn-ghost text-xs hidden" title="Restaurar los 30,000 registros al estado original sin ordenar">
           ⬅ Deshacer ordenamiento / Volver a estado original
         </button>
         <button id="btn21" class="btn-deck btn-atmo" disabled title="Primero carga los registros en la Fase 1">
@@ -472,7 +472,7 @@
       <h3 class="text-lg font-bold text-white">¿Purgar Memoria y Reiniciar Ciclo?</h3>
     </div>
     <p class="text-sm text-slate-300 leading-relaxed">
-      Esta acción vaciará los 15,000 registros en RAM, reiniciará las estadísticas acumuladas del Método Alfa y regresará la terminal al estado inicial de Fase 1.
+      Esta acción vaciará los 30,000 registros en RAM, reiniciará las estadísticas acumuladas del Método Alfa y regresará la terminal al estado inicial de Fase 1.
     </p>
     <div class="flex justify-end gap-2.5 pt-2">
       <button id="btnCancelReset" class="btn-deck btn-ghost text-xs">Cancelar</button>
@@ -556,7 +556,7 @@ const NUM = [
   "presion_atmosferica",
   "velocidad_viento"
 ];
-const TOTAL = 15000;
+const TOTAL = 30000;
 const $ = id => document.getElementById(id);
 
 const st = {
@@ -830,11 +830,11 @@ async function run(btn, label, fn) {
 function renderRamBlocks() {
   const container = $("ramBlocks");
   let html = "";
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 30; i++) {
     const activeClass = st.cargado
       ? "bg-bio-400 shadow-[0_0_8px_rgba(163,230,53,0.6)] border-bio-300"
       : "bg-white/5 border-white/10";
-    html += `<div class="h-2.5 rounded-[2px] border transition-all duration-500 ${activeClass}" style="transition-delay: ${i * 25}ms"></div>`;
+    html += `<div class="h-2.5 rounded-[2px] border transition-all duration-500 ${activeClass}" style="transition-delay: ${i * 15}ms"></div>`;
   }
   container.innerHTML = html;
   $("ramPct").textContent = st.cargado ? "100%" : "0%";
@@ -923,7 +923,7 @@ document.querySelectorAll(".step-btn").forEach(btn => {
   btn.onclick = () => {
     const target = Number(btn.dataset.goto);
     if (target > 1 && !st.cargado) {
-      notify("Primero debes cargar los 15,000 registros en la Fase 1.", "warning");
+      notify("Primero debes cargar los 30,000 registros en la Fase 1.", "warning");
       return;
     }
     focusPhase(target);
@@ -934,7 +934,7 @@ document.querySelectorAll(".step-btn").forEach(btn => {
    REFRESCO GENERAL DE INTERFAZ Y TABLAS
    ========================================== */
 function refresh() {
-  $("sumReg").textContent = (st.cargado ? fmt(TOTAL) : "0") + " / 15,000";
+  $("sumReg").textContent = (st.cargado ? fmt(TOTAL) : "0") + " / 30,000";
   $("sumOrd").textContent = st.ordenadoPor ? "Ordenado por " + st.ordenadoPor : "No ordenado";
   $("sumOrdSub").textContent = st.ordenadoPor
     ? `Algoritmo activo: ${st.ultimoMetodoOrd || "Estocástico"}`
@@ -1032,7 +1032,7 @@ function renderMuestra() {
 
   if (!rawRows.length) {
     $("tbM").innerHTML =
-      '<tr><td class="p-8 text-center text-slate-500 font-mono" colspan="11">Memoria RAM vacía. Ejecuta el paso [1.1 Cargar 15,000 Registros a RAM] para visualizar la telemetría.</td></tr>';
+      '<tr><td class="p-8 text-center text-slate-500 font-mono" colspan="11">Memoria RAM vacía. Ejecuta el paso [1.1 Cargar 30,000 Registros a RAM] para visualizar la telemetría.</td></tr>';
     return;
   }
 
@@ -1112,9 +1112,9 @@ $("btn11").onclick = () =>
     setMuestra(r, true);
 
     $("out1").textContent =
-      `[OK_RAM_ALLOC] Se realizó la carga de los 15,000 registros con sus 10 columnas a la estructura [${est}] y le tomó [${fmt(ns)}] nanosegundos (${ms(ns)} ms) completar la acción.`;
+      `[OK_RAM_ALLOC] Se realizó la carga de los 30,000 registros con sus 10 columnas a la estructura [${est}] y le tomó [${fmt(ns)}] nanosegundos (${ms(ns)} ms) completar la acción.`;
     log("Carga", est, "-", ns, "-", "-");
-    notify("15,000 registros agroclimáticos cargados en memoria RAM.", "success");
+    notify("30,000 registros agroclimáticos cargados en memoria RAM.", "success");
     focusPhase(2, false);
   });
 
@@ -1182,7 +1182,7 @@ async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
 
   $("out2").classList.remove("hidden");
   $("out2").textContent =
-    `Se ordenaron 15,000 registros por el campo [${campo}] usando el método [${met}] en [${fmt(ns)}] nanosegundos. Comparaciones: [${fmt(c)}], Asignaciones/Movimientos de Memoria: [${fmt(m)}]`;
+    `Se ordenaron 30,000 registros por el campo [${campo}] usando el método [${met}] en [${fmt(ns)}] nanosegundos. Comparaciones: [${fmt(c)}], Asignaciones/Movimientos de Memoria: [${fmt(m)}]`;
 
   const cardMetric = (t, v, s, col) => `
     <div class="rounded-xl border border-white/10 bg-[#070a0d] p-4">
@@ -1366,7 +1366,7 @@ async function ejecutarBusqueda() {
   const valor = $("valor").value.trim();
 
   if (!valor) {
-    notify("Ingresa el valor específico que deseas buscar en los 15,000 registros.", "warning");
+    notify("Ingresa el valor específico que deseas buscar en los 30,000 registros.", "warning");
     return;
   }
 
@@ -1421,7 +1421,7 @@ async function ejecutarBusqueda() {
 
   $("res3").innerHTML = `
     <div class="term-box !border-phosphor-500/30 !text-phosphor-300">
-      [TELEMETRY_LOCK] Se realizó la búsqueda en 15,000 registros por el campo [${esc(campo)}] usando el método [${esc(s.met)}] en [${fmt(ns)}] nanosegundos (${ms(ns)} ms). Comparaciones realizadas: [${fmt(c)}]
+      [TELEMETRY_LOCK] Se realizó la búsqueda en 30,000 registros por el campo [${esc(campo)}] usando el método [${esc(s.met)}] en [${fmt(ns)}] nanosegundos (${ms(ns)} ms). Comparaciones realizadas: [${fmt(c)}]
     </div>
 
     <!-- BANNER SEMÁFORO AGROCLIMÁTICO (INNOVACIÓN 2) -->
@@ -1657,7 +1657,7 @@ const selCaso = document.getElementById("selCasoPrueba");
 if (selCaso) {
   selCaso.onchange = async () => {
     if (!st.cargado) {
-      notify("Primero realiza la carga de 15,000 registros en RAM.", "warning");
+      notify("Primero realiza la carga de 30,000 registros en RAM.", "warning");
       selCaso.value = "aleatorio";
       return;
     }
