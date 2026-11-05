@@ -80,12 +80,14 @@ estado = EstadoRAM()
 
 
 def castear_valor(campo, valor):
-    """Convierte el valor recibido por JSON al tipo nativo del campo para que
-    las comparaciones (==, <, >) sean correctas."""
-    if campo in CAMPOS_ENTEROS:
-        return int(valor)
-    if campo in CAMPOS_FLOTANTES:
-        return float(valor)
+    """Convierte el valor recibido por JSON al tipo nativo de forma segura."""
+    try:
+        if campo in CAMPOS_ENTEROS:
+            return int(valor)
+        if campo in CAMPOS_FLOTANTES:
+            return float(valor)
+    except (ValueError, TypeError):
+        raise ValueError(f"El valor '{valor}' no es válido para el campo numérico '{campo}'.")
     return str(valor)
 
 
@@ -180,8 +182,8 @@ def ejecutar_busqueda(metodo, campo, valor):
                 f"La Búsqueda Binaria fue rechazada."
             )
         idx, comparaciones, tiempo_ns = binary_search(estado.registros, campo, valor_casteado)
-    elif metodo == "Búsqueda Lineal":
-        idx, comparaciones, tiempo_ns = linear_search(estado.registros, campo, valor_casteado)
+    elif metodo in ("Búsqueda Lineal", "Búsqueda Secuencial"):
+     idx, comparaciones, tiempo_ns = linear_search(estado.registros, campo, valor_casteado)
     else:
         raise ValueError(f"Método de búsqueda no reconocido: '{metodo}'")
 
@@ -197,3 +199,22 @@ def ejecutar_busqueda(metodo, campo, valor):
         f.write(linea)
 
     return encontrado, idx, registro, comparaciones, tiempo_ns
+
+def configurar_caso_prueba(tipo: str, campo: str = "id_estacion"):
+    """
+    Modifica el orden de los registros en RAM para benchmarking:
+    - 'mejor': Orden ascendente (O(n) o menor esfuerzo)
+    - 'peor': Orden descendente inverso (fuerza el peor caso en algoritmos como Quick Sort)
+    - 'aleatorio': Carga el orden original del archivo CSV
+    """
+    if not estado.cargado:
+        raise ValueError("No hay registros en RAM. Carga primero el dataset.")
+
+    if tipo == "aleatorio":
+        cargar_csv()
+        return "Registros restablecidos al orden aleatorio original."
+    
+    # Ordenamiento rápido auxiliar en Python para preparar el caso de prueba
+    estado.registros.sort(key=lambda x: x[campo], reverse=(tipo == "peor"))
+    estado.campo_actualmente_ordenado = campo if tipo == "mejor" else None
+    return f"Memoria RAM configurada en modo [{tipo.upper()}] según el campo [{campo}]."
