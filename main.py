@@ -70,10 +70,10 @@ def cargar():
 
     return {
         "mensaje": (
-            f"Se realizó la carga de los 15,000 registros con sus 10 columnas a la "
-            f"estructura [ArrayList/Lista de Objetos] y le tomó [{tiempo_ns}] "
-            f"nanosegundos completar la acción."
-        ),
+    f"Se realizó la carga de los {total} registros con sus 10 columnas a la "
+    f"estructura [ArrayList/Lista de Objetos] y le tomó [{tiempo_ns}] "
+    f"nanosegundos completar la acción."
+     ),
         "tiempo_ns": tiempo_ns,
         "total_registros": total,
         "muestra_primeros_30": estado.registros[:30],
