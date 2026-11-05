@@ -18,6 +18,8 @@ from pydantic import BaseModel
 
 import storage
 from storage import ALGORITMOS_POR_CAMPO, CAMPOS, CAMPOS_CLAVE, estado
+import auth
+from auth import RegistroRequest, LoginRequest
 
 # Límite de recursión por seguridad en algoritmos
 sys.setrecursionlimit(10000)
@@ -84,6 +86,17 @@ def cargar():
 # ---------------------------------------------------------------------------
 # FASE 2: DISPARADOR ALEATORIO DE ORDENAMIENTO
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# AUTENTICACIÓN Y CONTROL DE ACCESO
+# ---------------------------------------------------------------------------
+
+@app.post("/api/auth/registro")
+def api_registro(payload: RegistroRequest):
+    return auth.registrar_usuario(payload)
+
+@app.post("/api/auth/login")
+def api_login(payload: LoginRequest):
+    return auth.login_usuario(payload)
 
 @app.post("/api/fase2/disparador-ordenamiento")
 def disparador_ordenamiento():
