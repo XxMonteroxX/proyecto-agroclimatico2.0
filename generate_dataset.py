@@ -1,17 +1,14 @@
 """
-Genera dataset_agroclimatico_15000.csv con 15,000 registros sintéticos
-pero geográfica y climáticamente coherentes para los estados productores
-de Maíz Blanco y Aguacate Hass en México: Jalisco, Michoacán, Sinaloa y Veracruz.
-
-Este script NO forma parte del backend en producción: se ejecuta una sola vez
-para generar el archivo fuente que luego el API carga a RAM.
+Genera dataset_agroclimatico_15000.csv (o el nombre que usa tu backend)
+con 30,000 registros sintéticos y climáticamente coherentes.
 """
 import csv
 import random
 
 random.seed(42)
 
-TOTAL_REGISTROS = 15000
+# 1. Cambiar la cantidad a 30,000
+TOTAL_REGISTROS = 30000
 
 MUNICIPIOS_POR_ESTADO = {
     "Jalisco": ["Zapotlán el Grande", "Autlán de Navarro", "Tapalpa", "Sayula", "Tecolotlán", "Ameca"],
@@ -22,14 +19,12 @@ MUNICIPIOS_POR_ESTADO = {
 
 ESTADOS = list(MUNICIPIOS_POR_ESTADO.keys())
 
-# Rango de fechas: AAAAMMDD entre 2022-01-01 y 2024-12-31
 def fecha_aleatoria():
     anio = random.randint(2022, 2024)
     mes = random.randint(1, 12)
     dias_mes = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
     dia = random.randint(1, dias_mes[mes])
     return int(f"{anio:04d}{mes:02d}{dia:02d}")
-
 
 def generar_registro(id_estacion):
     estado = random.choice(ESTADOS)
@@ -56,7 +51,6 @@ def generar_registro(id_estacion):
         "velocidad_viento": velocidad_viento,
     }
 
-
 def main():
     campos = [
         "id_estacion", "temperatura_promedio", "fecha_registro", "estado", "municipio",
@@ -64,20 +58,20 @@ def main():
         "presion_atmosferica", "velocidad_viento",
     ]
 
-    # IDs de estación no secuenciales y con repeticiones ocasionales (folios de
-    # estación reutilizados en días distintos), para que Radix/Counting Sort
-    # tengan un reto real de distribución.
+    # 2. Escalar el banco de IDs disponibles para 30k filas (60% = 18,000 folios base)
     ids_disponibles = list(range(1000, 1000 + int(TOTAL_REGISTROS * 0.6)))
 
-    with open("dataset_agroclimatico_15000.csv", "w", newline="", encoding="utf-8") as f:
+    # Conservamos el mismo nombre que espera storage.py para que no tengas que cambiar rutas
+    archivo_salida = "dataset_agroclimatico_30000.csv"
+
+    with open(archivo_salida, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=campos)
         writer.writeheader()
         for _ in range(TOTAL_REGISTROS):
             id_estacion = random.choice(ids_disponibles)
             writer.writerow(generar_registro(id_estacion))
 
-    print(f"Dataset generado: dataset_agroclimatico_15000.csv ({TOTAL_REGISTROS} registros)")
-
+    print(f"Dataset generado exitosamente: {archivo_salida} con {TOTAL_REGISTROS} filas.")
 
 if __name__ == "__main__":
     main()
