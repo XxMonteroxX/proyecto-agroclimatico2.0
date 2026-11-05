@@ -124,9 +124,9 @@
 <body class="min-h-screen antialiased selection:bg-bio-500 selection:text-obsidian">
 
 <!-- CONTENEDOR DE TOASTS FLOTANTES -->
-<div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-md w-full pointer-events-none px-4 sm:px-0"></div>
+<div id="toastContainer" class="fixed bottom-5 right-5 z-[70] flex flex-col gap-2.5 max-w-md w-full pointer-events-none px-4 sm:px-0"></div>
 
-<div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+<div id="appRoot" class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
 
   <!-- ================================================== -->
   <!-- A. CABECERA DE TELEMETRÍA Y CONTROL DE MISIÓN      -->
@@ -157,6 +157,11 @@
 
       <!-- Controles Globales -->
       <div class="flex flex-wrap items-center gap-2.5">
+        <div id="userProfile" class="hidden items-center gap-2.5 rounded-xl border border-bio-500/30 bg-bio-500/10 px-3 py-1.5 font-mono text-xs">
+          <span class="h-2 w-2 rounded-full bg-bio-400 animate-pulse"></span>
+          <span id="userProfileName" class="max-w-[12rem] truncate font-semibold text-slate-100">Usuario</span>
+          <button id="btnLogout" type="button" class="ml-1 rounded-md border border-red-500/30 bg-red-500/10 px-2 py-0.5 text-[11px] text-red-300 transition hover:bg-red-500/20">Salir</button>
+        </div>
         <button id="btnSimMode" class="btn-deck btn-ghost text-xs py-2" title="Activa respuestas simuladas locales si no tienes el backend FastAPI corriendo">
           <svg class="h-4 w-4 text-atmo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
           <span id="simLabel">Modo Emulador: OFF</span>
@@ -476,6 +481,58 @@
   </div>
 </div>
 
+<!-- ================================================== -->
+<!-- MODAL DE ACCESO: INICIO DE SESIÓN / REGISTRO       -->
+<!-- ================================================== -->
+<div id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" class="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-black/90 backdrop-blur-md p-4">
+  <div class="deck-panel w-full max-w-md space-y-5 border-bio-500/40 p-6 shadow-[0_0_50px_rgba(132,204,22,0.15)] sm:p-8">
+    <div class="pointer-events-none absolute -top-20 left-1/2 h-40 w-72 -translate-x-1/2 rounded-full bg-bio-500/10 blur-3xl"></div>
+
+    <div class="relative space-y-1.5 text-center">
+      <div class="inline-flex items-center gap-1.5 rounded-md border border-bio-500/20 bg-bio-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-bio-400">
+        SYS.AUTH // CONTROL DE ACCESO
+      </div>
+      <h2 id="authTitle" class="text-xl font-bold tracking-wide text-white">Iniciar sesión</h2>
+      <p class="font-mono text-xs text-slate-400">Sistema Agroclimático SMN - SADER</p>
+    </div>
+
+    <div role="tablist" class="relative flex rounded-xl border border-white/10 bg-[#070a0d] p-1">
+      <button id="tabLogin" type="button" role="tab" class="flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold transition">Acceso</button>
+      <button id="tabRegister" type="button" role="tab" class="flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold transition">Nuevo registro</button>
+    </div>
+
+    <form id="authForm" class="relative space-y-3.5" autocomplete="on" novalidate>
+      <div id="fieldNombre" class="hidden">
+        <label for="authNombre" class="mb-1 block font-mono text-xs text-slate-400">Nombre completo</label>
+        <input id="authNombre" type="text" autocomplete="name" class="inp-deck text-xs" placeholder="Ing. Juan Pérez">
+      </div>
+
+      <div>
+        <label for="authUser" class="mb-1 block font-mono text-xs text-slate-400">Usuario</label>
+        <input id="authUser" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false" class="inp-deck text-xs" placeholder="jperez">
+      </div>
+
+      <div>
+        <label for="authPass" class="mb-1 block font-mono text-xs text-slate-400">Contraseña</label>
+        <div class="relative">
+          <input id="authPass" type="password" required autocomplete="current-password" class="inp-deck pr-16 text-xs" placeholder="••••••••">
+          <button id="btnTogglePass" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 font-mono text-[11px] text-slate-400 transition hover:text-white">Ver</button>
+        </div>
+        <p id="authPassHint" class="mt-1 hidden font-mono text-[11px] text-slate-500">Mínimo 6 caracteres.</p>
+      </div>
+
+      <p id="authError" role="alert" class="hidden rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 font-mono text-xs text-red-300"></p>
+
+      <button id="btnAuthSubmit" type="submit" class="btn-deck btn-bio mt-2 w-full py-2.5 text-xs font-bold">Ingresar al centro de control</button>
+    </form>
+
+    <div class="relative flex items-center justify-between gap-3 border-t border-white/10 pt-4 font-mono text-[11px] text-slate-500">
+      <span id="authConn" class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-slate-500"></span>Verificando enlace...</span>
+      <button id="btnAuthSim" type="button" class="text-atmo-400 underline underline-offset-2 transition hover:text-white">Usar modo emulador</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API_BASE_URL = window.location.origin;
 const CAMPOS = [
@@ -612,8 +669,43 @@ function generateMockRow(idx) {
   };
 }
 
+/* ==========================================
+   AUTENTICACIÓN SIMULADA (MODO EMULADOR)
+   Usuarios guardados solo en este navegador.
+   ========================================== */
+async function hashPass(txt) {
+  try {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (_) {
+    return btoa(unescape(encodeURIComponent(txt)));
+  }
+}
+
+async function mockAuth(path, body) {
+  const KEY = "agro_mock_users";
+  let users = {};
+  try { users = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (_) {}
+  const username = String(body.username || "").toLowerCase();
+  const fail = (status, msg) => { const e = new Error(msg); e.status = status; throw e; };
+
+  if (path === "/api/auth/registro") {
+    if (users[username]) fail(409, "Ese usuario ya existe.");
+    users[username] = { nombre: body.nombre || body.username, pass: await hashPass(body.password) };
+    localStorage.setItem(KEY, JSON.stringify(users));
+    return { mensaje: "Cuenta creada" };
+  }
+  if (path === "/api/auth/login") {
+    const u = users[username];
+    if (!u || u.pass !== await hashPass(body.password)) fail(401, "Usuario o contraseña incorrectos.");
+    return { usuario: { username: body.username, nombre: u.nombre } };
+  }
+  fail(404, "Endpoint de autenticación no disponible en el emulador.");
+}
+
 async function mockApi(path, method, body) {
   await new Promise(r => setTimeout(r, 320));
+  if (path.startsWith("/api/auth/")) return mockAuth(path, body);
   if (path === "/api/fase1/cargar") {
     const p = Array.from({ length: 30 }, (_, i) => generateMockRow(i + 1));
     const u = Array.from({ length: 30 }, (_, i) => generateMockRow(TOTAL - 29 + i));
@@ -695,12 +787,26 @@ async function mockApi(path, method, body) {
    ========================================== */
 async function api(path, method = "GET", body) {
   if (st.simMode) return mockApi(path, method, body);
+  const headers = { "Content-Type": "application/json" };
+  const token = getToken();
+  if (token) headers["Authorization"] = "Bearer " + token;
   const r = await fetch(API_BASE_URL + path, {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: body ? JSON.stringify(body) : undefined
   });
-  if (!r.ok) throw new Error("HTTP " + r.status + " en " + path);
+  if (!r.ok) {
+    let detalle = "";
+    try {
+      const j = await r.json();
+      if (typeof j.detail === "string") detalle = j.detail;
+    } catch (_) {}
+    // Sesión vencida o token inválido en un endpoint protegido
+    if (r.status === 401 && !path.startsWith("/api/auth/") && getSesion()) cerrarSesion(true);
+    const err = new Error(detalle || ("HTTP " + r.status + " en " + path));
+    err.status = r.status;
+    throw err;
+  }
   return r.json();
 }
 
@@ -757,6 +863,7 @@ $("btnSimMode").onclick = () => {
   $("btnSimMode").classList.toggle("border-atmo-400/50", st.simMode);
   $("btnSimMode").classList.toggle("bg-atmo-500/15", st.simMode);
   ping();
+  actualizarAuthConn();
   notify(st.simMode ? "Modo Emulador activado. Puedes probar todo el flujo sin servidor backend." : "Modo Emulador desactivado. Conectando a endpoints reales FastAPI.", "info");
 };
 
@@ -1567,6 +1674,152 @@ if (selCaso) {
     }
   };
 }
+
+/* ===============================================================
+   CONTROL DE SESIÓN (LOGIN / REGISTRO)
+   =============================================================== */
+const SESSION_KEY = "agro_user";
+const TOKEN_KEY = "agro_token";
+let modoRegistro = false;
+
+function getToken() {
+  try { return localStorage.getItem(TOKEN_KEY); } catch (_) { return null; }
+}
+
+function getSesion() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) { return null; }
+}
+
+const TAB_ON = "flex-1 rounded-lg border border-bio-500/30 bg-bio-500/20 py-1.5 font-mono text-xs font-semibold text-bio-400 transition";
+const TAB_OFF = "flex-1 rounded-lg border border-transparent py-1.5 font-mono text-xs font-semibold text-slate-400 transition hover:text-white";
+
+function setAuthError(msg) {
+  const el = $("authError");
+  el.textContent = msg || "";
+  el.classList.toggle("hidden", !msg);
+}
+
+function setModoAuth(registro) {
+  modoRegistro = registro;
+  setAuthError("");
+  $("authTitle").textContent = registro ? "Crear cuenta" : "Iniciar sesión";
+  $("btnAuthSubmit").textContent = registro ? "Crear cuenta" : "Ingresar al centro de control";
+  $("fieldNombre").classList.toggle("hidden", !registro);
+  $("authPassHint").classList.toggle("hidden", !registro);
+  $("authPass").autocomplete = registro ? "new-password" : "current-password";
+  $("tabLogin").className = registro ? TAB_OFF : TAB_ON;
+  $("tabRegister").className = registro ? TAB_ON : TAB_OFF;
+  $("tabLogin").setAttribute("aria-selected", String(!registro));
+  $("tabRegister").setAttribute("aria-selected", String(registro));
+}
+
+function actualizarAuthConn() {
+  const el = $("authConn");
+  if (st.simMode) {
+    el.innerHTML = '<span class="h-2 w-2 rounded-full bg-atmo-400 animate-pulse"></span>Emulador local activo';
+    $("btnAuthSim").textContent = "Usar servidor real";
+  } else {
+    const online = $("conn").textContent.includes("Online");
+    el.innerHTML = `<span class="h-2 w-2 rounded-full ${online ? "bg-bio-400 animate-pulse" : "bg-red-500"}"></span>${online ? "FastAPI en línea" : "FastAPI sin conexión"}`;
+    $("btnAuthSim").textContent = "Usar modo emulador";
+  }
+}
+
+function verificarSesion() {
+  const user = getSesion();
+  const logueado = !!user;
+  $("authModal").classList.toggle("hidden", logueado);
+  $("authModal").classList.toggle("flex", !logueado);
+  $("userProfile").classList.toggle("hidden", !logueado);
+  $("userProfile").classList.toggle("flex", logueado);
+  document.body.classList.toggle("overflow-hidden", !logueado);
+  // Mientras no haya sesión, el contenido de fondo no recibe foco ni clics
+  if (logueado) $("appRoot").removeAttribute("inert"); else $("appRoot").setAttribute("inert", "");
+  if (logueado) {
+    $("userProfileName").textContent = user.nombre || user.username || "Usuario";
+  } else {
+    setTimeout(() => $("authUser").focus(), 50);
+  }
+}
+
+function cerrarSesion(expirada = false) {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+  } catch (_) {}
+  // Limpia los datos en memoria para que la siguiente persona empiece desde cero
+  st.hist = [];
+  vaciarMemoriaRam();
+  $("authPass").value = "";
+  verificarSesion();
+  notify(expirada ? "Tu sesión expiró. Inicia sesión de nuevo." : "Sesión finalizada.", expirada ? "warning" : "info");
+}
+
+$("tabLogin").onclick = () => setModoAuth(false);
+$("tabRegister").onclick = () => setModoAuth(true);
+
+$("btnTogglePass").onclick = () => {
+  const visible = $("authPass").type === "text";
+  $("authPass").type = visible ? "password" : "text";
+  $("btnTogglePass").textContent = visible ? "Ver" : "Ocultar";
+};
+
+$("btnAuthSim").onclick = () => $("btnSimMode").click();
+
+$("authForm").onsubmit = async e => {
+  e.preventDefault();
+  setAuthError("");
+  const username = $("authUser").value.trim();
+  const password = $("authPass").value;
+  const nombre = $("authNombre").value.trim();
+
+  if (!username || !password) return setAuthError("Escribe tu usuario y contraseña.");
+  if (modoRegistro && password.length < 6) return setAuthError("La contraseña debe tener al menos 6 caracteres.");
+
+  const btn = $("btnAuthSubmit");
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"></span><span>Procesando...</span>';
+
+  try {
+    if (modoRegistro) {
+      await api("/api/auth/registro", "POST", { username, password, nombre });
+      setModoAuth(false);
+      $("authUser").value = username;
+      $("authPass").value = "";
+      $("authPass").focus();
+      notify("Cuenta creada. Ahora inicia sesión.", "success");
+    } else {
+      const resp = await api("/api/auth/login", "POST", { username, password });
+      const usuario = resp.usuario || { username, nombre: username };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(usuario));
+      const token = resp.token || resp.access_token;
+      if (token) localStorage.setItem(TOKEN_KEY, token);
+      $("authPass").value = "";
+      verificarSesion();
+      notify(`Bienvenido/a, ${usuario.nombre || usuario.username}`, "success");
+    }
+  } catch (err) {
+    if (err.status === 401) setAuthError("Usuario o contraseña incorrectos.");
+    else if (err.status === undefined) setAuthError("No se pudo conectar con el servidor. Revisa FastAPI o usa el modo emulador.");
+    else setAuthError(err.message || "No se pudo completar la operación.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+};
+
+$("btnLogout").onclick = () => cerrarSesion(false);
+
+// Mantiene sincronizado el estado de conexión mostrado en el modal
+setInterval(() => { if (!getSesion()) actualizarAuthConn(); }, 1000);
+
+setModoAuth(false);
+verificarSesion();
+actualizarAuthConn();
 
 refresh();
 </script>
