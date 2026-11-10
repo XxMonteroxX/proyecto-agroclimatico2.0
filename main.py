@@ -62,24 +62,34 @@ def cargar():
             status_code=404,
             detail=(
                 f"No se encontró el archivo '{storage.DATASET_PATH.name}' junto "
-                f"a main.py. Coloque el dataset de 15,000 registros en esa ruta."
+                f"a main.py. Coloque el dataset de 30,000 registros en esa ruta."
             ),
         )
 
     tiempo_ns, total = storage.cargar_csv()
 
+    # Rebanadas de 60 elementos
+    primeros_60 = estado.registros[:60]
+    ultimos_60 = estado.registros[-60:]
+
     return {
         "mensaje": (
-    f"Se realizó la carga de los {total} registros con sus 10 columnas a la "
-    f"estructura [ArrayList/Lista de Objetos] y le tomó [{tiempo_ns}] "
-    f"nanosegundos completar la acción."
-     ),
+            f"Se realizó la carga de los {total} registros con sus 10 columnas a la "
+            f"estructura [ArrayList/Lista de Objetos] y le tomó [{tiempo_ns}] "
+            f"nanosegundos completar la acción."
+        ),
         "tiempo_ns": tiempo_ns,
         "total_registros": total,
-        "muestra_primeros_30": estado.registros[:30],
-        "muestra_ultimos_30": estado.registros[-30:],
-        "primeros_30": estado.registros[:30],
-        "ultimos_30": estado.registros[-30:],
+        # Nuevas llaves para 60 registros
+        "muestra_primeros_60": primeros_60,
+        "muestra_ultimos_60": ultimos_60,
+        "primeros_60": primeros_60,
+        "ultimos_60": ultimos_60,
+        # Llaves heredadas para que el frontend no falle si aún busca '30'
+        "muestra_primeros_30": primeros_60,
+        "muestra_ultimos_30": ultimos_60,
+        "primeros_30": primeros_60,
+        "ultimos_30": ultimos_60,
     }
 
 
@@ -113,6 +123,10 @@ def disparador_ordenamiento():
     comparaciones, movimientos, tiempo_ns = storage.ejecutar_ordenamiento(campo, metodo)
     alfa_nombre, alfa_conteo = storage.metodo_alfa()
 
+    # Rebanadas de 60 registros ordenados
+    primeros_60 = estado.registros[:60]
+    ultimos_60 = estado.registros[-60:]
+
     return {
         "campo_seleccionado": {"clave": clave, "nombre": campo},
         "campo": campo,
@@ -132,13 +146,17 @@ def disparador_ordenamiento():
             "veces_ejecutado": alfa_conteo,
             "historial_completo": dict(estado.conteo_metodos),
         },
-        "muestra_primeros_30": estado.registros[:30],
-        "muestra_ultimos_30": estado.registros[-30:],
-        "primeros_30": estado.registros[:30],
-        "ultimos_30": estado.registros[-30:],
+        # Claves actualizadas para 60 registros
+        "muestra_primeros_60": primeros_60,
+        "muestra_ultimos_60": ultimos_60,
+        "primeros_60": primeros_60,
+        "ultimos_60": ultimos_60,
+        # Claves anteriores para evitar errores si no se ha refrescado el frontend
+        "muestra_primeros_30": primeros_60,
+        "muestra_ultimos_30": ultimos_60,
+        "primeros_30": primeros_60,
+        "ultimos_30": ultimos_60,
     }
-
-
 # ---------------------------------------------------------------------------
 # FASE 3: DISPARADOR ALEATORIO DE BÚSQUEDA
 # ---------------------------------------------------------------------------
