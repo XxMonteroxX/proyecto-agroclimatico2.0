@@ -303,8 +303,8 @@
     <div class="space-y-3">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-[#070a0d] p-1.5 border border-white/10 w-fit">
-          <button class="tab-pill on" data-tab="p">Primeros 30 registros</button>
-          <button class="tab-pill" data-tab="u">Últimos 30 registros</button>
+          <button class="tab-pill on" data-tab="p">Primeros 60 registros</button>
+          <button class="tab-pill" data-tab="u">Últimos 60 registros</button>
         </div>
 
         <div class="flex items-center gap-3">
@@ -706,14 +706,14 @@ async function mockAuth(path, body) {
 async function mockApi(path, method, body) {
   await new Promise(r => setTimeout(r, 320));
   if (path.startsWith("/api/auth/")) return mockAuth(path, body);
-  if (path === "/api/fase1/cargar") {
-    const p = Array.from({ length: 30 }, (_, i) => generateMockRow(i + 1));
-    const u = Array.from({ length: 30 }, (_, i) => generateMockRow(TOTAL - 29 + i));
+ if (path === "/api/fase1/cargar") {
+    const p = Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1));
+    const u = Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i));
     return {
       tiempo_ns: 4829100,
       estructura: "ArrayList<RegistroAgro>",
-      muestra_primeros_30: p,
-      muestra_ultimos_30: u
+      muestra_primeros_60: p,
+      muestra_ultimos_60: u
     };
   }
   if (path === "/api/fase2/disparador-ordenamiento") {
@@ -721,8 +721,8 @@ async function mockApi(path, method, body) {
     const metodos = ["Quick Sort", "Merge Sort", "Radix Sort", "Shell Sort", "Heap Sort"];
     const c = body?.forzar_campo || camposClave[Math.floor(Math.random() * camposClave.length)];
     const m = metodos[Math.floor(Math.random() * metodos.length)];
-    const sortedP = [...(st.origP.length ? st.origP : Array.from({ length: 30 }, (_, i) => generateMockRow(i + 1)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
-    const sortedU = [...(st.origU.length ? st.origU : Array.from({ length: 30 }, (_, i) => generateMockRow(TOTAL - 29 + i)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
+    const sortedP = [...(st.origP.length ? st.origP : Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
+    const sortedU = [...(st.origU.length ? st.origU : Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
     return {
       campo_seleccionado: c,
       clave: getClaveNum(c),
@@ -1061,8 +1061,9 @@ function renderMuestra() {
 }
 
 function setMuestra(res, saveAsOriginal = false) {
-  const p = pick(res, "muestra_primeros_30", "primeros_30", "primeros");
-  const u = pick(res, "muestra_ultimos_30", "ultimos_30", "ultimos");
+  // Se agregan las claves de 60 al selector pick
+  const p = pick(res, "muestra_primeros_60", "primeros_60", "muestra_primeros_30", "primeros_30", "primeros");
+  const u = pick(res, "muestra_ultimos_60", "ultimos_60", "muestra_ultimos_30", "ultimos_30", "ultimos");
   if (Array.isArray(p) && p.length) {
     st.p = p;
     if (saveAsOriginal) st.origP = JSON.parse(JSON.stringify(p));
@@ -1072,7 +1073,6 @@ function setMuestra(res, saveAsOriginal = false) {
     if (saveAsOriginal) st.origU = JSON.parse(JSON.stringify(u));
   }
 }
-
 document.querySelectorAll(".tab-pill").forEach(b => {
   b.onclick = () => {
     st.tab = b.dataset.tab;
