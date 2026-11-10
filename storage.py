@@ -20,7 +20,7 @@ from algorithms import (
 
 BASE_DIR = Path(__file__).parent
 
-DATASET_PATH = BASE_DIR / "dataset_agroclimatico_15000.csv"
+DATASET_PATH = BASE_DIR / "dataset_agroclimatico_30000.csv"
 BITACORA_ORDEN_PATH = BASE_DIR / "bitacora_ordenacion.txt"
 BITACORA_BUSQUEDA_PATH = BASE_DIR / "bitacora_busqueda.txt"
 BACKUP_PATH = BASE_DIR / "registros_ordenados_backup.csv"
