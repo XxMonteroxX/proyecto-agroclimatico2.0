@@ -60,15 +60,159 @@
     display: none !important;
   }
 
-  .container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 24px 16px;
+  /* ESTRUCTURA PRINCIPAL CON SIDEBAR IZQUIERDA */
+  .app-shell {
+    display: flex;
     flex: 1;
+    width: 100%;
+    max-width: 1520px;
+    margin: 0 auto;
+  }
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-subtle);
+    background: rgba(11, 15, 19, 0.95);
+    backdrop-filter: blur(14px);
+    padding: 20px 14px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 40;
+  }
+
+  .sidebar-brand {
+    padding: 0 8px 18px 8px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--bio);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-brand-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    border-radius: 11px;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 11px 13px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    transform: translateX(2px);
+  }
+
+  .nav-item.active {
+    border-color: rgba(132, 204, 22, 0.45);
+    background: rgba(132, 204, 22, 0.16);
+    color: #bef264;
+    font-weight: 700;
+    box-shadow: 0 0 18px rgba(132, 204, 22, 0.15);
+  }
+
+  .nav-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-icon {
+    background: rgba(132, 204, 22, 0.25);
+    color: var(--bio);
+  }
+
+  .sidebar-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 14px;
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  @media (max-width: 900px) {
+    .app-shell {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px;
+    }
+    .sidebar-brand, .sidebar-footer {
+      display: none;
+    }
+    .sidebar-nav {
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .nav-item {
+      width: auto;
+      white-space: nowrap;
+      padding: 8px 12px;
+    }
+    .main-content {
+      padding: 16px;
+    }
   }
 
   .deck-panel {
@@ -232,7 +376,7 @@
   .dot-red { background: #ef4444; }
 
   h1 {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: #ffffff;
     margin-top: 8px;
@@ -321,52 +465,11 @@
     padding-top: 10px;
   }
 
-  /* BARRA DE NAVEGACIÓN DE 7 MÓDULOS */
-  .main-nav {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    overflow-x: auto;
-    border-top: 1px solid var(--border-subtle);
-    margin-top: 18px;
-    padding-top: 14px;
-    padding-bottom: 4px;
-  }
-
-  .nav-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background: transparent;
-    padding: 8px 13px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-
-  .nav-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-  }
-
-  .nav-item.active {
-    border-color: rgba(132, 204, 22, 0.45);
-    background: rgba(132, 204, 22, 0.16);
-    color: #bef264;
-    box-shadow: 0 0 15px rgba(132, 204, 22, 0.15);
-  }
-
   /* HUD METRICS */
   .hud-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
     margin-top: 16px;
   }
 
@@ -374,7 +477,7 @@
     border-radius: 12px;
     border: 1px solid var(--border-subtle);
     background: rgba(7, 10, 13, 0.85);
-    padding: 16px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -391,7 +494,7 @@
 
   .hud-value {
     font-family: var(--font-mono);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     margin-top: 6px;
     color: #ffffff;
@@ -401,17 +504,17 @@
     font-family: var(--font-mono);
     font-size: 11px;
     color: #64748b;
-    margin-top: 6px;
+    margin-top: 5px;
   }
 
   .ram-blocks {
     display: grid;
     grid-template-columns: repeat(30, minmax(0, 1fr));
     gap: 3px;
-    margin-top: 12px;
+    margin-top: 10px;
   }
   .ram-block {
-    height: 10px;
+    height: 9px;
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -426,7 +529,7 @@
   /* STEPPER */
   .stepper-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
   }
 
@@ -437,7 +540,7 @@
     border-radius: 12px;
     border: 1px solid var(--border-subtle);
     background: rgba(255, 255, 255, 0.02);
-    padding: 12px;
+    padding: 11px;
     text-align: left;
     cursor: pointer;
     color: var(--text-main);
@@ -457,8 +560,8 @@
   }
 
   .step-badge {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -718,7 +821,7 @@
   /* MÉTRICAS GRID */
   .metrics-4 {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 12px;
     margin-bottom: 16px;
   }
@@ -732,13 +835,13 @@
 
   .grid-2 {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
   }
 
   .grid-3 {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
   }
 
@@ -885,10 +988,10 @@
     border-top: 1px solid var(--border-subtle);
     background: rgba(8, 11, 14, 0.95);
     padding: 14px 20px;
-    margin-top: 24px;
+    margin-top: auto;
   }
   .footer-inner {
-    max-width: 1280px;
+    max-width: 1480px;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -962,488 +1065,531 @@
 
 <div id="toastContainer"></div>
 
-<div id="appRoot" class="container">
+<div id="appRoot" class="app-shell">
 
   <!-- ================================================== -->
-  <!-- A. CABECERA DE TELEMETRÍA Y MENÚ DE NAVEGACIÓN     -->
+  <!-- MENÚ LATERAL IZQUIERDO FIJO (7 MÓDULOS - Pág. 2)   -->
   <!-- ================================================== -->
-  <header class="deck-panel" style="z-index: 30;">
-    <div class="header-top">
-      <div>
-        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
-          <span class="badge-sys">MÉTODOS DE ORDENAMIENTO Y BÚSQUEDA // PROYECTO 1</span>
-          <span id="conn" class="conn-pill"><span class="dot"></span>Verificando enlace...</span>
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-title">
+          <span>🌿</span> AERO-AGRO // SYS
         </div>
-        <h1>MONITOREO AGROCLIMÁTICO <span class="text-bio">//</span> MAÍZ Y AGUACATE</h1>
-        <p class="subtitle">Benchmarking en RAM de 30,000 registros • Sector Agroalimentario y Meteorológico</p>
+        <div class="sidebar-brand-sub">Ordenamiento y Búsqueda</div>
       </div>
 
-      <div class="header-actions">
-        <button id="btnSimMode" class="btn-deck btn-ghost btn-sm" title="Activa respuestas simuladas locales">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-          <span id="simLabel">Emulador: OFF</span>
+      <nav aria-label="Navegación Principal" class="sidebar-nav">
+        <button data-nav="intro" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Introducción</span>
         </button>
-
-        <button id="btnHist" class="btn-deck btn-ghost btn-sm">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Bitácora (<span id="histCount">0</span>)
+        <button data-nav="operacion" data-phase="1" class="nav-item active">
+          <span class="nav-icon">🗄️</span>
+          <span>Carga de Datos</span>
         </button>
-
-        <button id="btnGlobalReset" class="btn-deck btn-danger btn-sm">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          Reiniciar
+        <button data-nav="operacion" data-phase="2" class="nav-item">
+          <span class="nav-icon">⇅</span>
+          <span>Ordenación</span>
         </button>
+        <button data-nav="operacion" data-phase="3" class="nav-item">
+          <span class="nav-icon">🔍</span>
+          <span>Búsqueda</span>
+        </button>
+        <button data-nav="reportes" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Reportes</span>
+        </button>
+        <button data-nav="alfa" class="nav-item">
+          <span class="nav-icon">∑</span>
+          <span>Método Alfa</span>
+        </button>
+        <button data-nav="fuentes" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Fuentes</span>
+        </button>
+      </nav>
+    </div>
 
-        <!-- MENÚ DESPLEGABLE DE USUARIO -->
-        <div id="userProfile" class="user-menu-wrap hidden">
-          <button id="btnUserDropdown" type="button" class="user-btn">
-            <span class="dot dot-bio"></span>
-            <span id="userProfileName">USUARIO</span>
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+    <div class="sidebar-footer">
+      <div>Dataset: <span class="text-white">30,000 reg.</span></div>
+      <div>Motor: <span class="text-bio">Python Puro</span></div>
+    </div>
+  </aside>
+
+  <!-- ================================================== -->
+  <!-- ÁREA CENTRAL DE CONTENIDO Y TELEMETRÍA             -->
+  <!-- ================================================== -->
+  <main class="main-content">
+
+    <!-- A. CABECERA SUPERIOR -->
+    <header class="deck-panel" style="z-index: 30;">
+      <div class="header-top">
+        <div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+            <span class="badge-sys">MÉTODOS DE ORDENAMIENTO Y BÚSQUEDA // PROYECTO 1</span>
+            <span id="conn" class="conn-pill"><span class="dot"></span>Verificando enlace...</span>
+          </div>
+          <h1>MONITOREO AGROCLIMÁTICO <span class="text-bio">//</span> MAÍZ Y AGUACATE</h1>
+          <p class="subtitle">Benchmarking en RAM de 30,000 registros • Sector Agroalimentario y Meteorológico</p>
+        </div>
+
+        <div class="header-actions">
+          <button id="btnSimMode" class="btn-deck btn-ghost btn-sm" title="Activa respuestas simuladas locales">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+            <span id="simLabel">Emulador: OFF</span>
           </button>
 
-          <div id="userDropdownMenu" class="user-dropdown hidden">
-            <div class="user-dropdown-header">
-              Rol: <span id="userRoleLabel" class="text-bio">Investigador</span>
+          <button id="btnHist" class="btn-deck btn-ghost btn-sm">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Bitácora (<span id="histCount">0</span>)
+          </button>
+
+          <button id="btnGlobalReset" class="btn-deck btn-danger btn-sm">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Reiniciar
+          </button>
+
+          <!-- MENÚ DESPLEGABLE DE USUARIO -->
+          <div id="userProfile" class="user-menu-wrap hidden">
+            <button id="btnUserDropdown" type="button" class="user-btn">
+              <span class="dot dot-bio"></span>
+              <span id="userProfileName">USUARIO</span>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+
+            <div id="userDropdownMenu" class="user-dropdown hidden">
+              <div class="user-dropdown-header">
+                Rol: <span id="userRoleLabel" class="text-bio">Investigador</span>
+              </div>
+              <button id="menuItemPerfil" type="button">👤 Perfil</button>
+              <button id="menuItemConfig" type="button">⚙️ Configuración</button>
+              <button id="menuItemAyuda" type="button">❓ Ayuda</button>
+              <button id="btnLogout" type="button" class="logout-item">🚪 SALIR</button>
             </div>
-            <button id="menuItemPerfil" type="button">👤 Perfil</button>
-            <button id="menuItemConfig" type="button">⚙️ Configuración</button>
-            <button id="menuItemAyuda" type="button">❓ Ayuda</button>
-            <button id="btnLogout" type="button" class="logout-item">🚪 SALIR</button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- BARRA DE NAVEGACIÓN PRINCIPAL (7 MÓDULOS) -->
-    <nav aria-label="Navegación Principal" class="main-nav">
-      <button data-nav="intro" class="nav-item">🏠 Introducción del proyecto</button>
-      <button data-nav="operacion" data-phase="1" class="nav-item active">🗄️ Carga de Datos</button>
-      <button data-nav="operacion" data-phase="2" class="nav-item">⇅ Ordenación</button>
-      <button data-nav="operacion" data-phase="3" class="nav-item">🔍 Búsqueda</button>
-      <button data-nav="reportes" class="nav-item">📊 Reportes</button>
-      <button data-nav="alfa" class="nav-item">∑ Método Alfa</button>
-      <button data-nav="fuentes" class="nav-item">📄 Fuentes</button>
-    </nav>
-
-    <!-- HUD: MÉTRICAS DE ESTADO -->
-    <div class="hud-grid">
-      <div class="hud-card">
-        <div class="hud-label">
-          <span>BANCO DE MEMORIA RAM</span>
-          <span id="ramPct" class="text-phosphor" style="font-weight:700;">0%</span>
+      <!-- HUD: MÉTRICAS DE ESTADO -->
+      <div class="hud-grid">
+        <div class="hud-card">
+          <div class="hud-label">
+            <span>BANCO DE MEMORIA RAM</span>
+            <span id="ramPct" class="text-phosphor" style="font-weight:700;">0%</span>
+          </div>
+          <div id="sumReg" class="hud-value">0 / 30,000</div>
+          <div id="ramBlocks" class="ram-blocks"></div>
         </div>
-        <div id="sumReg" class="hud-value">0 / 30,000</div>
-        <div id="ramBlocks" class="ram-blocks"></div>
-      </div>
 
-      <div class="hud-card">
-        <div class="hud-label">
-          <span>VECTOR DE ORDENACIÓN</span>
-          <span id="ordTag" style="background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; font-size:10px;">RAW_STATE</span>
+        <div class="hud-card">
+          <div class="hud-label">
+            <span>VECTOR DE ORDENACIÓN</span>
+            <span id="ordTag" style="background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; font-size:10px;">RAW_STATE</span>
+          </div>
+          <div id="sumOrd" class="hud-value text-atmo">No ordenado</div>
+          <div id="sumOrdSub" class="hud-sub">Secuencia original de captura</div>
         </div>
-        <div id="sumOrd" class="hud-value text-atmo">No ordenado</div>
-        <div id="sumOrdSub" class="hud-sub">Secuencia original de captura</div>
-      </div>
 
-      <div class="hud-card">
-        <div class="hud-label">
-          <span>ALFA GENERAL (GLOBAL)</span>
-          <span class="text-bio" style="font-size:10px;">BENCHMARK</span>
+        <div class="hud-card">
+          <div class="hud-label">
+            <span>ALFA GENERAL (GLOBAL)</span>
+            <span class="text-bio" style="font-size:10px;">BENCHMARK</span>
+          </div>
+          <div id="sumAlfa" class="hud-value text-bio">Sin ejecuciones</div>
+          <div id="sumAlfaSub" class="hud-sub">Esperando pruebas en Fase 2</div>
         </div>
-        <div id="sumAlfa" class="hud-value text-bio">Sin ejecuciones</div>
-        <div id="sumAlfaSub" class="hud-sub">Esperando pruebas en Fase 2</div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- ================================================== -->
-  <!-- VISTA 1: INTRODUCCIÓN DEL PROYECTO                 -->
-  <!-- ================================================== -->
-  <div id="viewIntro" class="hidden">
-    <section class="deck-panel">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon">📖</div>
-          <div>
-            <h2 class="sec-title">Introducción del Proyecto</h2>
-            <p class="sec-sub">Materia: Métodos de Ordenamiento y Búsqueda • Sector Agroclimático</p>
+    <!-- ================================================== -->
+    <!-- VISTA 1: INTRODUCCIÓN DEL PROYECTO                 -->
+    <!-- ================================================== -->
+    <div id="viewIntro" class="hidden">
+      <section class="deck-panel">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon">📖</div>
+            <div>
+              <h2 class="sec-title">Introducción del Proyecto</h2>
+              <p class="sec-sub">Materia: Métodos de Ordenamiento y Búsqueda • Sector Agroclimático</p>
+            </div>
+          </div>
+          <button onclick="switchMainView('operacion', 1)" class="btn-deck btn-bio btn-sm">Ir a Carga de Datos ➔</button>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 16px;">
+          <div class="box-dark">
+            <h3 class="text-bio" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">¿QUÉ ES ESTE PROYECTO?</h3>
+            <p style="font-size:14px; line-height:1.65; color:#cbd5e1; margin-bottom:10px;">
+              Este sistema implementa y visualiza de manera manual (sin librerías externas de ordenamiento ni búsqueda) los principales algoritmos de la ciencia de la computación aplicados a una base de datos real de <strong class="text-white">30,000 registros agroclimáticos</strong> de cultivos de maíz y aguacate en México.
+            </p>
+            <p style="font-size:14px; line-height:1.65; color:#cbd5e1;">
+              Permite inyectar los datos en memoria RAM, ejecutar disparos estocásticos de ordenamiento y búsqueda, y evaluar su eficiencia real en <strong class="text-phosphor">nanosegundos</strong>, comparaciones lógicas y movimientos de memoria.
+            </p>
+          </div>
+
+          <div class="box-dark">
+            <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">¿QUÉ ENCONTRARÁS AQUÍ?</h3>
+            <ul class="feature-list">
+              <li><span class="text-bio">✔</span> Carga masiva de 30,000 registros CSV (10 columnas) a RAM.</li>
+              <li><span class="text-bio">✔</span> 6 Métodos de Ordenamiento: Radix, Counting, Bucket, Quick, Merge y Heap Sort.</li>
+              <li><span class="text-bio">✔</span> Búsqueda Binaria (con validación de seguridad en RAM) y Búsqueda Lineal.</li>
+              <li><span class="text-bio">✔</span> Reportes comparativos por los 3 campos clave y gráficas en vivo.</li>
+              <li><span class="text-bio">✔</span> Evaluación del Método Alfa (Individual por Usuario vs. Global).</li>
+              <li><span class="text-bio">✔</span> Referencias bibliográficas en formato APA.</li>
+            </ul>
           </div>
         </div>
-        <button onclick="switchMainView('operacion', 1)" class="btn-deck btn-bio btn-sm">Ir a Carga de Datos ➔</button>
+
+        <div class="alert-box" style="margin-bottom:0;">
+          <strong class="text-atmo">📊 PROFUNDIDAD DE LA INVESTIGACIÓN:</strong><br>
+          Se realizó una investigación detallada sobre la complejidad temporal y espacial de cada algoritmo (<code class="text-bio">O(n log n)</code>, <code class="text-bio">O(n + k)</code>, <code class="text-bio">O(log n)</code>), asignando cada técnica según la naturaleza del dato clave: enteros de estación (<code class="text-white">id_estacion</code>), rangos térmicos (<code class="text-white">temperatura_promedio</code>) y series cronológicas (<code class="text-white">fecha_registro</code>).
+        </div>
+      </section>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- VISTA 2: OPERACIÓN (FASES 1, 2 Y 3)                -->
+    <!-- ================================================== -->
+    <div id="viewOperacion" style="display:flex; flex-direction:column; gap:22px;">
+
+      <!-- STEPPER -->
+      <div class="deck-panel" style="padding:14px;">
+        <div class="stepper-row">
+          <button data-goto="1" class="step-btn step-active">
+            <div id="stepBadge1" class="step-badge">01</div>
+            <div>
+              <div id="stepStatus1" style="font-family:var(--font-mono); font-size:10px; color:var(--bio);">FASE ACTIVA</div>
+              <div style="font-size:14px; font-weight:600;">1. Carga a Memoria RAM</div>
+            </div>
+          </button>
+
+          <button data-goto="2" class="step-btn step-locked">
+            <div id="stepBadge2" class="step-badge">02</div>
+            <div>
+              <div id="stepStatus2" style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">BLOQUEADA</div>
+              <div style="font-size:14px; font-weight:600;">2. Ordenación Aleatoria</div>
+            </div>
+          </button>
+
+          <button data-goto="3" class="step-btn step-locked">
+            <div id="stepBadge3" class="step-badge">03</div>
+            <div>
+              <div id="stepStatus3" style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">BLOQUEADA</div>
+              <div style="font-size:14px; font-weight:600;">3. Búsqueda Clave</div>
+            </div>
+          </button>
+        </div>
       </div>
 
-      <div class="grid-2" style="margin-bottom: 16px;">
+      <!-- FASE 1 -->
+      <section id="secFase1" class="deck-panel deck-panel-active">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon">F1</div>
+            <div>
+              <h2 class="sec-title">Fase 1: Carga de Datos a Memoria RAM</h2>
+              <p class="sec-sub">Archivo: dataset_agroclimatico_30000.csv • 30,000 registros × 10 columnas</p>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <button id="btnResetRam" class="btn-deck btn-ghost btn-sm hidden">Vaciar memoria RAM</button>
+            <div class="scenario-box">
+              <label class="text-muted">Escenario:</label>
+              <select id="selCasoPrueba">
+                <option value="aleatorio">Aleatorio (Original)</option>
+                <option value="mejor">Mejor Caso (Pre-ordenado)</option>
+                <option value="peor">Peor Caso (Inverso)</option>
+              </select>
+            </div>
+            <button id="btn11" class="btn-deck btn-bio">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              1.1 Cargar 30,000 Registros a RAM
+            </button>
+          </div>
+        </div>
+
+        <div id="out1" class="term-box">
+          <span class="text-muted">[SYS_IDLE] $ </span>Esperando orden de ingesta de datos en memoria principal...
+        </div>
+
+        <div class="table-toolbar">
+          <div class="tabs-group">
+            <button class="tab-pill on" data-tab="p">Primeros 60 registros</button>
+            <button class="tab-pill" data-tab="u">Últimos 60 registros</button>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            <input id="localFilter" type="text" placeholder="Filtrar en vista actual..." class="inp-deck" style="width:230px; padding:6px 12px; font-size:12px;">
+            <span id="sampleCounter" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">0 filas visibles</span>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead id="thM"></thead>
+            <tbody id="tbM"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- FASE 2 -->
+      <section id="secFase2" class="deck-panel">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon atmo">F2</div>
+            <div>
+              <h2 class="sec-title">Fase 2: Disparador Aleatorio de Ordenación</h2>
+              <p class="sec-sub">Selección estocástica de atributo clave y algoritmo en RAM</p>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <button id="btnUndoSort" class="btn-deck btn-ghost btn-sm hidden">⬅ Deshacer ordenamiento</button>
+            <button id="btn21" class="btn-deck btn-atmo" disabled>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+              2.1 Activar Disparador Aleatorio de Ordenación
+            </button>
+          </div>
+        </div>
+
+        <div id="sel2" class="alert-box hidden"></div>
+        <div id="out2" class="term-box atmo hidden"></div>
+        <div id="badges2" class="metrics-4 hidden"></div>
+
         <div class="box-dark">
-          <h3 class="text-bio" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">¿QUÉ ES ESTE PROYECTO?</h3>
-          <p style="font-size:14px; line-height:1.65; color:#cbd5e1; margin-bottom:10px;">
-            Este sistema implementa y visualiza de manera manual (sin librerías externas de ordenamiento ni búsqueda) los principales algoritmos de la ciencia de la computación aplicados a una base de datos real de <strong class="text-white">30,000 registros agroclimáticos</strong> de cultivos de maíz y aguacate en México.
-          </p>
-          <p style="font-size:14px; line-height:1.65; color:#cbd5e1;">
-            Permite inyectar los datos en memoria RAM, ejecutar disparos estocásticos de ordenamiento y búsqueda, y evaluar su eficiencia real en <strong class="text-phosphor">nanosegundos</strong>, comparaciones lógicas y movimientos de memoria.
-          </p>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;">
+            <h3 style="font-family:var(--font-mono); font-size:12px; text-transform:uppercase; color:#cbd5e1;">
+              Frecuencia Acumulada en Sesión Actual
+            </h3>
+            <button onclick="switchMainView('alfa')" style="background:none; border:none; color:var(--bio); font-family:var(--font-mono); font-size:12px; text-decoration:underline; cursor:pointer;">
+              Ver Comparativa Alfa (Usuario vs. General) ➔
+            </button>
+          </div>
+          <div id="alfa" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">
+            Aún no hay ejecuciones de ordenamiento registradas.
+          </div>
+        </div>
+      </section>
+
+      <!-- FASE 3 -->
+      <section id="secFase3" class="deck-panel">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon phosphor">F3</div>
+            <div>
+              <h2 class="sec-title">Fase 3: Disparador Aleatorio de Búsqueda Clave</h2>
+              <p class="sec-sub">Búsqueda Binaria O(log n) o Búsqueda Lineal O(n) sobre RAM</p>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <button id="btnBackToF2" class="btn-deck btn-ghost btn-sm hidden">⬅ Volver a Fase 2</button>
+            <button id="btn31" class="btn-deck btn-phosphor" disabled>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              3.1 Activar Disparador Aleatorio de Búsqueda
+            </button>
+          </div>
+        </div>
+
+        <div id="mod3" class="hidden" style="display:flex; flex-direction:column; gap:14px;"></div>
+        <div id="res3" class="hidden" style="display:flex; flex-direction:column; gap:14px; margin-top:14px;"></div>
+      </section>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- VISTA 3: REPORTES Y ANÁLISIS COMPARATIVO           -->
+    <!-- ================================================== -->
+    <div id="viewReportes" class="hidden">
+      <section class="deck-panel">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon atmo">📊</div>
+            <div>
+              <h2 class="sec-title">Reportes y Análisis Comparativo por los 3 Campos Clave</h2>
+              <p class="sec-sub">Benchmarking de rendimiento entre id_estacion, temperatura_promedio y fecha_registro</p>
+            </div>
+          </div>
+          <button id="btnRefreshReportes" class="btn-deck btn-atmo btn-sm">Actualizar Métricas</button>
+        </div>
+
+        <div class="table-wrap" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>CAMPO CLAVE</th>
+                <th>TIPO DE DATO</th>
+                <th>MEJOR MÉTODO EJECUTADO</th>
+                <th>TIEMPO (ns / ms)</th>
+                <th>COMPARACIONES</th>
+                <th>MOVIMIENTOS RAM</th>
+              </tr>
+            </thead>
+            <tbody id="tbReportesClave">
+              <tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Cargando tabla comparativa...</td></tr>
+            </tbody>
+          </table>
         </div>
 
         <div class="box-dark">
-          <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">¿QUÉ ENCONTRARÁS AQUÍ?</h3>
-          <ul class="feature-list">
-            <li><span class="text-bio">✔</span> Carga masiva de 30,000 registros CSV (10 columnas) a RAM.</li>
-            <li><span class="text-bio">✔</span> 6 Métodos de Ordenamiento: Radix, Counting, Bucket, Quick, Merge y Heap Sort.</li>
-            <li><span class="text-bio">✔</span> Búsqueda Binaria (con validación de seguridad en RAM) y Búsqueda Lineal.</li>
-            <li><span class="text-bio">✔</span> Reportes comparativos por los 3 campos clave y gráficas en vivo.</li>
-            <li><span class="text-bio">✔</span> Evaluación del Método Alfa (Individual por Usuario vs. Global).</li>
-            <li><span class="text-bio">✔</span> Referencias bibliográficas en formato APA.</li>
+          <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:12px; text-transform:uppercase; margin-bottom:12px;">
+            Comparación Gráfica de Latencia (ms) y Evaluaciones Lógicas
+          </h3>
+          <div style="height:260px; width:100%;">
+            <canvas id="chartBenchmarking"></canvas>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- VISTA 4: MÉTODO ALFA (USUARIO VS GENERAL)          -->
+    <!-- ================================================== -->
+    <div id="viewAlfa" class="hidden">
+      <section class="deck-panel">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon">∑</div>
+            <div>
+              <h2 class="sec-title">Método Alfa: Usuario Registrado vs. Acumulado General</h2>
+              <p class="sec-sub">Identificación del algoritmo dominante de forma individual y global</p>
+            </div>
+          </div>
+          <button id="btnReiniciarAlfaUsuario" class="btn-deck btn-danger btn-sm">
+            🔄 Reiniciar Alfa del Usuario (No afecta el Alfa General)
+          </button>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:20px;">
+          <div class="box-dark" style="border-color:rgba(6, 182, 212, 0.35);">
+            <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:10px; margin-bottom:14px;">
+              <div>
+                <div class="text-atmo" style="font-family:var(--font-mono); font-size:11px;">ÁMBITO INDIVIDUAL</div>
+                <h3 style="font-size:15px; font-weight:700;">Método Alfa - Usuario (<span id="alfaUserTitle">Usuario</span>)</h3>
+              </div>
+              <span id="alfaUserWinnerBadge" style="background:rgba(6, 182, 212, 0.2); border:1px solid rgba(6, 182, 212, 0.4); color:#67e8f9; padding:4px 10px; border-radius:8px; font-family:var(--font-mono); font-size:12px; font-weight:700;">
+                Sin datos
+              </span>
+            </div>
+            <div id="barsAlfaUsuario" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">
+              Ejecuta ordenamientos en la Fase 2 para calcular tu Alfa personal.
+            </div>
+          </div>
+
+          <div class="box-dark" style="border-color:rgba(132, 204, 22, 0.35);">
+            <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:10px; margin-bottom:14px;">
+              <div>
+                <div class="text-bio" style="font-family:var(--font-mono); font-size:11px;">ACUMULADO GLOBAL (PROTEGIDO)</div>
+                <h3 style="font-size:15px; font-weight:700;">Método Alfa - General</h3>
+              </div>
+              <span id="alfaGenWinnerBadge" style="background:rgba(132, 204, 22, 0.2); border:1px solid rgba(132, 204, 22, 0.4); color:#bef264; padding:4px 10px; border-radius:8px; font-family:var(--font-mono); font-size:12px; font-weight:700;">
+                Sin datos
+              </span>
+            </div>
+            <div id="barsAlfaGeneral" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">
+              Sin registros globales aún.
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ÁMBITO</th>
+                <th>ALGORITMO ALFA</th>
+                <th>PUNTAJE / DOMINANCIA</th>
+                <th>ESTADO DE CONTROL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-atmo" style="font-weight:700;">Usuario Activo</td>
+                <td id="detUserAlgo">-</td>
+                <td id="detUserPts">0 ejecuciones (0%)</td>
+                <td class="text-muted">Reiniciable de forma independiente</td>
+              </tr>
+              <tr>
+                <td class="text-bio" style="font-weight:700;">General (Acumulado Global)</td>
+                <td id="detGenAlgo">-</td>
+                <td id="detGenPts">0 ejecuciones (0%)</td>
+                <td class="text-bio">Protegido (sin afectación por reinicio)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- VISTA 5: FUENTES Y REFERENCIAS APA                 -->
+    <!-- ================================================== -->
+    <div id="viewFuentes" class="hidden">
+      <section class="deck-panel">
+        <div class="sec-header">
+          <div class="sec-title-wrap">
+            <div class="sec-icon phosphor">📄</div>
+            <div>
+              <h2 class="sec-title">Fuentes Bibliográficas y Recursos Utilizados</h2>
+              <p class="sec-sub">Referencias académicas en formato APA y arquitectura tecnológica</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="box-dark" style="margin-bottom:20px;">
+          <h3 class="text-phosphor" style="font-family:var(--font-mono); font-size:13px; margin-bottom:12px;">REFERENCIAS BIBLIOGRÁFICAS (FORMATO APA 7ª ED.)</h3>
+          <ul class="apa-list">
+            <li>Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2022). <em>Introduction to algorithms</em> (4th ed.). MIT Press.</li>
+            <li>Knuth, D. E. (1998). <em>The art of computer programming: Vol. 3. Sorting and searching</em> (2nd ed.). Addison-Wesley.</li>
+            <li>Sedgewick, R., &amp; Wayne, K. (2011). <em>Algorithms</em> (4th ed.). Addison-Wesley Professional.</li>
           </ul>
         </div>
-      </div>
 
-      <div class="alert-box">
-        <strong class="text-atmo">📊 PROFUNDIDAD DE LA INVESTIGACIÓN:</strong><br>
-        Se realizó una investigación detallada sobre la complejidad temporal y espacial de cada algoritmo (<code class="text-bio">O(n log n)</code>, <code class="text-bio">O(n + k)</code>, <code class="text-bio">O(log n)</code>), asignando cada técnica según la naturaleza del dato clave: enteros de estación (<code class="text-white">id_estacion</code>), rangos térmicos (<code class="text-white">temperatura_promedio</code>) y series cronológicas (<code class="text-white">fecha_registro</code>).
-      </div>
-    </section>
-  </div>
-
-  <!-- ================================================== -->
-  <!-- VISTA 2: OPERACIÓN (FASES 1, 2 Y 3)                -->
-  <!-- ================================================== -->
-  <div id="viewOperacion" style="display:flex; flex-direction:column; gap:24px;">
-
-    <!-- STEPPER -->
-    <div class="deck-panel" style="padding:14px;">
-      <div class="stepper-row">
-        <button data-goto="1" class="step-btn step-active">
-          <div id="stepBadge1" class="step-badge">01</div>
-          <div>
-            <div id="stepStatus1" style="font-family:var(--font-mono); font-size:10px; color:var(--bio);">FASE ACTIVA</div>
-            <div style="font-size:14px; font-weight:600;">1. Carga a Memoria RAM</div>
-          </div>
-        </button>
-
-        <button data-goto="2" class="step-btn step-locked">
-          <div id="stepBadge2" class="step-badge">02</div>
-          <div>
-            <div id="stepStatus2" style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">BLOQUEADA</div>
-            <div style="font-size:14px; font-weight:600;">2. Ordenación Aleatoria</div>
-          </div>
-        </button>
-
-        <button data-goto="3" class="step-btn step-locked">
-          <div id="stepBadge3" class="step-badge">03</div>
-          <div>
-            <div id="stepStatus3" style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">BLOQUEADA</div>
-            <div style="font-size:14px; font-weight:600;">3. Búsqueda Clave</div>
-          </div>
-        </button>
-      </div>
+        <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">RECURSOS Y HERRAMIENTAS UTILIZADAS</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>CATEGORÍA</th>
+                <th>RECURSO / HERRAMIENTA</th>
+                <th>APLICACIÓN EN EL PROYECTO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-bio" style="font-weight:700;">Backend &amp; Algoritmos</td>
+                <td>Python 3 &amp; FastAPI</td>
+                <td>Implementación manual de algoritmos, API REST y medición en nanosegundos</td>
+              </tr>
+              <tr>
+                <td class="text-atmo" style="font-weight:700;">Frontend &amp; Diseño UI</td>
+                <td>HTML5, CSS3 y Chart.js</td>
+                <td>Interfaz interactiva, visualización de memoria RAM y gráficas comparativas</td>
+              </tr>
+              <tr>
+                <td class="text-phosphor" style="font-weight:700;">Persistencia</td>
+                <td>SQLite3</td>
+                <td>Gestión de usuarios y control independiente del Método Alfa</td>
+              </tr>
+              <tr>
+                <td style="color:#c084fc; font-weight:700;">Inteligencia Artificial</td>
+                <td>Claude y Gemini</td>
+                <td>Apoyo en arquitectura de software, diseño UI/UX y validación de algoritmos</td>
+              </tr>
+              <tr>
+                <td style="color:#34d399; font-weight:700;">Fuente de Datos</td>
+                <td>dataset_agroclimatico_30000.csv</td>
+                <td>30,000 registros meteorológicos y de cultivos de maíz y aguacate en México</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
 
-    <!-- FASE 1 -->
-    <section id="secFase1" class="deck-panel deck-panel-active">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon">F1</div>
-          <div>
-            <h2 class="sec-title">Fase 1: Carga de Datos a Memoria RAM</h2>
-            <p class="sec-sub">Archivo: dataset_agroclimatico_30000.csv • 30,000 registros × 10 columnas</p>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-          <button id="btnResetRam" class="btn-deck btn-ghost btn-sm hidden">Vaciar memoria RAM</button>
-          <div class="scenario-box">
-            <label class="text-muted">Escenario:</label>
-            <select id="selCasoPrueba">
-              <option value="aleatorio">Aleatorio (Original)</option>
-              <option value="mejor">Mejor Caso (Pre-ordenado)</option>
-              <option value="peor">Peor Caso (Inverso)</option>
-            </select>
-          </div>
-          <button id="btn11" class="btn-deck btn-bio">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-            1.1 Cargar 30,000 Registros a RAM
-          </button>
-        </div>
-      </div>
-
-      <div id="out1" class="term-box">
-        <span class="text-muted">[SYS_IDLE] $ </span>Esperando orden de ingesta de datos en memoria principal...
-      </div>
-
-      <div class="table-toolbar">
-        <div class="tabs-group">
-          <button class="tab-pill on" data-tab="p">Primeros 60 registros</button>
-          <button class="tab-pill" data-tab="u">Últimos 60 registros</button>
-        </div>
-
-        <div style="display:flex; align-items:center; gap:10px;">
-          <input id="localFilter" type="text" placeholder="Filtrar en vista actual..." class="inp-deck" style="width:230px; padding:6px 12px; font-size:12px;">
-          <span id="sampleCounter" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">0 filas visibles</span>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead id="thM"></thead>
-          <tbody id="tbM"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- FASE 2 -->
-    <section id="secFase2" class="deck-panel">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon atmo">F2</div>
-          <div>
-            <h2 class="sec-title">Fase 2: Disparador Aleatorio de Ordenación</h2>
-            <p class="sec-sub">Selección estocástica de atributo clave y algoritmo en RAM</p>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-          <button id="btnUndoSort" class="btn-deck btn-ghost btn-sm hidden">⬅ Deshacer ordenamiento</button>
-          <button id="btn21" class="btn-deck btn-atmo" disabled>
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
-            2.1 Activar Disparador Aleatorio de Ordenación
-          </button>
-        </div>
-      </div>
-
-      <div id="sel2" class="alert-box hidden"></div>
-      <div id="out2" class="term-box atmo hidden"></div>
-      <div id="badges2" class="metrics-4 hidden"></div>
-
-      <div class="box-dark">
-        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;">
-          <h3 style="font-family:var(--font-mono); font-size:12px; text-transform:uppercase; color:#cbd5e1;">
-            Frecuencia Acumulada en Sesión Actual
-          </h3>
-          <button onclick="switchMainView('alfa')" style="background:none; border:none; color:var(--bio); font-family:var(--font-mono); font-size:12px; text-decoration:underline; cursor:pointer;">
-            Ver Comparativa Alfa (Usuario vs. General) ➔
-          </button>
-        </div>
-        <div id="alfa" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">
-          Aún no hay ejecuciones de ordenamiento registradas.
-        </div>
-      </div>
-    </section>
-
-    <!-- FASE 3 -->
-    <section id="secFase3" class="deck-panel">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon phosphor">F3</div>
-          <div>
-            <h2 class="sec-title">Fase 3: Disparador Aleatorio de Búsqueda Clave</h2>
-            <p class="sec-sub">Búsqueda Binaria O(log n) o Búsqueda Lineal O(n) sobre RAM</p>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-          <button id="btnBackToF2" class="btn-deck btn-ghost btn-sm hidden">⬅ Volver a Fase 2</button>
-          <button id="btn31" class="btn-deck btn-phosphor" disabled>
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            3.1 Activar Disparador Aleatorio de Búsqueda
-          </button>
-        </div>
-      </div>
-
-      <div id="mod3" class="hidden" style="display:flex; flex-direction:column; gap:14px;"></div>
-      <div id="res3" class="hidden" style="display:flex; flex-direction:column; gap:14px; margin-top:14px;"></div>
-    </section>
-  </div>
-
-  <!-- ================================================== -->
-  <!-- VISTA 3: REPORTES Y ANÁLISIS COMPARATIVO           -->
-  <!-- ================================================== -->
-  <div id="viewReportes" class="hidden">
-    <section class="deck-panel">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon atmo">📊</div>
-          <div>
-            <h2 class="sec-title">Reportes y Análisis Comparativo por los 3 Campos Clave</h2>
-            <p class="sec-sub">Benchmarking de rendimiento entre id_estacion, temperatura_promedio y fecha_registro</p>
-          </div>
-        </div>
-        <button id="btnRefreshReportes" class="btn-deck btn-atmo btn-sm">Actualizar Métricas</button>
-      </div>
-
-      <div class="table-wrap" style="margin-bottom:20px;">
-        <table>
-          <thead>
-            <tr>
-              <th>CAMPO CLAVE</th>
-              <th>TIPO DE DATO</th>
-              <th>MEJOR MÉTODO EJECUTADO</th>
-              <th>TIEMPO (ns / ms)</th>
-              <th>COMPARACIONES</th>
-              <th>MOVIMIENTOS RAM</th>
-            </tr>
-          </thead>
-          <tbody id="tbReportesClave">
-            <tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Cargando tabla comparativa...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="box-dark">
-        <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:12px; text-transform:uppercase; margin-bottom:12px;">
-          Comparación Gráfica de Latencia (ms) y Evaluaciones Lógicas
-        </h3>
-        <div style="height:260px; width:100%;">
-          <canvas id="chartBenchmarking"></canvas>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================================================== -->
-  <!-- VISTA 4: MÉTODO ALFA (USUARIO VS GENERAL)          -->
-  <!-- ================================================== -->
-  <div id="viewAlfa" class="hidden">
-    <section class="deck-panel">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon">∑</div>
-          <div>
-            <h2 class="sec-title">Método Alfa: Usuario Registrado vs. Acumulado General</h2>
-            <p class="sec-sub">Identificación del algoritmo dominante de forma individual y global</p>
-          </div>
-        </div>
-        <button id="btnReiniciarAlfaUsuario" class="btn-deck btn-danger btn-sm">
-          🔄 Reiniciar Alfa del Usuario (No afecta el Alfa General)
-        </button>
-      </div>
-
-      <div class="grid-2" style="margin-bottom:20px;">
-        <div class="box-dark" style="border-color:rgba(6, 182, 212, 0.35);">
-          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:10px; margin-bottom:14px;">
-            <div>
-              <div class="text-atmo" style="font-family:var(--font-mono); font-size:11px;">ÁMBITO INDIVIDUAL</div>
-              <h3 style="font-size:15px; font-weight:700;">Método Alfa - Usuario (<span id="alfaUserTitle">Usuario</span>)</h3>
-            </div>
-            <span id="alfaUserWinnerBadge" style="background:rgba(6, 182, 212, 0.2); border:1px solid rgba(6, 182, 212, 0.4); color:#67e8f9; padding:4px 10px; border-radius:8px; font-family:var(--font-mono); font-size:12px; font-weight:700;">
-              Sin datos
-            </span>
-          </div>
-          <div id="barsAlfaUsuario" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">
-            Ejecuta ordenamientos en la Fase 2 para calcular tu Alfa personal.
-          </div>
-        </div>
-
-        <div class="box-dark" style="border-color:rgba(132, 204, 22, 0.35);">
-          <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:10px; margin-bottom:14px;">
-            <div>
-              <div class="text-bio" style="font-family:var(--font-mono); font-size:11px;">ACUMULADO GLOBAL (PROTEGIDO)</div>
-              <h3 style="font-size:15px; font-weight:700;">Método Alfa - General</h3>
-            </div>
-            <span id="alfaGenWinnerBadge" style="background:rgba(132, 204, 22, 0.2); border:1px solid rgba(132, 204, 22, 0.4); color:#bef264; padding:4px 10px; border-radius:8px; font-family:var(--font-mono); font-size:12px; font-weight:700;">
-              Sin datos
-            </span>
-          </div>
-          <div id="barsAlfaGeneral" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">
-            Sin registros globales aún.
-          </div>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ÁMBITO</th>
-              <th>ALGORITMO ALFA</th>
-              <th>PUNTAJE / DOMINANCIA</th>
-              <th>ESTADO DE CONTROL</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-atmo" style="font-weight:700;">Usuario Activo</td>
-              <td id="detUserAlgo">-</td>
-              <td id="detUserPts">0 ejecuciones (0%)</td>
-              <td class="text-muted">Reiniciable de forma independiente</td>
-            </tr>
-            <tr>
-              <td class="text-bio" style="font-weight:700;">General (Acumulado Global)</td>
-              <td id="detGenAlgo">-</td>
-              <td id="detGenPts">0 ejecuciones (0%)</td>
-              <td class="text-bio">Protegido (sin afectación por reinicio)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================================================== -->
-  <!-- VISTA 5: FUENTES Y REFERENCIAS APA                 -->
-  <!-- ================================================== -->
-  <div id="viewFuentes" class="hidden">
-    <section class="deck-panel">
-      <div class="sec-header">
-        <div class="sec-title-wrap">
-          <div class="sec-icon phosphor">📄</div>
-          <div>
-            <h2 class="sec-title">Fuentes Bibliográficas y Recursos Utilizados</h2>
-            <p class="sec-sub">Referencias académicas en formato APA y arquitectura tecnológica</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="box-dark" style="margin-bottom:20px;">
-        <h3 class="text-phosphor" style="font-family:var(--font-mono); font-size:13px; margin-bottom:12px;">REFERENCIAS BIBLIOGRÁFICAS (FORMATO APA 7ª ED.)</h3>
-        <ul class="apa-list">
-          <li>Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2022). <em>Introduction to algorithms</em> (4th ed.). MIT Press.</li>
-          <li>Knuth, D. E. (1998). <em>The art of computer programming: Vol. 3. Sorting and searching</em> (2nd ed.). Addison-Wesley.</li>
-          <li>Sedgewick, R., &amp; Wayne, K. (2011). <em>Algorithms</em> (4th ed.). Addison-Wesley Professional.</li>
-        </ul>
-      </div>
-
-      <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">RECURSOS Y HERRAMIENTAS UTILIZADAS</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>CATEGORÍA</th>
-              <th>RECURSO / HERRAMIENTA</th>
-              <th>APLICACIÓN EN EL PROYECTO</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-bio" style="font-weight:700;">Backend &amp; Algoritmos</td>
-              <td>Python 3 &amp; FastAPI</td>
-              <td>Implementación manual de algoritmos, API REST y medición en nanosegundos</td>
-            </tr>
-            <tr>
-              <td class="text-atmo" style="font-weight:700;">Frontend &amp; Diseño UI</td>
-              <td>HTML5, CSS3 y Chart.js</td>
-              <td>Interfaz interactiva, visualización de memoria RAM y gráficas comparativas</td>
-            </tr>
-            <tr>
-              <td class="text-phosphor" style="font-weight:700;">Persistencia</td>
-              <td>SQLite3</td>
-              <td>Gestión de usuarios y control independiente del Método Alfa</td>
-            </tr>
-            <tr>
-              <td style="color:#c084fc; font-weight:700;">Inteligencia Artificial</td>
-              <td>Claude y Gemini</td>
-              <td>Apoyo en arquitectura de software, diseño UI/UX y validación de algoritmos</td>
-            </tr>
-            <tr>
-              <td style="color:#34d399; font-weight:700;">Fuente de Datos</td>
-              <td>dataset_agroclimatico_30000.csv</td>
-              <td>30,000 registros meteorológicos y de cultivos de maíz y aguacate en México</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-
+  </main>
 </div>
 
 <!-- ================================================== -->
@@ -2179,7 +2325,7 @@ function renderPanelFase3() {
 
   if (bin) {
     h += `
-      <div class="alert-box ${listo ? "success" : "danger"}">
+      <div class="alert-box ${listo ? "success" : "danger"}" style="margin-bottom:0;">
         <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
           <div>
             <div>Campo requerido por Búsqueda Binaria: <strong class="text-white">${esc(campo)}</strong></div>
@@ -2271,7 +2417,7 @@ async function ejecutarBusqueda() {
   log("Búsqueda", s.met, campo, ns, c, "-");
 
   if (!ok || !reg) {
-    $("res3").innerHTML = `<div class="alert-box danger">Registro no encontrado con <strong>${esc(campo)} = ${esc(valor)}</strong> (${fmt(c)} comparaciones en ${fmt(ns)} ns).</div>`;
+    $("res3").innerHTML = `<div class="alert-box danger" style="margin-bottom:0;">Registro no encontrado con <strong>${esc(campo)} = ${esc(valor)}</strong> (${fmt(c)} comparaciones en ${fmt(ns)} ns).</div>`;
     $("res3").classList.remove("hidden");
     return;
   }
