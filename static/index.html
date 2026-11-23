@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AERO-AGRO // Centro de Control y Telemetría Bio-Climática</title>
+<title>AERO-AGRO // Métodos de Ordenamiento y Búsqueda</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -53,7 +53,7 @@
   }
 
   .deck-panel {
-    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-[#10161b]/80 backdrop-blur-md shadow-2xl shadow-black/60 transition-all duration-300;
+    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-[#10161b]/85 backdrop-blur-md shadow-2xl shadow-black/60 transition-all duration-300;
   }
 
   .deck-panel-active {
@@ -96,21 +96,18 @@
     @apply bg-bio-500/15 text-bio-400 border border-bio-500/30 shadow-[0_0_12px_rgba(132,204,22,0.15)];
   }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .nav-item {
+    @apply flex items-center gap-2 rounded-xl border border-transparent px-3 py-2 font-mono text-xs font-medium text-slate-400 transition-all hover:bg-white/[0.05] hover:text-white whitespace-nowrap;
   }
-  ::-webkit-scrollbar-track {
-    background: #070a0d;
+
+  .nav-item.active {
+    @apply border-bio-500/40 bg-bio-500/15 text-bio-300 shadow-[0_0_15px_rgba(132,204,22,0.15)];
   }
-  ::-webkit-scrollbar-thumb {
-    background: #1e293b;
-    border-radius: 3px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #84cc16;
-  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #070a0d; }
+  ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #84cc16; }
 
   @keyframes pulseGlow {
     0%, 100% { opacity: 0.4; }
@@ -121,18 +118,17 @@
   }
 </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-bio-500 selection:text-obsidian">
+<body class="min-h-screen flex flex-col antialiased selection:bg-bio-500 selection:text-obsidian">
 
 <!-- CONTENEDOR DE TOASTS FLOTANTES -->
 <div id="toastContainer" class="fixed bottom-5 right-5 z-[70] flex flex-col gap-2.5 max-w-md w-full pointer-events-none px-4 sm:px-0"></div>
 
-<div id="appRoot" class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+<div id="appRoot" class="mx-auto w-full max-w-7xl flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
 
   <!-- ================================================== -->
-  <!-- A. CABECERA DE TELEMETRÍA Y CONTROL DE MISIÓN      -->
+  <!-- A. CABECERA DE TELEMETRÍA Y MENÚ DE NAVEGACIÓN     -->
   <!-- ================================================== -->
-  <header class="deck-panel p-5 sm:p-6">
-    <!-- Spotlight superior -->
+  <header class="deck-panel p-5 sm:p-6 overflow-visible z-30">
     <div class="pointer-events-none absolute -top-24 left-1/3 h-48 w-96 rounded-full bg-bio-500/10 blur-3xl"></div>
     <div class="pointer-events-none absolute -top-24 right-1/4 h-48 w-96 rounded-full bg-atmo-500/10 blur-3xl"></div>
 
@@ -140,31 +136,25 @@
       <div class="space-y-1.5">
         <div class="flex flex-wrap items-center gap-2.5">
           <span class="inline-flex items-center gap-1.5 rounded-md bg-bio-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-bio-400 border border-bio-500/20">
-            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
-            SYS.TELEMETRY // MX-AGRO-V4
+            MÉTODOS DE ORDENAMIENTO Y BÚSQUEDA // PROYECTO 1
           </span>
           <span id="conn" class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-0.5 font-mono text-xs text-slate-400">
             <span class="h-2 w-2 rounded-full bg-slate-500"></span>Verificando enlace...
           </span>
         </div>
         <h1 class="text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl">
-          SISTEMA DE MONITOREO AGROCLIMÁTICO <span class="text-bio-400 font-normal">//</span> MAÍZ Y AGUACATE
+          MONITOREO AGROCLIMÁTICO <span class="text-bio-400 font-normal">//</span> MAÍZ Y AGUACATE
         </h1>
         <p class="text-xs sm:text-sm text-slate-400 font-mono">
-          Sector Primario Agroalimentario y Meteorológico de México • Unidad de Benchmarking en Memoria RAM
+          Benchmarking en RAM de 30,000 registros • Sector Agroalimentario y Meteorológico
         </p>
       </div>
 
-      <!-- Controles Globales -->
+      <!-- Controles Globales y Menú Desplegable de Usuario -->
       <div class="flex flex-wrap items-center gap-2.5">
-        <div id="userProfile" class="hidden items-center gap-2.5 rounded-xl border border-bio-500/30 bg-bio-500/10 px-3 py-1.5 font-mono text-xs">
-          <span class="h-2 w-2 rounded-full bg-bio-400 animate-pulse"></span>
-          <span id="userProfileName" class="max-w-[12rem] truncate font-semibold text-slate-100">Usuario</span>
-          <button id="btnLogout" type="button" class="ml-1 rounded-md border border-red-500/30 bg-red-500/10 px-2 py-0.5 text-[11px] text-red-300 transition hover:bg-red-500/20">Salir</button>
-        </div>
         <button id="btnSimMode" class="btn-deck btn-ghost text-xs py-2" title="Activa respuestas simuladas locales si no tienes el backend FastAPI corriendo">
           <svg class="h-4 w-4 text-atmo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-          <span id="simLabel">Modo Emulador: OFF</span>
+          <span id="simLabel">Emulador: OFF</span>
         </button>
 
         <button id="btnHist" class="btn-deck btn-ghost text-xs py-2">
@@ -174,14 +164,66 @@
 
         <button id="btnGlobalReset" class="btn-deck border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 text-xs py-2">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          Reiniciar Ciclo
+          Reiniciar
         </button>
+
+        <!-- MENÚ DESPLEGABLE DE USUARIO (Mockup Pág. 3) -->
+        <div id="userProfile" class="relative hidden">
+          <button id="btnUserDropdown" type="button" class="flex items-center gap-2 rounded-xl border border-bio-500/40 bg-bio-500/15 px-3 py-2 font-mono text-xs text-white transition hover:bg-bio-500/25">
+            <span class="h-2 w-2 rounded-full bg-bio-400 animate-pulse"></span>
+            <span id="userProfileName" class="max-w-[10rem] truncate font-bold">USUARIO</span>
+            <svg class="h-3.5 w-3.5 text-bio-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+
+          <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 rounded-xl border border-white/15 bg-[#0e1419] p-1.5 shadow-2xl z-50 font-mono text-xs">
+            <div class="border-b border-white/10 px-3 py-2 text-[11px] text-slate-400">
+              Rol: <span id="userRoleLabel" class="text-bio-400">Investigador</span>
+            </div>
+            <button id="menuItemPerfil" type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-slate-200 hover:bg-white/10">
+              <span>👤</span> Perfil
+            </button>
+            <button id="menuItemConfig" type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-slate-200 hover:bg-white/10">
+              <span>⚙️</span> Configuración
+            </button>
+            <button id="menuItemAyuda" type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-slate-200 hover:bg-white/10">
+              <span>❓</span> Ayuda
+            </button>
+            <div class="my-1 border-t border-white/10"></div>
+            <button id="btnLogout" type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-red-400 hover:bg-red-500/15">
+              <span>🚪</span> SALIR
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- HUD: Métricas de Estado y Bloques de Memoria L1/L2 -->
-    <div class="mt-6 grid gap-4 sm:grid-cols-3">
-      <!-- Medidor Visual de RAM -->
+    <!-- BARRA DE NAVEGACIÓN PRINCIPAL (7 MÓDULOS DEL MOCKUP PÁG. 2) -->
+    <nav aria-label="Navegación Principal" class="mt-5 flex items-center gap-1.5 overflow-x-auto border-t border-white/10 pt-4 pb-1">
+      <button data-nav="intro" class="nav-item">
+        <span>🏠</span> Introducción del proyecto
+      </button>
+      <button data-nav="operacion" data-phase="1" class="nav-item active">
+        <span>🗄️</span> Carga de Datos
+      </button>
+      <button data-nav="operacion" data-phase="2" class="nav-item">
+        <span>⇅</span> Ordenación
+      </button>
+      <button data-nav="operacion" data-phase="3" class="nav-item">
+        <span>🔍</span> Búsqueda
+      </button>
+      <button data-nav="reportes" class="nav-item">
+        <span>📊</span> Reportes
+      </button>
+      <button data-nav="alfa" class="nav-item">
+        <span>∑</span> Método Alfa
+      </button>
+      <button data-nav="fuentes" class="nav-item">
+        <span>📄</span> Fuentes
+      </button>
+    </nav>
+
+    <!-- HUD: Métricas de Estado y Bloques de Memoria RAM -->
+    <div class="mt-4 grid gap-4 sm:grid-cols-3">
       <div class="rounded-xl border border-white/10 bg-[#070a0d]/80 p-4">
         <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
           <span class="flex items-center gap-1.5">
@@ -191,11 +233,9 @@
           <span id="ramPct" class="text-phosphor-400 font-bold">0%</span>
         </div>
         <div id="sumReg" class="mt-1 font-mono text-xl font-bold text-white">0 / 30,000</div>
-        <!-- 30 bloques representando 1,000 registros cada uno -->
         <div id="ramBlocks" class="mt-3 grid gap-1" style="grid-template-columns: repeat(30, minmax(0, 1fr));"></div>
       </div>
 
-      <!-- Estado del Ordenamiento -->
       <div class="rounded-xl border border-white/10 bg-[#070a0d]/80 p-4 flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
           <span class="flex items-center gap-1.5">
@@ -208,12 +248,11 @@
         <div id="sumOrdSub" class="mt-2 text-[11px] font-mono text-slate-500 truncate">Secuencia original de captura</div>
       </div>
 
-      <!-- Método Alfa Actual -->
       <div class="rounded-xl border border-white/10 bg-[#070a0d]/80 p-4 flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
           <span class="flex items-center gap-1.5">
             <span class="h-2 w-2 rounded-sm bg-bio-400"></span>
-            DOMINANCIA ALFA (LÍDER)
+            ALFA GENERAL (GLOBAL)
           </span>
           <span class="text-[10px] text-bio-400/80">BENCHMARK</span>
         </div>
@@ -221,11 +260,66 @@
         <div id="sumAlfaSub" class="mt-2 text-[11px] font-mono text-slate-500">Esperando pruebas en Fase 2</div>
       </div>
     </div>
+  </header>
 
-    <!-- ================================================== -->
-    <!-- STEPPER INTERACTIVO BIDIRECCIONAL                  -->
-    <!-- ================================================== -->
-    <div class="mt-6 pt-5 border-t border-white/10">
+  <!-- ================================================== -->
+  <!-- VISTA 1: INTRODUCCIÓN DEL PROYECTO (Págs. 4 - 5)   -->
+  <!-- ================================================== -->
+  <div id="viewIntro" class="hidden space-y-6">
+    <section class="deck-panel p-6 sm:p-8 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-bio-500/15 border border-bio-500/30 text-lg">📖</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Introducción del Proyecto</h2>
+            <p class="font-mono text-xs text-slate-400">Materia: Métodos de Ordenamiento y Búsqueda • Sector Agroclimático</p>
+          </div>
+        </div>
+        <button onclick="switchMainView('operacion', 1)" class="btn-deck btn-bio text-xs">
+          Ir a Carga de Datos ➔
+        </button>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="rounded-xl border border-white/10 bg-[#070a0d]/80 p-5 space-y-3">
+          <h3 class="font-mono text-sm font-bold text-bio-400 uppercase tracking-wider">¿Qué es este proyecto?</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Este sistema implementa y visualiza de manera manual (sin librerías externas de ordenamiento ni búsqueda) los principales algoritmos de la ciencia de la computación aplicados a una base de datos real de <strong class="text-white">30,000 registros agroclimáticos</strong> de cultivos de maíz y aguacate en México.
+          </p>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Permite al usuario inyectar los datos en memoria RAM, ejecutar disparos estocásticos de ordenamiento y búsqueda, y evaluar su eficiencia real en <strong class="text-phosphor-400">nanosegundos</strong>, comparaciones lógicas y movimientos de memoria.
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-white/10 bg-[#070a0d]/80 p-5 space-y-3">
+          <h3 class="font-mono text-sm font-bold text-atmo-400 uppercase tracking-wider">¿Qué encontrarás aquí?</h3>
+          <ul class="space-y-2 text-sm text-slate-300 font-mono">
+            <li class="flex items-start gap-2"><span class="text-bio-400">✔</span> Carga masiva de 30,000 registros CSV (10 columnas) a RAM.</li>
+            <li class="flex items-start gap-2"><span class="text-bio-400">✔</span> 6 Métodos de Ordenamiento: Radix, Counting, Bucket, Quick, Merge y Heap Sort.</li>
+            <li class="flex items-start gap-2"><span class="text-bio-400">✔</span> Búsqueda Binaria (con validación de seguridad en RAM) y Búsqueda Lineal.</li>
+            <li class="flex items-start gap-2"><span class="text-bio-400">✔</span> Reportes comparativos por los 3 campos clave y gráficas en vivo.</li>
+            <li class="flex items-start gap-2"><span class="text-bio-400">✔</span> Evaluación del Método Alfa (Individual por Usuario vs. Global).</li>
+            <li class="flex items-start gap-2"><span class="text-bio-400">✔</span> Referencias bibliográficas en formato APA.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-atmo-500/30 bg-atmo-500/10 p-5 space-y-2">
+        <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-atmo-300">📊 Profundidad de la Investigación</h3>
+        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+          Se realizó una investigación detallada sobre la complejidad temporal y espacial de cada algoritmo (<code class="text-bio-300">O(n log n)</code>, <code class="text-bio-300">O(n + k)</code>, <code class="text-bio-300">O(log n)</code>), asignando cada técnica según la naturaleza del dato clave: enteros de estación (<code class="text-white">id_estacion</code>), rangos térmicos (<code class="text-white">temperatura_promedio</code>) y series cronológicas (<code class="text-white">fecha_registro</code>).
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- VISTA 2: OPERACIÓN (FASES 1, 2 Y 3)                -->
+  <!-- ================================================== -->
+  <div id="viewOperacion" class="space-y-6">
+
+    <!-- STEPPER INTERACTIVO -->
+    <div class="deck-panel p-4">
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
         <button data-goto="1" class="step-btn group flex-1 flex items-center gap-3 rounded-xl border border-bio-500/40 bg-bio-500/10 p-3 text-left transition-all">
           <div id="stepBadge1" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bio-500 font-mono text-xs font-bold text-obsidian">01</div>
@@ -256,173 +350,371 @@
         </button>
       </div>
     </div>
-  </header>
 
-  <!-- ================================================== -->
-  <!-- B. FASE 1: INFRAESTRUCTURA Y CARGA DE DATOS        -->
-  <!-- ================================================== -->
-  <section id="secFase1" class="deck-panel deck-panel-active p-5 sm:p-6 space-y-5">
-    <div class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-bio-500/10 blur-3xl"></div>
+    <!-- B. FASE 1: INFRAESTRUCTURA Y CARGA DE DATOS -->
+    <section id="secFase1" class="deck-panel deck-panel-active p-5 sm:p-6 space-y-5">
+      <div class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-bio-500/10 blur-3xl"></div>
 
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-      <div class="flex items-center gap-3">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-bio-500/15 border border-bio-500/30 font-mono text-sm font-bold text-bio-400">F1</span>
-        <div>
-          <h2 class="text-lg font-bold text-white">Fase 1: Infraestructura e Ingesta en Memoria RAM</h2>
-          <p class="text-xs text-slate-400 font-mono">Alocación directa de 30,000 vectores agroclimáticos (10 atributos por estación)</p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="btnResetRam" class="btn-deck btn-ghost text-xs hidden">
-          <svg class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-          Vaciar memoria RAM / Reiniciar pruebas
-        </button>
-        <!-- INNOVACIÓN 3: SELECTOR DE ESCENARIO -->
-        <div class="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#070a0d] px-2.5 py-1">
-          <label class="font-mono text-[11px] text-slate-400">Escenario:</label>
-          <select id="selCasoPrueba" class="bg-transparent font-mono text-xs text-phosphor-400 focus:outline-none cursor-pointer">
-            <option value="aleatorio" class="bg-[#10161b] text-slate-300">Aleatorio (Original)</option>
-            <option value="mejor" class="bg-[#10161b] text-bio-400">Mejor Caso (Pre-ordenado)</option>
-            <option value="peor" class="bg-[#10161b] text-red-400">Peor Caso (Inverso)</option>
-          </select>
-        </div>
-        <button id="btn11" class="btn-deck btn-bio">
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          1.1 Cargar 30,000 Registros a RAM
-        </button>
-      </div>
-    </div>
-
-    <!-- Terminal de salida Fase 1 -->
-    <div id="out1" class="term-box">
-      <span class="text-slate-500 select-none">[SYS_IDLE] $ </span>Esperando orden de ingesta de datos en memoria principal...
-    </div>
-
-    <!-- Visor de Muestra Tabular -->
-    <div class="space-y-3">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-[#070a0d] p-1.5 border border-white/10 w-fit">
-          <button class="tab-pill on" data-tab="p">Primeros 60 registros</button>
-          <button class="tab-pill" data-tab="u">Últimos 60 registros</button>
-        </div>
-
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div class="flex items-center gap-3">
-          <div class="relative w-full sm:w-64">
-            <input id="localFilter" type="text" placeholder="Filtrar en vista actual..." class="inp-deck py-1.5 pl-8 pr-3 text-xs">
-            <svg class="h-3.5 w-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-bio-500/15 border border-bio-500/30 font-mono text-sm font-bold text-bio-400">F1</span>
+          <div>
+            <h2 class="text-lg font-bold text-white">Fase 1: Carga de Datos a Memoria RAM</h2>
+            <p class="text-xs text-slate-400 font-mono">Archivo: dataset_agroclimatico_30000.csv • 30,000 registros × 10 columnas</p>
           </div>
-          <span id="sampleCounter" class="hidden sm:inline-block font-mono text-xs text-slate-400 shrink-0">0 filas visibles</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnResetRam" class="btn-deck btn-ghost text-xs hidden">
+            Vaciar memoria RAM
+          </button>
+          <div class="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#070a0d] px-2.5 py-1">
+            <label class="font-mono text-[11px] text-slate-400">Escenario:</label>
+            <select id="selCasoPrueba" class="bg-transparent font-mono text-xs text-phosphor-400 focus:outline-none cursor-pointer">
+              <option value="aleatorio" class="bg-[#10161b] text-slate-300">Aleatorio (Original)</option>
+              <option value="mejor" class="bg-[#10161b] text-bio-400">Mejor Caso (Pre-ordenado)</option>
+              <option value="peor" class="bg-[#10161b] text-red-400">Peor Caso (Inverso)</option>
+            </select>
+          </div>
+          <button id="btn11" class="btn-deck btn-bio">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            1.1 Cargar 30,000 Registros a RAM
+          </button>
         </div>
       </div>
 
-      <div class="max-h-[380px] overflow-auto rounded-xl border border-white/10 bg-[#070a0d]/90">
+      <div id="out1" class="term-box">
+        <span class="text-slate-500 select-none">[SYS_IDLE] $ </span>Esperando orden de ingesta de datos en memoria principal...
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-[#070a0d] p-1.5 border border-white/10 w-fit">
+            <button class="tab-pill on" data-tab="p">Primeros 60 registros</button>
+            <button class="tab-pill" data-tab="u">Últimos 60 registros</button>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="relative w-full sm:w-64">
+              <input id="localFilter" type="text" placeholder="Filtrar en vista actual..." class="inp-deck py-1.5 pl-8 pr-3 text-xs">
+              <svg class="h-3.5 w-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <span id="sampleCounter" class="hidden sm:inline-block font-mono text-xs text-slate-400 shrink-0">0 filas visibles</span>
+          </div>
+        </div>
+
+        <div class="max-h-[380px] overflow-auto rounded-xl border border-white/10 bg-[#070a0d]/90">
+          <table class="w-full whitespace-nowrap text-left font-mono text-xs">
+            <thead id="thM" class="sticky top-0 z-10 bg-[#10161b] text-slate-300 shadow-sm border-b border-white/10"></thead>
+            <tbody id="tbM" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- C. FASE 2: DISPARADOR ALEATORIO DE ORDENACIÓN -->
+    <section id="secFase2" class="deck-panel p-5 sm:p-6 space-y-5">
+      <div class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-atmo-500/10 blur-3xl"></div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-atmo-500/15 border border-atmo-500/30 font-mono text-sm font-bold text-atmo-400">F2</span>
+          <div>
+            <h2 class="text-lg font-bold text-white">Fase 2: Disparador Aleatorio de Ordenación</h2>
+            <p class="text-xs text-slate-400 font-mono">Selección estocástica de atributo clave y algoritmo en RAM</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnUndoSort" class="btn-deck btn-ghost text-xs hidden">
+            ⬅ Deshacer ordenamiento
+          </button>
+          <button id="btn21" class="btn-deck btn-atmo" disabled title="Primero carga los registros en la Fase 1">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+            2.1 Activar Disparador Aleatorio de Ordenación
+          </button>
+        </div>
+      </div>
+
+      <div id="sel2" class="hidden rounded-xl border border-atmo-500/40 bg-atmo-500/10 p-4 font-mono text-xs sm:text-sm text-atmo-200"></div>
+      <div id="out2" class="term-box hidden !border-atmo-500/30 !text-atmo-300"></div>
+      <div id="badges2" class="grid hidden gap-3 sm:grid-cols-2 lg:grid-cols-4"></div>
+
+      <!-- Monitor Rápido del Método Alfa en Fase 2 -->
+      <div class="rounded-xl border border-white/10 bg-[#070a0d]/70 p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-bio-400 animate-glow"></span>
+            Frecuencia Acumulada en Sesión Actual
+          </h3>
+          <button onclick="switchMainView('alfa')" class="font-mono text-xs text-bio-400 underline hover:text-white">
+            Ver Comparativa Alfa (Usuario vs. General) ➔
+          </button>
+        </div>
+        <div id="alfa" class="space-y-2.5 text-xs font-mono text-slate-500">
+          Aún no hay ejecuciones de ordenamiento registradas.
+        </div>
+      </div>
+    </section>
+
+    <!-- D. FASE 3: DISPARADOR ALEATORIO DE BÚSQUEDA -->
+    <section id="secFase3" class="deck-panel p-5 sm:p-6 space-y-5">
+      <div class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-phosphor-500/10 blur-3xl"></div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-phosphor-500/15 border border-phosphor-500/30 font-mono text-sm font-bold text-phosphor-400">F3</span>
+          <div>
+            <h2 class="text-lg font-bold text-white">Fase 3: Disparador Aleatorio de Búsqueda Clave</h2>
+            <p class="text-xs text-slate-400 font-mono">Búsqueda Binaria O(log n) o Búsqueda Lineal O(n) sobre RAM</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnBackToF2" class="btn-deck btn-ghost text-xs hidden">
+            ⬅ Volver a Fase 2
+          </button>
+          <button id="btn31" class="btn-deck btn-phosphor" disabled title="Primero carga los registros en la Fase 1">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            3.1 Activar Disparador Aleatorio de Búsqueda
+          </button>
+        </div>
+      </div>
+
+      <div id="mod3" class="hidden space-y-4"></div>
+      <div id="res3" class="hidden space-y-4"></div>
+    </section>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- VISTA 3: REPORTES Y ANÁLISIS COMPARATIVO (Pág. 10) -->
+  <!-- ================================================== -->
+  <div id="viewReportes" class="hidden space-y-6">
+    <section class="deck-panel p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-atmo-500/15 border border-atmo-500/30 text-lg">📊</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Reportes y Análisis Comparativo por los 3 Campos Clave</h2>
+            <p class="font-mono text-xs text-slate-400">Benchmarking de rendimiento entre id_estacion, temperatura_promedio y fecha_registro</p>
+          </div>
+        </div>
+        <button id="btnRefreshReportes" class="btn-deck btn-atmo text-xs">
+          Actualizar Métricas
+        </button>
+      </div>
+
+      <!-- Tabla Comparativa por los 3 Campos Clave (Mockup Pág. 10) -->
+      <div class="overflow-auto rounded-xl border border-white/10 bg-[#070a0d]/90">
         <table class="w-full whitespace-nowrap text-left font-mono text-xs">
-          <thead id="thM" class="sticky top-0 z-10 bg-[#10161b] text-slate-300 shadow-sm border-b border-white/10"></thead>
-          <tbody id="tbM" class="divide-y divide-white/5"></tbody>
+          <thead class="bg-[#10161b] text-atmo-300 border-b border-white/10">
+            <tr>
+              <th class="p-3.5">CAMPO CLAVE</th>
+              <th class="p-3.5">TIPO DE DATO</th>
+              <th class="p-3.5">MEJOR MÉTODO EJECUTADO</th>
+              <th class="p-3.5">TIEMPO (ns / ms)</th>
+              <th class="p-3.5">COMPARACIONES</th>
+              <th class="p-3.5">MOVIMIENTOS RAM</th>
+            </tr>
+          </thead>
+          <tbody id="tbReportesClave" class="divide-y divide-white/5 text-slate-300">
+            <tr>
+              <td colspan="6" class="p-6 text-center text-slate-500">Cargando tabla comparativa...</td>
+            </tr>
+          </tbody>
         </table>
       </div>
-    </div>
-  </section>
+
+      <!-- Gráfica Comparativa -->
+      <div class="rounded-xl border border-white/10 bg-[#070a0d]/80 p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-mono uppercase tracking-wider text-atmo-300 flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-atmo-400"></span>
+            Comparación Gráfica de Latencia (ms) y Evaluaciones Lógicas
+          </h3>
+          <span class="text-[11px] font-mono text-slate-500">Últimas ejecuciones en RAM</span>
+        </div>
+        <div class="h-64 w-full">
+          <canvas id="chartBenchmarking"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <!-- ================================================== -->
-  <!-- C. FASE 2: DISPARADOR ALEATORIO DE ORDENACIÓN      -->
+  <!-- VISTA 4: MÉTODO ALFA (USUARIO VS GENERAL - Pág. 11)-->
   <!-- ================================================== -->
-  <section id="secFase2" class="deck-panel p-5 sm:p-6 space-y-5">
-    <div class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-atmo-500/10 blur-3xl"></div>
+  <div id="viewAlfa" class="hidden space-y-6">
+    <section class="deck-panel p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-bio-500/15 border border-bio-500/30 font-mono text-lg font-bold text-bio-400">∑</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Método Alfa: Usuario Registrado vs. Acumulado General</h2>
+            <p class="font-mono text-xs text-slate-400">Identificación del algoritmo dominante de forma individual y global</p>
+          </div>
+        </div>
+        <button id="btnReiniciarAlfaUsuario" class="btn-deck border border-red-500/40 bg-red-500/10 text-red-300 hover:bg-red-500/20 text-xs">
+          🔄 Reiniciar Alfa del Usuario (No afecta el Alfa General)
+        </button>
+      </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-      <div class="flex items-center gap-3">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-atmo-500/15 border border-atmo-500/30 font-mono text-sm font-bold text-atmo-400">F2</span>
-        <div>
-          <h2 class="text-lg font-bold text-white">Fase 2: Disparador Aleatorio de Ordenación</h2>
-          <p class="text-xs text-slate-400 font-mono">Selección estocástica de atributo clave y algoritmo de ordenamiento en RAM</p>
+      <!-- Dos Columnas: Alfa Usuario vs Alfa General -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Columna Usuario -->
+        <div class="rounded-xl border border-atmo-500/30 bg-[#070a0d]/85 p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div>
+              <div class="font-mono text-[11px] uppercase text-atmo-400">ÁMBITO INDIVIDUAL</div>
+              <h3 class="text-base font-bold text-white">Método Alfa - Usuario (<span id="alfaUserTitle">Usuario</span>)</h3>
+            </div>
+            <span id="alfaUserWinnerBadge" class="rounded-lg bg-atmo-500/20 border border-atmo-400/40 px-3 py-1 font-mono text-xs font-bold text-atmo-300">
+              Sin datos
+            </span>
+          </div>
+          <div id="barsAlfaUsuario" class="space-y-3 font-mono text-xs text-slate-400">
+            Ejecuta ordenamientos en la Fase 2 para calcular tu Alfa personal.
+          </div>
+        </div>
+
+        <!-- Columna General -->
+        <div class="rounded-xl border border-bio-500/30 bg-[#070a0d]/85 p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div>
+              <div class="font-mono text-[11px] uppercase text-bio-400">ACUMULADO GLOBAL (PROTEGIDO)</div>
+              <h3 class="text-base font-bold text-white">Método Alfa - General</h3>
+            </div>
+            <span id="alfaGenWinnerBadge" class="rounded-lg bg-bio-500/20 border border-bio-400/40 px-3 py-1 font-mono text-xs font-bold text-bio-300">
+              Sin datos
+            </span>
+          </div>
+          <div id="barsAlfaGeneral" class="space-y-3 font-mono text-xs text-slate-400">
+            Sin registros globales aún.
+          </div>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="btnUndoSort" class="btn-deck btn-ghost text-xs hidden" title="Restaurar los 30,000 registros al estado original sin ordenar">
-          ⬅ Deshacer ordenamiento / Volver a estado original
-        </button>
-        <button id="btn21" class="btn-deck btn-atmo" disabled title="Primero carga los registros en la Fase 1">
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
-          2.1 Activar Disparador Aleatorio de Ordenación
-        </button>
+      <!-- Tabla Detalle Comparativo del Método Alfa (Mockup Pág. 11) -->
+      <div class="overflow-auto rounded-xl border border-white/10 bg-[#070a0d]/90">
+        <table class="w-full whitespace-nowrap text-left font-mono text-xs">
+          <thead class="bg-[#10161b] text-slate-300 border-b border-white/10">
+            <tr>
+              <th class="p-3.5">ÁMBITO</th>
+              <th class="p-3.5">ALGORITMO ALFA</th>
+              <th class="p-3.5">PUNTAJE / DOMINANCIA</th>
+              <th class="p-3.5">ESTADO DE CONTROL</th>
+            </tr>
+          </thead>
+          <tbody id="tbDetalleAlfa" class="divide-y divide-white/5 text-slate-200">
+            <tr>
+              <td class="p-3.5 font-semibold text-atmo-300">Usuario Activo</td>
+              <td id="detUserAlgo" class="p-3.5">-</td>
+              <td id="detUserPts" class="p-3.5">0 ejecuciones (0%)</td>
+              <td class="p-3.5 text-slate-400">Reiniciable de forma independiente</td>
+            </tr>
+            <tr>
+              <td class="p-3.5 font-semibold text-bio-400">General (Acumulado Global)</td>
+              <td id="detGenAlgo" class="p-3.5">-</td>
+              <td id="detGenPts" class="p-3.5">0 ejecuciones (0%)</td>
+              <td class="p-3.5 text-bio-300">Protegido (sin afectación por reinicio)</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-
-    <!-- Resultado del Sorteo de Fase 2 -->
-    <div id="sel2" class="hidden rounded-xl border border-atmo-500/40 bg-atmo-500/10 p-4 font-mono text-xs sm:text-sm text-atmo-200"></div>
-
-    <!-- Terminal de salida Fase 2 -->
-    <div id="out2" class="term-box hidden !border-atmo-500/30 !text-atmo-300"></div>
-
-    <!-- Tarjetas de Telemetría de Fase 2 -->
-    <div id="badges2" class="grid hidden gap-3 sm:grid-cols-2 lg:grid-cols-4"></div>
-
-    <!-- Monitor del Método Alfa -->
-    <div class="rounded-xl border border-white/10 bg-[#070a0d]/70 p-4 space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-bio-400 animate-glow"></span>
-          Método Alfa: Distribución y Frecuencia Acumulada por Algoritmo
-        </h3>
-        <span id="alfaTotalRuns" class="font-mono text-xs text-slate-500">0 corridas registradas</span>
-      </div>
-      <div id="alfa" class="space-y-2.5 text-xs font-mono text-slate-500">
-        Aún no hay ejecuciones de ordenamiento registradas.
-      </div>
-    </div>
-
-    <!-- INNOVACIÓN 1: GRÁFICA COMPARATIVA INTERACTIVA -->
-    <div class="rounded-xl border border-white/10 bg-[#070a0d]/70 p-4 space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-mono uppercase tracking-wider text-atmo-300 flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-atmo-400"></span>
-          Telemetría en Vivo: Latencia (ms) y Evaluaciones Lógicas
-        </h3>
-        <span class="text-[10px] font-mono text-slate-500">Historial dinámico en RAM</span>
-      </div>
-      <div class="h-56 w-full">
-        <canvas id="chartBenchmarking"></canvas>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- ================================================== -->
-  <!-- D. FASE 3: DISPARADOR ALEATORIO DE BÚSQUEDA        -->
+  <!-- VISTA 5: FUENTES Y REFERENCIAS APA (Pág. 12)       -->
   <!-- ================================================== -->
-  <section id="secFase3" class="deck-panel p-5 sm:p-6 space-y-5">
-    <div class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-phosphor-500/10 blur-3xl"></div>
-
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-      <div class="flex items-center gap-3">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-phosphor-500/15 border border-phosphor-500/30 font-mono text-sm font-bold text-phosphor-400">F3</span>
+  <div id="viewFuentes" class="hidden space-y-6">
+    <section class="deck-panel p-6 sm:p-8 space-y-6">
+      <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-phosphor-500/15 border border-phosphor-500/30 text-lg">📄</span>
         <div>
-          <h2 class="text-lg font-bold text-white">Fase 3: Disparador Aleatorio de Búsqueda Clave</h2>
-          <p class="text-xs text-slate-400 font-mono">Inspección puntual de telemetría por estación mediante Búsqueda Secuencial o Binaria</p>
+          <h2 class="text-xl font-bold text-white">Fuentes Bibliográficas y Recursos Utilizados</h2>
+          <p class="font-mono text-xs text-slate-400">Referencias académicas en formato APA y arquitectura tecnológica del proyecto</p>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="btnBackToF2" class="btn-deck btn-ghost text-xs hidden">
-          ⬅ Volver a Fase 2 (Reordenar con otro algoritmo)
-        </button>
-        <button id="btn31" class="btn-deck btn-phosphor" disabled title="Primero carga los registros en la Fase 1">
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          3.1 Activar Disparador Aleatorio de Búsqueda
-        </button>
+      <div class="rounded-xl border border-white/10 bg-[#070a0d]/85 p-5 space-y-4">
+        <h3 class="font-mono text-sm font-bold text-phosphor-400 uppercase tracking-wider">Referencias Bibliográficas (Formato APA 7ª Ed.)</h3>
+        <ul class="space-y-3 text-sm text-slate-300 leading-relaxed pl-4 border-l-2 border-phosphor-500/40">
+          <li>
+            Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2022). <em>Introduction to algorithms</em> (4th ed.). MIT Press.
+          </li>
+          <li>
+            Knuth, D. E. (1998). <em>The art of computer programming: Vol. 3. Sorting and searching</em> (2nd ed.). Addison-Wesley.
+          </li>
+          <li>
+            Sedgewick, R., &amp; Wayne, K. (2011). <em>Algorithms</em> (4th ed.). Addison-Wesley Professional.
+          </li>
+        </ul>
       </div>
-    </div>
 
-    <!-- Panel dinámico de configuración de búsqueda -->
-    <div id="mod3" class="hidden space-y-4"></div>
-
-    <!-- Resultado y Ficha Técnica de Sensor -->
-    <div id="res3" class="hidden space-y-4"></div>
-  </section>
+      <div class="space-y-3">
+        <h3 class="font-mono text-sm font-bold text-atmo-400 uppercase tracking-wider">Recursos y Herramientas Utilizadas</h3>
+        <div class="overflow-auto rounded-xl border border-white/10 bg-[#070a0d]/90">
+          <table class="w-full whitespace-nowrap text-left font-mono text-xs">
+            <thead class="bg-[#10161b] text-slate-300 border-b border-white/10">
+              <tr>
+                <th class="p-3.5">CATEGORÍA</th>
+                <th class="p-3.5">RECURSO / HERRAMIENTA</th>
+                <th class="p-3.5">APLICACIÓN EN EL PROYECTO</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 text-slate-300">
+              <tr>
+                <td class="p-3.5 text-bio-400 font-semibold">Backend &amp; Algoritmos</td>
+                <td class="p-3.5">Python 3 &amp; FastAPI</td>
+                <td class="p-3.5">Implementación manual de algoritmos, API REST y medición en nanosegundos</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 text-atmo-400 font-semibold">Frontend &amp; Diseño UI</td>
+                <td class="p-3.5">HTML5, TailwindCSS y Chart.js</td>
+                <td class="p-3.5">Interfaz interactiva, visualización de memoria RAM y gráficas comparativas</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 text-phosphor-400 font-semibold">Persistencia</td>
+                <td class="p-3.5">SQLite3</td>
+                <td class="p-3.5">Gestión de usuarios, sesiones y control independiente del Método Alfa</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 text-purple-400 font-semibold">Inteligencia Artificial</td>
+                <td class="p-3.5">Claude y Gemini</td>
+                <td class="p-3.5">Apoyo en arquitectura de software, diseño UI/UX y validación de algoritmos</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 text-emerald-400 font-semibold">Fuente de Datos</td>
+                <td class="p-3.5">dataset_agroclimatico_30000.csv</td>
+                <td class="p-3.5">30,000 registros meteorológicos y de cultivos de maíz y aguacate en México</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
 
 </div>
+
+<!-- ================================================== -->
+<!-- PIE DE PÁGINA CON CRÉDITOS (Mockup Pág. 1)         -->
+<!-- ================================================== -->
+<footer class="mt-8 border-t border-white/10 bg-[#080b0e]/90 py-4 px-4 backdrop-blur-md">
+  <div class="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-2 font-mono text-xs text-slate-400">
+    <div>
+      <span class="text-slate-500">Desarrolladores:</span>
+      <strong class="text-slate-200">Axel Montero Lagunas</strong> &amp; <strong class="text-slate-200">Jorge Ausencio Flores Delgado</strong>
+    </div>
+    <div>
+      <span class="text-slate-500">IAs utilizadas:</span>
+      <span class="rounded border border-bio-500/30 bg-bio-500/10 px-2 py-0.5 text-bio-300">Claude</span>
+      <span class="mx-1 text-slate-600">+</span>
+      <span class="rounded border border-atmo-500/30 bg-atmo-500/10 px-2 py-0.5 text-atmo-300">Gemini</span>
+    </div>
+  </div>
+</footer>
 
 <!-- ================================================== -->
 <!-- MODAL DE HISTORIAL DE EJECUCIONES                  -->
@@ -435,10 +727,7 @@
         <p class="text-xs font-mono text-slate-400">Registro cronológico en nanosegundos de operaciones en RAM</p>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btnCsv" class="btn-deck btn-bio text-xs py-2">
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          Exportar CSV
-        </button>
+        <button id="btnCsv" class="btn-deck btn-bio text-xs py-2">Exportar CSV</button>
         <button id="btnClose" class="btn-deck btn-ghost text-xs py-2">Cerrar [ESC]</button>
       </div>
     </div>
@@ -468,68 +757,94 @@
 <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
   <div class="deck-panel max-w-md w-full p-6 space-y-4 border-red-500/40">
     <div class="flex items-center gap-3 text-red-400">
-      <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
       <h3 class="text-lg font-bold text-white">¿Purgar Memoria y Reiniciar Ciclo?</h3>
     </div>
     <p class="text-sm text-slate-300 leading-relaxed">
-      Esta acción vaciará los 30,000 registros en RAM, reiniciará las estadísticas acumuladas del Método Alfa y regresará la terminal al estado inicial de Fase 1.
+      Esta acción vaciará los 30,000 registros en RAM y regresará la terminal al estado inicial de Fase 1.
     </p>
     <div class="flex justify-end gap-2.5 pt-2">
       <button id="btnCancelReset" class="btn-deck btn-ghost text-xs">Cancelar</button>
-      <button id="btnConfirmReset" class="btn-deck bg-red-500 text-obsidian hover:bg-red-400 text-xs">Sí, purgar todo el ciclo</button>
+      <button id="btnConfirmReset" class="btn-deck bg-red-500 text-obsidian hover:bg-red-400 text-xs">Sí, purgar ciclo</button>
     </div>
   </div>
 </div>
 
 <!-- ================================================== -->
-<!-- MODAL DE ACCESO: INICIO DE SESIÓN / REGISTRO       -->
+<!-- MODAL INFO (PERFIL / CONFIG / AYUDA DEL MENÚ)      -->
 <!-- ================================================== -->
-<div id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" class="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-black/90 backdrop-blur-md p-4">
-  <div class="deck-panel w-full max-w-md space-y-5 border-bio-500/40 p-6 shadow-[0_0_50px_rgba(132,204,22,0.15)] sm:p-8">
+<div id="infoModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  <div class="deck-panel max-w-lg w-full p-6 space-y-4 border-atmo-500/40">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+      <h3 id="infoModalTitle" class="text-lg font-bold text-white">Información</h3>
+      <button id="btnCloseInfoModal" class="btn-deck btn-ghost text-xs py-1 px-2.5">✕</button>
+    </div>
+    <div id="infoModalBody" class="text-sm text-slate-300 space-y-2 leading-relaxed font-mono text-xs"></div>
+  </div>
+</div>
+
+<!-- ================================================== -->
+<!-- MODAL DE ACCESO: REGISTRO / INGRESAR SIN CLAVE     -->
+<!-- ================================================== -->
+<div id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" class="fixed inset-0 z-[60] flex flex-col justify-between overflow-y-auto bg-black/90 backdrop-blur-md p-4">
+  <div class="my-auto mx-auto deck-panel w-full max-w-md space-y-5 border-bio-500/40 p-6 shadow-[0_0_50px_rgba(132,204,22,0.15)] sm:p-8">
     <div class="pointer-events-none absolute -top-20 left-1/2 h-40 w-72 -translate-x-1/2 rounded-full bg-bio-500/10 blur-3xl"></div>
 
     <div class="relative space-y-1.5 text-center">
       <div class="inline-flex items-center gap-1.5 rounded-md border border-bio-500/20 bg-bio-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-bio-400">
-        SYS.AUTH // CONTROL DE ACCESO
+        MÉTODOS DE ORDENAMIENTO Y BÚSQUEDA
       </div>
-      <h2 id="authTitle" class="text-xl font-bold tracking-wide text-white">Iniciar sesión</h2>
-      <p class="font-mono text-xs text-slate-400">Sistema Agroclimático SMN - SADER</p>
+      <h2 id="authTitle" class="text-xl font-bold tracking-wide text-white">Registro de Usuario</h2>
+      <p class="font-mono text-xs text-slate-400">Ingresa tus datos para comenzar a explorar los métodos</p>
     </div>
 
     <div role="tablist" class="relative flex rounded-xl border border-white/10 bg-[#070a0d] p-1">
-      <button id="tabLogin" type="button" role="tab" class="flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold transition">Acceso</button>
-      <button id="tabRegister" type="button" role="tab" class="flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold transition">Nuevo registro</button>
+      <button id="tabLogin" type="button" role="tab" class="flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold transition">Ingresar</button>
+      <button id="tabRegister" type="button" role="tab" class="flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold transition">Crear cuenta</button>
     </div>
 
     <form id="authForm" class="relative space-y-3.5" autocomplete="on" novalidate>
       <div id="fieldNombre" class="hidden">
         <label for="authNombre" class="mb-1 block font-mono text-xs text-slate-400">Nombre completo</label>
-        <input id="authNombre" type="text" autocomplete="name" class="inp-deck text-xs" placeholder="Ing. Juan Pérez">
+        <input id="authNombre" type="text" autocomplete="name" class="inp-deck text-xs" placeholder="Ej. Axel Montero">
       </div>
 
       <div>
-        <label for="authUser" class="mb-1 block font-mono text-xs text-slate-400">Usuario</label>
-        <input id="authUser" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false" class="inp-deck text-xs" placeholder="jperez">
+        <label for="authUser" class="mb-1 block font-mono text-xs text-slate-400">Nombre de usuario</label>
+        <input id="authUser" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false" class="inp-deck text-xs" placeholder="Escribe tu nombre de usuario">
       </div>
 
       <div>
-        <label for="authPass" class="mb-1 block font-mono text-xs text-slate-400">Contraseña</label>
+        <label for="authPass" class="mb-1 block font-mono text-xs text-slate-400">Clave (opcional para ingreso directo)</label>
         <div class="relative">
-          <input id="authPass" type="password" required autocomplete="current-password" class="inp-deck pr-16 text-xs" placeholder="••••••••">
+          <input id="authPass" type="password" autocomplete="current-password" class="inp-deck pr-16 text-xs" placeholder="••••••••">
           <button id="btnTogglePass" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 font-mono text-[11px] text-slate-400 transition hover:text-white">Ver</button>
         </div>
-        <p id="authPassHint" class="mt-1 hidden font-mono text-[11px] text-slate-500">Mínimo 6 caracteres.</p>
+        <p id="authPassHint" class="mt-1 hidden font-mono text-[11px] text-slate-500">Mínimo 4 caracteres para registrar cuenta.</p>
       </div>
 
       <p id="authError" role="alert" class="hidden rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 font-mono text-xs text-red-300"></p>
 
-      <button id="btnAuthSubmit" type="submit" class="btn-deck btn-bio mt-2 w-full py-2.5 text-xs font-bold">Ingresar al centro de control</button>
+      <div class="space-y-2.5 pt-1">
+        <button id="btnAuthSubmit" type="submit" class="btn-deck btn-bio w-full py-2.5 text-xs font-bold">
+          ➔ Ingresar
+        </button>
+        <button id="btnLoginSinClave" type="button" class="btn-deck btn-ghost w-full py-2.5 text-xs font-semibold">
+          ➔ Ingresar sin clave
+        </button>
+      </div>
     </form>
 
     <div class="relative flex items-center justify-between gap-3 border-t border-white/10 pt-4 font-mono text-[11px] text-slate-500">
       <span id="authConn" class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-slate-500"></span>Verificando enlace...</span>
       <button id="btnAuthSim" type="button" class="text-atmo-400 underline underline-offset-2 transition hover:text-white">Usar modo emulador</button>
     </div>
+  </div>
+
+  <!-- Créditos visibles también en pantalla principal (Mockup Pág. 1) -->
+  <div class="mx-auto mt-4 w-full max-w-2xl rounded-xl border border-white/10 bg-[#0b0f12]/90 px-4 py-2.5 text-center font-mono text-[11px] text-slate-400">
+    Desarrolladores: <strong class="text-slate-200">Axel Montero Lagunas</strong> y <strong class="text-slate-200">Jorge Ausencio Flores Delgado</strong>
+    <span class="mx-2 text-slate-600">|</span>
+    IA's utilizadas: <strong class="text-bio-400">Claude</strong> y <strong class="text-atmo-400">Gemini</strong>
   </div>
 </div>
 
@@ -564,6 +879,7 @@ const st = {
   ordenadoPor: null,
   ultimoMetodoOrd: null,
   activePhase: 1,
+  currentView: "operacion",
   hist: [],
   cont: {},
   p: [],
@@ -576,9 +892,6 @@ const st = {
   simMode: false
 };
 
-/* ==========================================
-   UTILIDADES BLINDADAS (ANTI-XSS Y NUMÉRICAS)
-   ========================================== */
 const esc = str => {
   if (str === undefined || str === null) return "";
   const d = document.createElement("div");
@@ -586,7 +899,6 @@ const esc = str => {
   return d.innerHTML;
 };
 
-// Función pick blindada: respeta explícitamente el valor numérico 0
 const pick = (o, ...k) => {
   if (!o || typeof o !== "object") return undefined;
   for (const x of k) {
@@ -605,41 +917,21 @@ const getClaveNum = campo => {
   return "N/A";
 };
 
-/* ==========================================
-   SISTEMA DE NOTIFICACIONES TOAST MODERNAS
-   ========================================== */
 function notify(msg, type = "info") {
   const container = $("toastContainer");
   const toast = document.createElement("div");
-  
   const styles = {
     success: "border-bio-500/50 bg-[#0d1512]/95 text-bio-300 shadow-[0_0_25px_rgba(132,204,22,0.2)]",
     warning: "border-phosphor-500/50 bg-[#17130a]/95 text-phosphor-300 shadow-[0_0_25px_rgba(245,158,11,0.2)]",
     error:   "border-red-500/50 bg-[#180c0e]/95 text-red-300 shadow-[0_0_25px_rgba(239,68,68,0.25)]",
     info:    "border-atmo-500/50 bg-[#0a1519]/95 text-atmo-300 shadow-[0_0_25px_rgba(6,182,212,0.2)]"
   };
-
-  const icons = {
-    success: '<svg class="h-5 w-5 text-bio-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-    warning: '<svg class="h-5 w-5 text-phosphor-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
-    error:   '<svg class="h-5 w-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-    info:    '<svg class="h-5 w-5 text-atmo-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-  };
-
   toast.className = `pointer-events-auto flex items-start gap-3 rounded-xl border p-3.5 font-mono text-xs backdrop-blur-md transition-all duration-300 translate-y-2 opacity-0 ${styles[type] || styles.info}`;
-  toast.innerHTML = `
-    ${icons[type] || icons.info}
-    <div class="flex-1 leading-relaxed"></div>
-    <button class="text-slate-400 hover:text-white ml-1">✕</button>
-  `;
+  toast.innerHTML = `<div class="flex-1 leading-relaxed"></div><button class="text-slate-400 hover:text-white ml-1">✕</button>`;
   toast.querySelector("div").textContent = msg;
   toast.querySelector("button").onclick = () => toast.remove();
-
   container.appendChild(toast);
-  requestAnimationFrame(() => {
-    toast.classList.remove("translate-y-2", "opacity-0");
-  });
-
+  requestAnimationFrame(() => toast.classList.remove("translate-y-2", "opacity-0"));
   setTimeout(() => {
     if (toast.parentElement) {
       toast.classList.add("opacity-0", "translate-x-4");
@@ -649,16 +941,58 @@ function notify(msg, type = "info") {
 }
 
 /* ==========================================
-   EMULADOR LOCAL DE EMERGENCIA (OPCIONAL)
+   NAVEGACIÓN ENTRE LAS 7 SECCIONES
+   ========================================== */
+function switchMainView(viewName, phaseNum = null) {
+  st.currentView = viewName;
+  const views = {
+    intro: $("viewIntro"),
+    operacion: $("viewOperacion"),
+    reportes: $("viewReportes"),
+    alfa: $("viewAlfa"),
+    fuentes: $("viewFuentes")
+  };
+
+  Object.entries(views).forEach(([k, el]) => {
+    if (el) el.classList.toggle("hidden", k !== viewName);
+  });
+
+  document.querySelectorAll(".nav-item").forEach(btn => {
+    const isSameView = btn.dataset.nav === viewName;
+    const isSamePhase = !btn.dataset.phase || Number(btn.dataset.phase) === (phaseNum || st.activePhase);
+    btn.classList.toggle("active", isSameView && (viewName !== "operacion" || isSamePhase));
+  });
+
+  if (viewName === "operacion" && phaseNum) {
+    focusPhase(phaseNum, true);
+  }
+  if (viewName === "reportes") {
+    cargarTablaReportes();
+  }
+  if (viewName === "alfa") {
+    cargarPanelDobleAlfa();
+  }
+}
+
+document.querySelectorAll(".nav-item").forEach(btn => {
+  btn.onclick = () => {
+    const targetView = btn.dataset.nav;
+    const targetPhase = btn.dataset.phase ? Number(btn.dataset.phase) : null;
+    switchMainView(targetView, targetPhase);
+  };
+});
+
+/* ==========================================
+   EMULADOR LOCAL SINCRONIZADO CON BACKEND
    ========================================== */
 function generateMockRow(idx) {
-  const estados = ["Michoacán", "Jalisco", "Sinaloa", "Estado de México", "Puebla", "Chiapa", "Guanajuato", "Veracruz"];
-  const muns = ["Uruapan", "Tancítaro", "Zapotlán", "Guasave", "Toluca", "Atlixco", "Celaya", "Perote"];
+  const estados = ["Michoacán", "Jalisco", "Sinaloa", "Veracruz"];
+  const muns = ["Uruapan", "Zapotlán", "Guasave", "Perote"];
   const i = idx % estados.length;
   return {
     id_estacion: 10000 + idx,
-    temperatura_promedio: Number((14 + ((idx * 7) % 18) + (idx % 10) * 0.1).toFixed(1)),
-    fecha_registro: 20250101 + (idx % 28),
+    temperatura_promedio: 14 + ((idx * 7) % 24),
+    fecha_registro: 20260101 + (idx % 28),
     estado: estados[i],
     municipio: muns[i],
     humedad_relativa: 45 + (idx % 45),
@@ -669,58 +1003,36 @@ function generateMockRow(idx) {
   };
 }
 
-/* ==========================================
-   AUTENTICACIÓN SIMULADA (MODO EMULADOR)
-   Usuarios guardados solo en este navegador.
-   ========================================== */
-async function hashPass(txt) {
-  try {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-  } catch (_) {
-    return btoa(unescape(encodeURIComponent(txt)));
-  }
-}
-
-async function mockAuth(path, body) {
-  const KEY = "agro_mock_users";
-  let users = {};
-  try { users = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (_) {}
-  const username = String(body.username || "").toLowerCase();
-  const fail = (status, msg) => { const e = new Error(msg); e.status = status; throw e; };
-
-  if (path === "/api/auth/registro") {
-    if (users[username]) fail(409, "Ese usuario ya existe.");
-    users[username] = { nombre: body.nombre || body.username, pass: await hashPass(body.password) };
-    localStorage.setItem(KEY, JSON.stringify(users));
-    return { mensaje: "Cuenta creada" };
-  }
-  if (path === "/api/auth/login") {
-    const u = users[username];
-    if (!u || u.pass !== await hashPass(body.password)) fail(401, "Usuario o contraseña incorrectos.");
-    return { usuario: { username: body.username, nombre: u.nombre } };
-  }
-  fail(404, "Endpoint de autenticación no disponible en el emulador.");
-}
-
 async function mockApi(path, method, body) {
-  await new Promise(r => setTimeout(r, 320));
-  if (path.startsWith("/api/auth/")) return mockAuth(path, body);
- if (path === "/api/fase1/cargar") {
-    const p = Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1));
-    const u = Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i));
+  await new Promise(r => setTimeout(r, 250));
+  if (path === "/api/auth/registro") return { status: "success" };
+  if (path === "/api/auth/login") {
+    const sinClave = !body.password;
     return {
-      tiempo_ns: 4829100,
-      estructura: "ArrayList<RegistroAgro>",
-      muestra_primeros_60: p,
-      muestra_ultimos_60: u
+      status: "success",
+      usuario: {
+        username: body.username.toLowerCase(),
+        nombre: body.username,
+        rol: sinClave ? "Invitado (Sin clave)" : "Investigador Agroclimático",
+        invitado: sinClave
+      },
+      token: "mock-token"
     };
   }
+  if (path === "/api/fase1/cargar") {
+    const p = Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1));
+    const u = Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i));
+    return { tiempo_ns: 4829100, estructura: "ArrayList", muestra_primeros_60: p, muestra_ultimos_60: u };
+  }
   if (path === "/api/fase2/disparador-ordenamiento") {
-    const camposClave = ["id_estacion", "temperatura_promedio", "fecha_registro"];
-    const metodos = ["Quick Sort", "Merge Sort", "Radix Sort", "Shell Sort", "Heap Sort"];
+    const mapa = {
+      id_estacion: ["Radix Sort", "Counting Sort"],
+      temperatura_promedio: ["Bucket Sort"],
+      fecha_registro: ["Quick Sort", "Merge Sort", "Heap Sort"]
+    };
+    const camposClave = Object.keys(mapa);
     const c = body?.forzar_campo || camposClave[Math.floor(Math.random() * camposClave.length)];
-    const m = metodos[Math.floor(Math.random() * metodos.length)];
+    const m = mapa[c][Math.floor(Math.random() * mapa[c].length)];
     const sortedP = [...(st.origP.length ? st.origP : Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
     const sortedU = [...(st.origU.length ? st.origU : Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
     return {
@@ -730,66 +1042,70 @@ async function mockApi(path, method, body) {
       tiempo_ns: Math.floor(12000000 + Math.random() * 25000000),
       comparaciones: Math.floor(185000 + Math.random() * 90000),
       movimientos: Math.floor(95000 + Math.random() * 60000),
-      muestra_primeros_30: sortedP,
-      muestra_ultimos_30: sortedU
+      muestra_primeros_60: sortedP,
+      muestra_ultimos_60: sortedU
     };
   }
   if (path === "/api/fase3/disparador-busqueda") {
-    const metodos = ["Búsqueda Binaria", "Búsqueda Secuencial"];
-    const met = metodos[Math.floor(Math.random() * metodos.length)];
-    const camposClave = ["id_estacion", "temperatura_promedio", "fecha_registro"];
-    const campo = st.ordenadoPor || camposClave[Math.floor(Math.random() * camposClave.length)];
+    const met = Math.random() > 0.5 ? "Búsqueda Binaria" : "Búsqueda Lineal";
+    const campo = st.ordenadoPor || "id_estacion";
     return { metodo_seleccionado: met, campo_requerido: campo };
   }
   if (path === "/api/fase3/ejecutar-busqueda") {
     const pool = [...st.p, ...st.u];
-    const found = pool.find(r => String(r[body.campo]).toLowerCase() === String(body.valor).toLowerCase()) || pool[0];
-    const isMatch = found && String(found[body.campo]).toLowerCase() === String(body.valor).toLowerCase();
+    const found = pool.find(r => String(r[body.campo]).toLowerCase() === String(body.valor).toLowerCase());
     return {
-      encontrado: isMatch,
+      encontrado: !!found,
       tiempo_ns: /binari/i.test(body.metodo) ? 14200 : 894300,
       comparaciones: /binari/i.test(body.metodo) ? 14 : 4320,
-      indice_ram: isMatch ? 1 : 0,
-      registro: isMatch ? found : null
+      indice_ram: found ? 1 : -1,
+      registro: found || null
+    };
+  }
+  if (path.startsWith("/api/alfa")) {
+    if (method === "DELETE") {
+      st.cont = {};
+      return { status: "success" };
+    }
+    const entries = Object.entries(st.cont);
+    const total = entries.reduce((a, b) => a + b[1], 0);
+    const lider = entries.length ? [...entries].sort((a, b) => b[1] - a[1])[0] : null;
+    const obj = {
+      nombre: lider ? lider[0] : null,
+      veces_ejecutado: lider ? lider[1] : 0,
+      porcentaje: lider && total ? Math.round((lider[1] * 100) / total) : 0,
+      total_ejecuciones: total,
+      desglose: { ...st.cont }
+    };
+    return { usuario: obj, general: obj };
+  }
+  if (path === "/api/reportes/comparativa") {
+    return {
+      comparativa_campos_clave: ["id_estacion", "temperatura_promedio", "fecha_registro"].map(c => {
+        const hit = [...st.hist].reverse().find(h => h.fase === "Ordenación" && h.campo === c);
+        return {
+          campo: c,
+          tipo_dato: "Entero",
+          metodo: hit ? hit.metodo : "Sin ejecutar aún",
+          tiempo_ns: hit ? hit.ns : null,
+          comparaciones: hit ? hit.c : null,
+          movimientos: hit ? hit.m : null
+        };
+      })
     };
   }
   if (path === "/api/benchmarking/configurar-caso") {
-    const campo = body?.campo || "id_estacion";
-    const baseP = st.origP.length ? st.origP : st.p;
-    const baseU = st.origU.length ? st.origU : st.u;
-    let sortedP = [...baseP];
-    let sortedU = [...baseU];
-    if (body?.tipo === "mejor") {
-      sortedP.sort((a, b) => (a[campo] > b[campo] ? 1 : -1));
-      sortedU.sort((a, b) => (a[campo] > b[campo] ? 1 : -1));
-    } else if (body?.tipo === "peor") {
-      sortedP.sort((a, b) => (a[campo] > b[campo] ? -1 : 1));
-      sortedU.sort((a, b) => (a[campo] > b[campo] ? -1 : 1));
-    } else {
-      sortedP = [...baseP].sort(() => Math.random() - 0.5);
-      sortedU = [...baseU].sort(() => Math.random() - 0.5);
-    }
-    const etiquetas = {
-      aleatorio: "Escenario Aleatorio (Original) aplicado a la muestra en RAM.",
-      mejor: `Mejor Caso: datos pre-ordenados por [${campo}] para minimizar comparaciones.`,
-      peor: `Peor Caso: datos en orden inverso por [${campo}] para maximizar comparaciones.`
-    };
     return {
-      mensaje: etiquetas[body?.tipo] || etiquetas.aleatorio,
-      muestra_primeros_30: sortedP,
-      muestra_ultimos_30: sortedU
+      mensaje: `Escenario [${body.tipo.toUpperCase()}] aplicado en emulador.`,
+      muestra_primeros_60: st.p,
+      muestra_ultimos_60: st.u
     };
   }
 }
 
-/* ==========================================
-   CLIENTE HTTP FASTAPI CON FALLBACK CLARO
-   ========================================== */
 async function api(path, method = "GET", body) {
   if (st.simMode) return mockApi(path, method, body);
   const headers = { "Content-Type": "application/json" };
-  const token = getToken();
-  if (token) headers["Authorization"] = "Bearer " + token;
   const r = await fetch(API_BASE_URL + path, {
     method,
     headers,
@@ -801,9 +1117,7 @@ async function api(path, method = "GET", body) {
       const j = await r.json();
       if (typeof j.detail === "string") detalle = j.detail;
     } catch (_) {}
-    // Sesión vencida o token inválido en un endpoint protegido
-    if (r.status === 401 && !path.startsWith("/api/auth/") && getSesion()) cerrarSesion(true);
-    const err = new Error(detalle || ("HTTP " + r.status + " en " + path));
+    const err = new Error(detalle || ("HTTP " + r.status));
     err.status = r.status;
     throw err;
   }
@@ -817,7 +1131,7 @@ async function run(btn, label, fn) {
   try {
     await fn();
   } catch (e) {
-    notify(`Fallo de comunicación con FastAPI (${e.message}). Verifica que el servidor esté activo en ${API_BASE_URL} o activa el Modo Emulador en la cabecera.`, "error");
+    notify(e.message, "error");
   } finally {
     btn.innerHTML = originalHTML;
     refresh();
@@ -848,9 +1162,7 @@ async function ping() {
     return;
   }
   let ok = false;
-  try {
-    ok = (await fetch(API_BASE_URL + "/openapi.json", { cache: "no-store" })).ok;
-  } catch (_) {}
+  try { ok = (await fetch(API_BASE_URL + "/openapi.json", { cache: "no-store" })).ok; } catch (_) {}
   el.innerHTML = `<span class="h-2 w-2 rounded-full ${ok ? "bg-bio-400 animate-pulse" : "bg-red-500"}"></span>${ok ? "FastAPI Online" : "FastAPI Offline"}`;
   el.className = "inline-flex items-center gap-2 rounded-full border px-3 py-0.5 text-xs font-mono " + (ok ? "border-bio-500/40 bg-bio-500/10 text-bio-300" : "border-red-500/40 bg-red-500/10 text-red-300");
 }
@@ -859,22 +1171,19 @@ setInterval(ping, 5000);
 
 $("btnSimMode").onclick = () => {
   st.simMode = !st.simMode;
-  $("simLabel").textContent = st.simMode ? "Modo Emulador: ON" : "Modo Emulador: OFF";
-  $("btnSimMode").classList.toggle("border-atmo-400/50", st.simMode);
-  $("btnSimMode").classList.toggle("bg-atmo-500/15", st.simMode);
+  $("simLabel").textContent = st.simMode ? "Emulador: ON" : "Emulador: OFF";
   ping();
   actualizarAuthConn();
-  notify(st.simMode ? "Modo Emulador activado. Puedes probar todo el flujo sin servidor backend." : "Modo Emulador desactivado. Conectando a endpoints reales FastAPI.", "info");
+  notify(st.simMode ? "Modo Emulador activado." : "Modo Emulador desactivado.", "info");
 };
 
 /* ==========================================
-   NAVEGACIÓN DE FASES Y STEPPER
+   STEPPER DE FASES
    ========================================== */
 function focusPhase(phaseNum, smoothScroll = true) {
   st.activePhase = phaseNum;
   [1, 2, 3].forEach(n => {
-    const sec = $("secFase" + n);
-    sec.classList.toggle("deck-panel-active", n === phaseNum);
+    $("secFase" + n).classList.toggle("deck-panel-active", n === phaseNum);
   });
   updateStepperUI();
   if (smoothScroll) {
@@ -899,22 +1208,18 @@ function updateStepperUI() {
       btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.01] p-3 text-left opacity-50 cursor-not-allowed transition-all";
       badge.className = "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 font-mono text-xs font-bold text-slate-500";
       status.textContent = "Bloqueada";
-      status.className = "font-mono text-[10px] uppercase tracking-wider text-slate-500";
     } else if (isCurrent) {
-      btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-bio-400/50 bg-bio-500/15 p-3 text-left shadow-[0_0_20px_rgba(132,204,22,0.15)] transition-all";
+      btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-bio-400/50 bg-bio-500/15 p-3 text-left transition-all";
       badge.className = "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bio-400 font-mono text-xs font-bold text-obsidian";
       status.textContent = s.done ? "Completada • En Foco" : "Fase en Curso";
-      status.className = "font-mono text-[10px] uppercase tracking-wider text-bio-300";
     } else if (s.done) {
-      btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-atmo-500/30 bg-atmo-500/10 p-3 text-left hover:border-atmo-400/50 transition-all";
-      badge.className = "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-atmo-500/20 border border-atmo-400/40 font-mono text-xs font-bold text-atmo-300";
-      status.textContent = "✓ Completada (Clic para volver)";
-      status.className = "font-mono text-[10px] uppercase tracking-wider text-atmo-300";
+      btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-atmo-500/30 bg-atmo-500/10 p-3 text-left transition-all";
+      badge.className = "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-atmo-500/20 font-mono text-xs font-bold text-atmo-300";
+      status.textContent = "✓ Completada";
     } else {
-      btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left hover:border-white/25 transition-all";
+      btn.className = "step-btn group flex-1 flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left transition-all";
       badge.className = "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 font-mono text-xs font-bold text-slate-300";
       status.textContent = "Disponible";
-      status.className = "font-mono text-[10px] uppercase tracking-wider text-slate-400";
     }
   });
 }
@@ -931,41 +1236,29 @@ document.querySelectorAll(".step-btn").forEach(btn => {
 });
 
 /* ==========================================
-   REFRESCO GENERAL DE INTERFAZ Y TABLAS
+   REFRESCO GENERAL DE INTERFAZ
    ========================================== */
 function refresh() {
   $("sumReg").textContent = (st.cargado ? fmt(TOTAL) : "0") + " / 30,000";
   $("sumOrd").textContent = st.ordenadoPor ? "Ordenado por " + st.ordenadoPor : "No ordenado";
-  $("sumOrdSub").textContent = st.ordenadoPor
-    ? `Algoritmo activo: ${st.ultimoMetodoOrd || "Estocástico"}`
-    : "Secuencia original de captura";
+  $("sumOrdSub").textContent = st.ordenadoPor ? `Algoritmo: ${st.ultimoMetodoOrd || "Estocástico"}` : "Secuencia original";
   $("ordTag").textContent = st.ordenadoPor ? "SORTED_RAM" : "RAW_STATE";
-  $("ordTag").className = st.ordenadoPor
-    ? "rounded bg-atmo-500/20 border border-atmo-500/30 px-1.5 py-0.5 text-[10px] text-atmo-300"
-    : "rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-slate-400";
 
   const e = Object.entries(st.cont);
   const tot = e.reduce((a, x) => a + x[1], 0);
-  $("alfaTotalRuns").textContent = `${tot} ${tot === 1 ? "corrida registrada" : "corridas registradas"}`;
   $("histCount").textContent = st.hist.length;
 
   if (tot > 0) {
     const m = [...e].sort((a, b) => b[1] - a[1])[0];
     const pct = Math.round((m[1] * 100) / tot);
     $("sumAlfa").textContent = `${m[0]} (${pct}%)`;
-    $("sumAlfaSub").textContent = `${m[1]} de ${tot} ejecuciones totales`;
+    $("sumAlfaSub").textContent = `${m[1]} de ${tot} ejecuciones`;
   } else {
     $("sumAlfa").textContent = "Sin ejecuciones";
     $("sumAlfaSub").textContent = "Esperando pruebas en Fase 2";
   }
 
-  ["btn21", "btn31"].forEach(id => {
-    $(id).disabled = !st.cargado;
-    $(id).title = st.cargado ? "" : "Primero carga los registros en la Fase 1";
-  });
-  $("btn11").disabled = false;
-
-  // Botones de retroceso contextuales
+  ["btn21", "btn31"].forEach(id => { $(id).disabled = !st.cargado; });
   $("btnResetRam").classList.toggle("hidden", !st.cargado);
   $("btnUndoSort").classList.toggle("hidden", !st.ordenadoPor);
   $("btnBackToF2").classList.toggle("hidden", !st.cargado);
@@ -976,7 +1269,6 @@ function refresh() {
   renderMuestra();
 }
 
-/* BUG CORREGIDO: (v * 100 / max) y Sanitización Anti-XSS */
 function renderAlfa() {
   const e = Object.entries(st.cont);
   if (!e.length) {
@@ -1001,78 +1293,51 @@ function renderAlfa() {
             </span>
             <span class="text-slate-400"><strong class="text-phosphor-400">${esc(v)}</strong> ejecuciones (${sharePct}%)</span>
           </div>
-          <div class="h-2.5 w-full overflow-hidden rounded-full bg-white/5 p-0.5">
-            <div class="h-full rounded-full transition-all duration-700 ${isLeader ? "bg-gradient-to-r from-bio-500 to-atmo-400 shadow-[0_0_10px_rgba(132,204,22,0.5)]" : "bg-atmo-500/60"}" style="width: ${widthPct}%"></div>
+          <div class="h-2 w-full overflow-hidden rounded-full bg-white/5">
+            <div class="h-full rounded-full ${isLeader ? "bg-bio-400" : "bg-atmo-500/70"}" style="width: ${widthPct}%"></div>
           </div>
         </div>
       `;
-    })
-    .join("");
+    }).join("");
 }
 
-/* BUG CORREGIDO: Cálculo exacto de índice inicial (TOTAL - rows.length + 1) + Filtro Local + Sanitización */
 function renderMuestra() {
-  $("thM").innerHTML =
-    '<tr><th class="p-3 text-bio-400">#</th>' +
-    CAMPOS.map(c => `<th class="p-3">${esc(c)}</th>`).join("") +
-    "</tr>";
-
+  $("thM").innerHTML = '<tr><th class="p-3 text-bio-400">#</th>' + CAMPOS.map(c => `<th class="p-3">${esc(c)}</th>`).join("") + "</tr>";
   const rawRows = st[st.tab] || [];
   const ini = st.tab === "p" ? 1 : TOTAL - rawRows.length + 1;
   const q = st.filterText.trim().toLowerCase();
 
   const indexedRows = rawRows.map((r, i) => ({ row: r, idx: ini + i }));
-  const filtered = q
-    ? indexedRows.filter(item =>
-        CAMPOS.some(c => String(item.row[c] ?? "").toLowerCase().includes(q))
-      )
-    : indexedRows;
+  const filtered = q ? indexedRows.filter(item => CAMPOS.some(c => String(item.row[c] ?? "").toLowerCase().includes(q))) : indexedRows;
 
   $("sampleCounter").textContent = `${filtered.length} filas visibles`;
 
   if (!rawRows.length) {
-    $("tbM").innerHTML =
-      '<tr><td class="p-8 text-center text-slate-500 font-mono" colspan="11">Memoria RAM vacía. Ejecuta el paso [1.1 Cargar 30,000 Registros a RAM] para visualizar la telemetría.</td></tr>';
+    $("tbM").innerHTML = '<tr><td class="p-8 text-center text-slate-500 font-mono" colspan="11">Memoria RAM vacía. Ejecuta [1.1 Cargar 30,000 Registros a RAM].</td></tr>';
     return;
   }
 
-  if (!filtered.length) {
-    $("tbM").innerHTML =
-      '<tr><td class="p-6 text-center text-phosphor-400 font-mono" colspan="11">Ningún registro de la muestra actual coincide con el filtro local.</td></tr>';
-    return;
-  }
-
-  $("tbM").innerHTML = filtered
-    .map(({ row, idx }) => {
-      const cells = CAMPOS.map(c => {
-        const val = row[c] ?? "";
-        if (c === "tipo_cultivo_predominante") {
-          const isAvocado = /aguacate/i.test(String(val));
-          const pillClass = isAvocado
-            ? "bg-bio-500/15 text-bio-300 border-bio-500/30"
-            : "bg-phosphor-500/15 text-phosphor-300 border-phosphor-500/30";
-          return `<td class="p-2.5"><span class="inline-block rounded-md border px-2 py-0.5 text-[11px] ${pillClass}">${esc(val)}</span></td>`;
-        }
-        return `<td class="p-2.5 text-slate-300">${esc(val)}</td>`;
-      }).join("");
-      return `<tr class="hover:bg-white/[0.04] transition-colors"><td class="p-2.5 font-bold text-phosphor-400">${fmt(idx)}</td>${cells}</tr>`;
-    })
-    .join("");
+  $("tbM").innerHTML = filtered.map(({ row, idx }) => {
+    const cells = CAMPOS.map(c => {
+      const val = row[c] ?? "";
+      if (c === "tipo_cultivo_predominante") {
+        const isAvocado = /aguacate/i.test(String(val));
+        const pillClass = isAvocado ? "bg-bio-500/15 text-bio-300 border-bio-500/30" : "bg-phosphor-500/15 text-phosphor-300 border-phosphor-500/30";
+        return `<td class="p-2.5"><span class="inline-block rounded-md border px-2 py-0.5 text-[11px] ${pillClass}">${esc(val)}</span></td>`;
+      }
+      return `<td class="p-2.5 text-slate-300">${esc(val)}</td>`;
+    }).join("");
+    return `<tr class="hover:bg-white/[0.04] transition-colors"><td class="p-2.5 font-bold text-phosphor-400">${fmt(idx)}</td>${cells}</tr>`;
+  }).join("");
 }
 
 function setMuestra(res, saveAsOriginal = false) {
-  // Se agregan las claves de 60 al selector pick
-  const p = pick(res, "muestra_primeros_60", "primeros_60", "muestra_primeros_30", "primeros_30", "primeros");
-  const u = pick(res, "muestra_ultimos_60", "ultimos_60", "muestra_ultimos_30", "ultimos_30", "ultimos");
-  if (Array.isArray(p) && p.length) {
-    st.p = p;
-    if (saveAsOriginal) st.origP = JSON.parse(JSON.stringify(p));
-  }
-  if (Array.isArray(u) && u.length) {
-    st.u = u;
-    if (saveAsOriginal) st.origU = JSON.parse(JSON.stringify(u));
-  }
+  const p = pick(res, "muestra_primeros_60", "primeros_60", "muestra_primeros_30", "primeros_30");
+  const u = pick(res, "muestra_ultimos_60", "ultimos_60", "muestra_ultimos_30", "ultimos_30");
+  if (Array.isArray(p) && p.length) { st.p = p; if (saveAsOriginal) st.origP = JSON.parse(JSON.stringify(p)); }
+  if (Array.isArray(u) && u.length) { st.u = u; if (saveAsOriginal) st.origU = JSON.parse(JSON.stringify(u)); }
 }
+
 document.querySelectorAll(".tab-pill").forEach(b => {
   b.onclick = () => {
     st.tab = b.dataset.tab;
@@ -1081,54 +1346,37 @@ document.querySelectorAll(".tab-pill").forEach(b => {
   };
 });
 
-$("localFilter").oninput = e => {
-  st.filterText = e.target.value;
-  renderMuestra();
-};
+$("localFilter").oninput = e => { st.filterText = e.target.value; renderMuestra(); };
 
 function log(fase, metodo, campo, ns, c, m) {
-  st.hist.push({
-    fase,
-    metodo,
-    campo,
-    ns,
-    c,
-    m,
-    hora: new Date().toLocaleTimeString("es-MX")
-  });
+  st.hist.push({ fase, metodo, campo, ns, c, m, hora: new Date().toLocaleTimeString("es-MX") });
 }
 
 /* ==========================================
-   FASE 1: CARGA Y RESET DE RAM
+   FASE 1, 2 Y 3
    ========================================== */
-$("btn11").onclick = () =>
-  run($("btn11"), "Ingestando en RAM", async () => {
-    const r = await api("/api/fase1/cargar", "POST");
-    const ns = pick(r, "tiempo_ns", "nanosegundos") ?? 0;
-    const est = pick(r, "estructura") || "ArrayList";
-    st.cargado = true;
-    st.ordenadoPor = null;
-    st.ultimoMetodoOrd = null;
-    setMuestra(r, true);
+$("btn11").onclick = () => run($("btn11"), "Ingestando en RAM", async () => {
+  const r = await api("/api/fase1/cargar", "POST");
+  const ns = pick(r, "tiempo_ns", "nanosegundos") ?? 0;
+  st.cargado = true;
+  st.ordenadoPor = null;
+  st.ultimoMetodoOrd = null;
+  setMuestra(r, true);
 
-    $("out1").textContent =
-      `[OK_RAM_ALLOC] Se realizó la carga de los 30,000 registros con sus 10 columnas a la estructura [${est}] y le tomó [${fmt(ns)}] nanosegundos (${ms(ns)} ms) completar la acción.`;
-    log("Carga", est, "-", ns, "-", "-");
-    notify("30,000 registros agroclimáticos cargados en memoria RAM.", "success");
-    focusPhase(2, false);
-  });
+  $("out1").textContent = `[OK_RAM_ALLOC] Se realizó la carga de los 30,000 registros con sus 10 columnas a la estructura [ArrayList] y le tomó [${fmt(ns)}] nanosegundos (${ms(ns)} ms) completar la acción.`;
+  log("Carga", "ArrayList", "-", ns, "-", "-");
+  notify("30,000 registros cargados en memoria RAM.", "success");
+  focusPhase(2, false);
+});
 
 function vaciarMemoriaRam() {
   st.cargado = false;
   st.ordenadoPor = null;
   st.ultimoMetodoOrd = null;
-  st.p = [];
-  st.u = [];
-  st.origP = [];
-  st.origU = [];
+  st.p = []; st.u = []; st.origP = []; st.origU = [];
   st.sorteo = null;
   st.cont = {};
-  $("out1").innerHTML = '<span class="text-slate-500 select-none">[SYS_IDLE] $ </span>Memoria RAM vaciada. Esperando nueva carga de datos...';
+  $("out1").innerHTML = '<span class="text-slate-500 select-none">[SYS_IDLE] $ </span>Memoria RAM vaciada.';
   $("sel2").classList.add("hidden");
   $("out2").classList.add("hidden");
   $("badges2").classList.add("hidden");
@@ -1136,33 +1384,25 @@ function vaciarMemoriaRam() {
   $("res3").classList.add("hidden");
   focusPhase(1);
   refresh();
-  notify("Memoria RAM vaciada y contadores de prueba reiniciados.", "info");
 }
-
 $("btnResetRam").onclick = vaciarMemoriaRam;
 
-/* ==========================================
-   FASE 2: ORDENACIÓN Y RETROCESO A ORIGINAL
-   ========================================== */
 async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
-  const payload = campoSugerido ? { forzar_campo: campoSugerido } : undefined;
+  const user = getSesion();
+  const payload = {
+    username: user ? user.username : null,
+    forzar_campo: campoSugerido || null
+  };
   const r = await api("/api/fase2/disparador-ordenamiento", "POST", payload);
 
-  let rawCampo = pick(r, "campo_seleccionado", "campo", "campo_clave");
-  let campo = "id_estacion";
-  let clave = "";
-  if (typeof rawCampo === "object" && rawCampo !== null) {
-    campo = rawCampo.nombre || rawCampo.campo || "id_estacion";
-    clave = rawCampo.clave || rawCampo.numero || getClaveNum(campo);
-  } else if (typeof rawCampo === "string") {
-    campo = rawCampo;
-    clave = pick(r, "clave", "numero_clave", "clave_seleccionada") || getClaveNum(campo);
-  }
+  let rawCampo = pick(r, "campo_seleccionado", "campo");
+  let campo = typeof rawCampo === "object" && rawCampo !== null ? rawCampo.nombre : rawCampo;
+  let clave = typeof rawCampo === "object" && rawCampo !== null ? rawCampo.clave : (pick(r, "clave") || getClaveNum(campo));
 
-  const met = pick(r, "metodo_asignado", "metodo", "metodo_ordenamiento", "algoritmo") || "Radix Sort";
-  const ns = pick(r, "tiempo_ns", "nanosegundos") ?? 0;
+  const met = pick(r, "metodo_asignado", "metodo") || "Radix Sort";
+  const ns = pick(r, "tiempo_ns") ?? 0;
   const c = pick(r, "comparaciones") ?? 0;
-  const m = pick(r, "movimientos", "asignaciones", "intercambios") ?? 0;
+  const m = pick(r, "movimientos") ?? 0;
 
   st.ordenadoPor = campo;
   st.ultimoMetodoOrd = met;
@@ -1173,16 +1413,15 @@ async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
   $("sel2").innerHTML = `
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
       <div>
-        <span class="text-slate-400">➔ Campo clave seleccionado aleatoriamente:</span> <strong class="text-white">${esc(campo)}</strong> <span class="text-atmo-400">(Clave ${esc(clave)})</span><br>
-        <span class="text-slate-400">➔ Método de ordenamiento asignado:</span> <strong class="text-bio-400">${esc(met)}</strong>
+        <span class="text-slate-400">➔ Campo clave seleccionado:</span> <strong class="text-white">${esc(campo)}</strong> <span class="text-atmo-400">(Clave ${esc(clave)})</span><br>
+        <span class="text-slate-400">➔ Método asignado:</span> <strong class="text-bio-400">${esc(met)}</strong>
       </div>
-      <span class="rounded-lg bg-atmo-500/20 border border-atmo-400/30 px-3 py-1 text-xs font-bold text-atmo-300 shrink-0">VECTOR ORDENADO</span>
+      <span class="rounded-lg bg-atmo-500/20 border border-atmo-400/30 px-3 py-1 text-xs font-bold text-atmo-300">VECTOR ORDENADO</span>
     </div>
   `;
 
   $("out2").classList.remove("hidden");
-  $("out2").textContent =
-    `Se ordenaron 30,000 registros por el campo [${campo}] usando el método [${met}] en [${fmt(ns)}] nanosegundos. Comparaciones: [${fmt(c)}], Asignaciones/Movimientos de Memoria: [${fmt(m)}]`;
+  $("out2").textContent = `Se ordenaron 30,000 registros por el campo [${campo}] usando el método [${met}] en [${fmt(ns)}] nanosegundos. Comparaciones: [${fmt(c)}], Movimientos: [${fmt(m)}]`;
 
   const cardMetric = (t, v, s, col) => `
     <div class="rounded-xl border border-white/10 bg-[#070a0d] p-4">
@@ -1191,31 +1430,25 @@ async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
       <div class="mt-0.5 text-[11px] font-mono text-slate-500">${esc(s)}</div>
     </div>
   `;
-
   $("badges2").classList.remove("hidden");
   $("badges2").innerHTML =
-    cardMetric("Tiempo de Ejecución", fmt(ns), "nanosegundos (ns)", "text-phosphor-400") +
-    cardMetric("Latencia Equivalente", ms(ns), "milisegundos (ms)", "text-phosphor-300") +
-    cardMetric("Comparaciones Clave", fmt(c), "evaluaciones lógicas", "text-atmo-400") +
-    cardMetric("Movimientos en RAM", fmt(m), "intercambios / escrituras", "text-bio-400");
+    cardMetric("Tiempo", fmt(ns), "nanosegundos (ns)", "text-phosphor-400") +
+    cardMetric("Latencia", ms(ns), "milisegundos (ms)", "text-phosphor-300") +
+    cardMetric("Comparaciones", fmt(c), "evaluaciones lógicas", "text-atmo-400") +
+    cardMetric("Movimientos", fmt(m), "escrituras en RAM", "text-bio-400");
 
   log("Ordenación", met, campo, ns, c, m);
   updateChart(met, ns, c);
-  notify(`Ordenamiento completado con ${met} por el campo [${campo}].`, "success");
-
-  // Si hay un sorteo de búsqueda binaria activo esperando este campo, refrescar su panel
+  notify(`Ordenamiento completado con ${met} por [${campo}].`, "success");
   if (st.sorteo) renderPanelFase3();
 }
 
-$("btn21").onclick = () =>
-  run($("btn21"), "Sorteando y Ordenando", async () => {
-    focusPhase(2, false);
-    await ejecutarDisparadorOrdenamiento();
-  });
+$("btn21").onclick = () => run($("btn21"), "Ordenando", async () => {
+  focusPhase(2, false);
+  await ejecutarDisparadorOrdenamiento();
+});
 
-// Botón de retroceso en Fase 2: Restaurar orden original sin recargar
 $("btnUndoSort").onclick = () => {
-  if (!st.cargado) return;
   st.ordenadoPor = null;
   st.ultimoMetodoOrd = null;
   if (st.origP.length) st.p = JSON.parse(JSON.stringify(st.origP));
@@ -1225,68 +1458,42 @@ $("btnUndoSort").onclick = () => {
   $("badges2").classList.add("hidden");
   if (st.sorteo) renderPanelFase3();
   refresh();
-  notify("Ordenamiento deshecho. La memoria RAM restauró el orden desordenado original de Fase 1.", "info");
+  notify("Ordenamiento deshecho.", "info");
 };
 
-/* ==========================================
-   FASE 3: BÚSQUEDA CLAVE Y FICHA DE SENSOR
-   ========================================== */
 function renderPanelFase3() {
   if (!st.sorteo) return;
   const { met, campo, bin } = st.sorteo;
   const listo = st.ordenadoPor === campo;
 
   let h = `
-    <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#070a0d] p-4 font-mono text-xs sm:text-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#070a0d] p-4 font-mono text-xs">
       <div>
         <span class="text-slate-400">Algoritmo sorteado:</span>
         <strong class="ml-1 text-phosphor-400">${esc(met)}</strong>
-        <span class="ml-2 rounded bg-white/5 px-2 py-0.5 text-[11px] text-slate-400">${bin ? "Requiere pre-ordenación O(log n)" : "Exploración directa O(n)"}</span>
       </div>
-      <button id="btnReRollSearch" class="btn-deck btn-ghost text-xs py-1.5 px-3">
-        🎲 Cambiar método de búsqueda
-      </button>
+      <button id="btnReRollSearch" class="btn-deck btn-ghost text-xs py-1.5 px-3">🎲 Cambiar método</button>
     </div>
   `;
 
   if (bin) {
     h += `
-      <div class="rounded-xl border p-4 text-xs sm:text-sm font-mono space-y-3 ${
-        listo
-          ? "border-bio-500/40 bg-bio-500/10 text-bio-200"
-          : "border-red-500/50 bg-red-500/10 text-red-200"
-      }">
+      <div class="rounded-xl border p-4 text-xs font-mono space-y-3 ${listo ? "border-bio-500/40 bg-bio-500/10 text-bio-200" : "border-red-500/50 bg-red-500/10 text-red-200"}">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div>Campo clave requerido por Búsqueda Binaria: <strong class="text-white">${esc(campo)}</strong></div>
-            <div class="mt-1">Estado actual en RAM: <strong>${
-              listo
-                ? "✓ YA ORDENADO PREVIAMENTE POR ESTE CAMPO"
-                : `✗ SIN ORDENAR POR [${esc(campo)}] (Actual: ${esc(st.ordenadoPor || "Desordenado")})`
-            }</strong></div>
+            <div>Campo requerido por Búsqueda Binaria: <strong class="text-white">${esc(campo)}</strong></div>
+            <div class="mt-1">Estado RAM: <strong>${listo ? "✓ ORDENADO POR ESTE CAMPO" : `✗ ACTUAL: ${esc(st.ordenadoPor || "Desordenado")}`}</strong></div>
           </div>
-          ${
-            !listo
-              ? `<button id="btnAutoSortNow" class="btn-deck btn-phosphor text-xs shrink-0">⚡ Ordenar por este campo ahora mismo</button>`
-              : ""
-          }
+          ${!listo ? `<button id="btnAutoSortNow" class="btn-deck btn-phosphor text-xs shrink-0">⚡ Ordenar por este campo ahora</button>` : ""}
         </div>
       </div>
       <div class="grid gap-3 sm:grid-cols-3">
         <div class="sm:col-span-2">
-          <label class="mb-1 block font-mono text-xs text-slate-400">Valor exacto a localizar en [${esc(campo)}]:</label>
-          <input id="valor" class="inp-deck" ${
-            NUM.includes(campo) ? 'type="number" step="any"' : 'type="text"'
-          } placeholder="Ej. ${campo === "id_estacion" ? "10005" : campo === "fecha_registro" ? "20250115" : "18.5"}" ${
-            listo ? "" : "disabled"
-          }>
+          <label class="mb-1 block font-mono text-xs text-slate-400">Valor a localizar en [${esc(campo)}]:</label>
+          <input id="valor" class="inp-deck" type="number" placeholder="Ej. 10005" ${listo ? "" : "disabled"}>
         </div>
         <div class="flex items-end">
-          <button id="btnBus" class="btn-deck btn-bio w-full py-2.5" ${
-            !listo ? 'disabled title="La memoria no está ordenada por este campo"' : ""
-          }>
-            Ejecutar Búsqueda Binaria
-          </button>
+          <button id="btnBus" class="btn-deck btn-bio w-full py-2.5" ${!listo ? "disabled" : ""}>Ejecutar Búsqueda Binaria</button>
         </div>
       </div>
     `;
@@ -1294,19 +1501,17 @@ function renderPanelFase3() {
     h += `
       <div class="grid gap-3 sm:grid-cols-3">
         <div>
-          <label class="mb-1 block font-mono text-xs text-slate-400">Atributo de inspección:</label>
+          <label class="mb-1 block font-mono text-xs text-slate-400">Campo (1-10):</label>
           <select id="campoSel" class="inp-deck">
             ${CAMPOS.map(c => `<option value="${esc(c)}" ${c === campo ? "selected" : ""}>${esc(c)}</option>`).join("")}
           </select>
         </div>
         <div>
-          <label class="mb-1 block font-mono text-xs text-slate-400">Dato o patrón a buscar:</label>
-          <input id="valor" class="inp-deck" type="text" placeholder="Escribe el valor a localizar...">
+          <label class="mb-1 block font-mono text-xs text-slate-400">Valor a buscar:</label>
+          <input id="valor" class="inp-deck" type="text" placeholder="Escribe el dato...">
         </div>
         <div class="flex items-end">
-          <button id="btnBus" class="btn-deck btn-bio w-full py-2.5">
-            Ejecutar Búsqueda Secuencial
-          </button>
+          <button id="btnBus" class="btn-deck btn-bio w-full py-2.5">Ejecutar Búsqueda Lineal</button>
         </div>
       </div>
     `;
@@ -1314,61 +1519,41 @@ function renderPanelFase3() {
 
   $("mod3").innerHTML = h;
   $("mod3").classList.remove("hidden");
-
-  $("btnBus").onclick = () => run($("btnBus"), "Explorando RAM", ejecutarBusqueda);
+  $("btnBus").onclick = () => run($("btnBus"), "Buscando", ejecutarBusqueda);
   $("btnReRollSearch").onclick = () => $("btn31").click();
 
   const btnAuto = $("btnAutoSortNow");
   if (btnAuto) {
-    btnAuto.onclick = () =>
-      run(btnAuto, "Ordenando en Fase 2", async () => {
-        // Intenta ordenar hasta empatar con el campo requerido (máx 8 intentos en backend real o directo en emulador)
-        for (let intento = 1; intento <= 8; intento++) {
-          await ejecutarDisparadorOrdenamiento(campo);
-          if (st.ordenadoPor === campo) break;
-        }
-        if (st.ordenadoPor === campo) {
-          notify(`Memoria RAM alineada por [${campo}]. Búsqueda Binaria desbloqueada.`, "success");
-        } else {
-          notify(`El disparador aleatorio ordenó por [${st.ordenadoPor}]. Pulsa de nuevo hasta obtener [${campo}].`, "warning");
-        }
-        renderPanelFase3();
-        refresh();
-      });
+    btnAuto.onclick = () => run(btnAuto, "Ordenando", async () => {
+      await ejecutarDisparadorOrdenamiento(campo);
+      renderPanelFase3();
+      refresh();
+    });
   }
 }
 
-$("btn31").onclick = () =>
-  run($("btn31"), "Sorteando Método", async () => {
-    focusPhase(3, false);
-    const r = await api("/api/fase3/disparador-busqueda");
-    const met = pick(r, "metodo_seleccionado", "metodo", "metodo_busqueda", "algoritmo") || "Búsqueda Binaria";
-    let rawCampo = pick(r, "campo_requerido", "campo_seleccionado", "campo", "campo_clave") || st.ordenadoPor || "id_estacion";
-    let campo = typeof rawCampo === "object" && rawCampo !== null ? rawCampo.nombre || rawCampo.campo || "id_estacion" : rawCampo;
+$("btn31").onclick = () => run($("btn31"), "Sorteando", async () => {
+  focusPhase(3, false);
+  const r = await api("/api/fase3/disparador-busqueda");
+  const met = pick(r, "metodo_seleccionado", "metodo") || "Búsqueda Binaria";
+  const campo = pick(r, "campo_requerido", "campo") || st.ordenadoPor || "id_estacion";
+  st.sorteo = { met, campo, bin: /binari/i.test(met) };
+  $("res3").classList.add("hidden");
+  renderPanelFase3();
+});
 
-    st.sorteo = { met, campo, bin: /binari/i.test(met) };
-    $("res3").classList.add("hidden");
-    renderPanelFase3();
-  });
-
-// Botón de retroceso en Fase 3: Volver a Fase 2 limpiando la búsqueda
 $("btnBackToF2").onclick = () => {
   $("res3").classList.add("hidden");
   $("mod3").classList.add("hidden");
   st.sorteo = null;
   focusPhase(2);
-  notify("Búsqueda reiniciada. Selecciona un nuevo ordenamiento en la Fase 2.", "info");
 };
 
 async function ejecutarBusqueda() {
   const s = st.sorteo;
   const campo = s.bin ? s.campo : $("campoSel").value;
   const valor = $("valor").value.trim();
-
-  if (!valor) {
-    notify("Ingresa el valor específico que deseas buscar en los 30,000 registros.", "warning");
-    return;
-  }
+  if (!valor) return notify("Ingresa un valor a buscar.", "warning");
 
   const r = await api("/api/fase3/ejecutar-busqueda", "POST", {
     metodo: s.met,
@@ -1376,163 +1561,128 @@ async function ejecutarBusqueda() {
     valor: NUM.includes(campo) ? Number(valor) : valor
   });
 
-  const ns = pick(r, "tiempo_ns", "nanosegundos") ?? (r.benchmarking ? r.benchmarking.tiempo_ns : 0);
-  const c = pick(r, "comparaciones") ?? (r.benchmarking ? r.benchmarking.comparaciones : 0);
-  const reg = pick(r, "registro", "fila_encontrada", "datos");
-  const idx = pick(r, "indice_ram", "indice", "fila");
+  const ns = pick(r, "tiempo_ns") ?? 0;
+  const c = pick(r, "comparaciones") ?? 0;
+  const reg = pick(r, "registro");
+  const idx = pick(r, "indice_ram", "indice");
   const ok = pick(r, "encontrado") ?? !!reg;
 
   log("Búsqueda", s.met, campo, ns, c, "-");
 
   if (!ok || !reg) {
-    $("res3").innerHTML = `
-      <div class="rounded-xl border border-red-500/40 bg-red-500/10 p-5 font-mono text-xs sm:text-sm text-red-200 flex items-center gap-3">
-        <svg class="h-6 w-6 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <div>
-          El registro con <strong>${esc(campo)} = ${esc(valor)}</strong> no existe en la matriz RAM.
-          Se ejecutaron <strong>${fmt(c)}</strong> comparaciones en <strong>${fmt(ns)}</strong> nanosegundos (${ms(ns)} ms).
-        </div>
-      </div>
-    `;
+    $("res3").innerHTML = `<div class="rounded-xl border border-red-500/40 bg-red-500/10 p-4 font-mono text-xs text-red-200">Registro no encontrado con <strong>${esc(campo)} = ${esc(valor)}</strong> (${fmt(c)} comparaciones en ${fmt(ns)} ns).</div>`;
     $("res3").classList.remove("hidden");
-    notify("Registro no localizado en el banco de memoria.", "warning");
     return;
   }
-
-  const cult = String(reg.tipo_cultivo_predominante || "Sin especificar");
-  const isAguacate = /aguacate/i.test(cult);
-  const badgeClass = isAguacate
-    ? "border-bio-400/50 bg-bio-500/20 text-bio-300 shadow-[0_0_15px_rgba(132,204,22,0.25)]"
-    : "border-phosphor-400/50 bg-phosphor-500/20 text-phosphor-300 shadow-[0_0_15px_rgba(245,158,11,0.25)]";
-
-  const sensorCell = (label, val, unit, svgPath) => `
-    <div class="rounded-xl border border-white/10 bg-[#070a0d]/90 p-3.5 flex items-start gap-3">
-      <div class="mt-0.5 rounded-lg bg-white/5 p-2 text-atmo-400 border border-white/10">
-        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">${svgPath}</svg>
-      </div>
-      <div class="min-w-0 flex-1">
-        <div class="font-mono text-[10px] uppercase tracking-wider text-slate-400">${esc(label)}</div>
-        <div class="mt-0.5 font-mono text-sm sm:text-base font-bold text-white truncate">${esc(val ?? "")}${unit ? ` <span class="text-xs font-normal text-slate-400">${esc(unit)}</span>` : ""}</div>
-      </div>
-    </div>
-  `;
-
-  const semaforo = evaluarRiesgoAgroclimatico(reg);
 
   $("res3").innerHTML = `
     <div class="term-box !border-phosphor-500/30 !text-phosphor-300">
-      [TELEMETRY_LOCK] Se realizó la búsqueda en 30,000 registros por el campo [${esc(campo)}] usando el método [${esc(s.met)}] en [${fmt(ns)}] nanosegundos (${ms(ns)} ms). Comparaciones realizadas: [${fmt(c)}]
+      [ENCONTRADO] Posición RAM: #${fmt(idx)} • Tiempo: ${fmt(ns)} ns (${ms(ns)} ms) • Comparaciones: ${fmt(c)}
     </div>
-
-    <!-- BANNER SEMÁFORO AGROCLIMÁTICO (INNOVACIÓN 2) -->
-    <div class="rounded-xl border p-4 font-mono text-xs flex items-start gap-3.5 shadow-lg ${semaforo.color}">
-      <span class="text-2xl select-none">${semaforo.icon}</span>
-      <div class="space-y-0.5">
-        <div class="font-bold tracking-wider text-sm">${esc(semaforo.nivel)}</div>
-        <div class="text-slate-300 leading-relaxed">${esc(semaforo.detalle)}</div>
-      </div>
-    </div>
-
-    <!-- Credencial / Ficha Técnica de Sensor Telemétrico -->
-    <div class="relative overflow-hidden rounded-2xl border border-bio-500/40 bg-gradient-to-br from-[#10191e] via-[#0b1014] to-[#0d1612] p-5 sm:p-6 shadow-2xl">
-      <div class="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-bio-500/10 blur-2xl"></div>
-
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 mb-5">
-        <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-bio-500/15 border border-bio-400/40 text-bio-400 font-mono font-bold">
-            #${idx !== undefined ? fmt(idx) : "1"}
-          </div>
-          <div>
-            <div class="font-mono text-[10px] uppercase tracking-widest text-bio-400">CREDENCIAL DE SENSOR METEOROLÓGICO // RAM HIT</div>
-            <h3 class="text-lg font-bold text-white">Estación ID-${esc(reg.id_estacion)} • ${esc(reg.municipio)}, ${esc(reg.estado)}</h3>
-          </div>
-        </div>
-
-        <span class="inline-flex items-center gap-2 rounded-full border px-3.5 py-1 font-mono text-xs font-bold ${badgeClass}">
-          <span class="h-2 w-2 rounded-full bg-current"></span>
-          ${esc(cult)}
-        </span>
-      </div>
-
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        ${sensorCell("Dirección RAM", idx !== undefined ? "Fila #" + fmt(idx) : "Fila #1", "", '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/>')}
-        ${sensorCell("ID Estación", reg.id_estacion, "", '<path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>')}
-        ${sensorCell("Temperatura", reg.temperatura_promedio, "°C", '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>')}
-        ${sensorCell("Fecha Captura", reg.fecha_registro, "AAAAMMDD", '<path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>')}
-        ${sensorCell("Estado", reg.estado, "", '<path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>')}
-        ${sensorCell("Municipio", reg.municipio, "", '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>')}
-        ${sensorCell("Humedad Rel.", reg.humedad_relativa, "%", '<path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>')}
-        ${sensorCell("Precipitación", reg.precipitacion_mm, "mm", '<path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>')}
-        ${sensorCell("Presión Atm.", reg.presion_atmosferica, "hPa", '<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>')}
-        ${sensorCell("Vel. Viento", reg.velocidad_viento, "km/h", '<path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>')}
+    <div class="rounded-2xl border border-bio-500/40 bg-[#0d1612] p-5 space-y-3 font-mono text-xs">
+      <div class="text-base font-bold text-white">Estación ID-${esc(reg.id_estacion)} • ${esc(reg.municipio)}, ${esc(reg.estado)} (${esc(reg.tipo_cultivo_predominante)})</div>
+      <div class="grid gap-2 sm:grid-cols-4 text-slate-300">
+        <div>Temp: <strong class="text-white">${esc(reg.temperatura_promedio)} °C</strong></div>
+        <div>Fecha: <strong class="text-white">${esc(reg.fecha_registro)}</strong></div>
+        <div>Humedad: <strong class="text-white">${esc(reg.humedad_relativa)}%</strong></div>
+        <div>Precipitación: <strong class="text-white">${esc(reg.precipitacion_mm)} mm</strong></div>
       </div>
     </div>
   `;
-
   $("res3").classList.remove("hidden");
-  notify(`Estación #${reg.id_estacion} localizada con éxito.`, "success");
 }
 
 /* ==========================================
-   MODALES: BITÁCORA CSV Y REINICIO GLOBAL
+   VISTA REPORTES Y MÉTODO ALFA DOBLE
    ========================================== */
-$("btnHist").onclick = () => {
-  $("tbH").innerHTML = st.hist.length
-    ? st.hist
-        .map(
-          (h, i) => `
-        <tr class="hover:bg-white/[0.03]">
-          <td class="p-3 text-slate-400">${i + 1}</td>
-          <td class="p-3"><span class="rounded bg-white/5 px-2 py-0.5 text-slate-200">${esc(h.fase)}</span></td>
-          <td class="p-3 font-semibold text-bio-400">${esc(h.metodo)}</td>
-          <td class="p-3 text-atmo-300">${esc(h.campo)}</td>
-          <td class="p-3 text-phosphor-400 font-bold">${h.ns === "-" ? "-" : fmt(h.ns)}</td>
-          <td class="p-3">${h.c === "-" ? "-" : fmt(h.c)}</td>
-          <td class="p-3">${h.m === "-" ? "-" : fmt(h.m)}</td>
-          <td class="p-3 text-slate-400">${esc(h.hora)}</td>
-        </tr>`
-        )
-        .join("")
-    : '<tr><td class="p-6 text-center text-slate-500" colspan="8">Aún no hay ejecuciones registradas en esta sesión.</td></tr>';
-  $("modal").classList.replace("hidden", "flex");
-};
+async function cargarTablaReportes() {
+  try {
+    const resp = await api("/api/reportes/comparativa");
+    const filas = resp.comparativa_campos_clave || [];
+    $("tbReportesClave").innerHTML = filas.map(f => `
+      <tr class="hover:bg-white/[0.03]">
+        <td class="p-3.5 font-bold text-white">${esc(f.campo)}</td>
+        <td class="p-3.5 text-slate-400">${esc(f.tipo_dato)}</td>
+        <td class="p-3.5 font-semibold text-bio-400">${esc(f.metodo)}</td>
+        <td class="p-3.5 text-phosphor-400">${f.tiempo_ns !== null ? `${fmt(f.tiempo_ns)} ns (${ms(f.tiempo_ns)} ms)` : "-"}</td>
+        <td class="p-3.5">${f.comparaciones !== null ? fmt(f.comparaciones) : "-"}</td>
+        <td class="p-3.5">${f.movimientos !== null ? fmt(f.movimientos) : "-"}</td>
+      </tr>
+    `).join("");
+  } catch (e) {
+    notify("No se pudo cargar el reporte comparativo.", "error");
+  }
+}
+$("btnRefreshReportes").onclick = cargarTablaReportes;
 
-$("btnClose").onclick = () => $("modal").classList.replace("flex", "hidden");
-
-$("btnCsv").onclick = () => {
-  if (!st.hist.length) {
-    notify("No hay registros en la bitácora para exportar.", "warning");
+function renderBarrasAlfa(containerId, datos, colorClass) {
+  const cont = $(containerId);
+  const desglose = datos?.desglose || {};
+  const entries = Object.entries(desglose);
+  if (!entries.length) {
+    cont.innerHTML = '<div class="text-slate-500">Sin ejecuciones registradas aún.</div>';
     return;
   }
-  const csv =
-    "No,Fase,Metodo,Campo,Tiempo_ns,Comparaciones,Movimientos,Hora\n" +
-    st.hist.map((h, i) => [i + 1, h.fase, `"${h.metodo}"`, h.campo, h.ns, h.c, h.m, h.hora].join(",")).join("\n");
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
-  a.download = "bitacora_telemetria_agro.csv";
-  a.click();
-  notify("Archivo CSV descargado correctamente.", "success");
-};
+  const total = datos.total_ejecuciones || entries.reduce((a, b) => a + b[1], 0) || 1;
+  cont.innerHTML = entries
+    .sort((a, b) => b[1] - a[1])
+    .map(([metodo, count], i) => {
+      const pct = Math.round((count * 100) / total);
+      return `
+        <div class="space-y-1">
+          <div class="flex justify-between">
+            <span class="${i === 0 ? "font-bold text-white" : "text-slate-300"}">${esc(metodo)} ${i === 0 ? "★ ALFA" : ""}</span>
+            <span>${count} ejec. (${pct}%)</span>
+          </div>
+          <div class="h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
+            <div class="h-full ${colorClass}" style="width: ${pct}%"></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+}
 
-// Modal de Reinicio Global
-$("btnGlobalReset").onclick = () => $("resetModal").classList.replace("hidden", "flex");
-$("btnCancelReset").onclick = () => $("resetModal").classList.replace("flex", "hidden");
-$("btnConfirmReset").onclick = () => {
-  $("resetModal").classList.replace("flex", "hidden");
-  st.hist = [];
-  vaciarMemoriaRam();
-};
+async function cargarPanelDobleAlfa() {
+  const user = getSesion();
+  const username = user ? user.username : "";
+  $("alfaUserTitle").textContent = user ? (user.nombre || user.username) : "Invitado";
 
-window.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    $("modal").classList.replace("flex", "hidden");
-    $("resetModal").classList.replace("flex", "hidden");
+  try {
+    const query = username ? `?username=${encodeURIComponent(username)}` : "";
+    const data = await api("/api/alfa" + query);
+    const u = data.usuario || {};
+    const g = data.general || {};
+
+    $("alfaUserWinnerBadge").textContent = u.nombre ? `${u.nombre} (${u.porcentaje}%)` : "Sin datos";
+    $("alfaGenWinnerBadge").textContent = g.nombre ? `${g.nombre} (${g.porcentaje}%)` : "Sin datos";
+
+    renderBarrasAlfa("barsAlfaUsuario", u, "bg-atmo-400");
+    renderBarrasAlfa("barsAlfaGeneral", g, "bg-bio-400");
+
+    $("detUserAlgo").textContent = u.nombre || "Sin ejecutar";
+    $("detUserPts").textContent = `${u.veces_ejecutado || 0} ejecuciones (${u.porcentaje || 0}%)`;
+    $("detGenAlgo").textContent = g.nombre || "Sin ejecutar";
+    $("detGenPts").textContent = `${g.veces_ejecutado || 0} ejecuciones (${g.porcentaje || 0}%)`;
+  } catch (e) {
+    notify("Error al consultar estadísticas Alfa.", "error");
   }
-});
+}
 
-/* ===============================================================
-   LÓGICA INNOVACIÓN 1: GRÁFICA COMPARATIVA (CHART.JS)
-   =============================================================== */
+$("btnReiniciarAlfaUsuario").onclick = async () => {
+  const user = getSesion();
+  if (!user || !user.username) return;
+  try {
+    await api(`/api/alfa/${encodeURIComponent(user.username)}`, "DELETE");
+    notify("Alfa del usuario reiniciado. El Alfa General permanece intacto.", "success");
+    cargarPanelDobleAlfa();
+  } catch (e) {
+    notify(e.message, "error");
+  }
+};
+
+/* ==========================================
+   CHART.JS, BITÁCORA Y MENÚ DE USUARIO
+   ========================================== */
 let benchChart = null;
 const chartData = { labels: [], tiemposMs: [], comparaciones: [] };
 
@@ -1544,46 +1694,19 @@ function initChart() {
     data: {
       labels: chartData.labels,
       datasets: [
-        {
-          label: "Tiempo (ms)",
-          data: chartData.tiemposMs,
-          backgroundColor: "rgba(6, 182, 212, 0.6)",
-          borderColor: "#22d3ee",
-          borderWidth: 1,
-          yAxisID: "y"
-        },
-        {
-          label: "Comparaciones (K)",
-          data: chartData.comparaciones,
-          backgroundColor: "rgba(163, 230, 53, 0.6)",
-          borderColor: "#a3e635",
-          borderWidth: 1,
-          yAxisID: "y1"
-        }
+        { label: "Tiempo (ms)", data: chartData.tiemposMs, backgroundColor: "rgba(6, 182, 212, 0.7)", yAxisID: "y" },
+        { label: "Comparaciones (K)", data: chartData.comparaciones, backgroundColor: "rgba(163, 230, 53, 0.7)", yAxisID: "y1" }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x: { ticks: { color: "#94a3b8", font: { family: "monospace", size: 10 } } },
-        y: {
-          type: "linear",
-          position: "left",
-          title: { display: true, text: "Latencia (ms)", color: "#22d3ee", font: { size: 10 } },
-          ticks: { color: "#94a3b8", font: { size: 10 } }
-        },
-        y1: {
-          type: "linear",
-          position: "right",
-          grid: { drawOnChartArea: false },
-          title: { display: true, text: "Comparaciones (Miles)", color: "#a3e635", font: { size: 10 } },
-          ticks: { color: "#94a3b8", font: { size: 10 } }
-        }
+        x: { ticks: { color: "#94a3b8" } },
+        y: { type: "linear", position: "left", ticks: { color: "#22d3ee" } },
+        y1: { type: "linear", position: "right", grid: { drawOnChartArea: false }, ticks: { color: "#a3e635" } }
       },
-      plugins: {
-        legend: { labels: { color: "#cbd5e1", font: { family: "monospace", size: 11 } } }
-      }
+      plugins: { legend: { labels: { color: "#cbd5e1" } } }
     }
   });
 }
@@ -1591,110 +1714,71 @@ function initChart() {
 function updateChart(metodo, tiempoNs, comparaciones) {
   if (!benchChart) initChart();
   if (!benchChart) return;
-  const msVal = Number((Number(tiempoNs) / 1e6).toFixed(2));
-  const kComp = Number((Number(comparaciones) / 1000).toFixed(1));
-
   chartData.labels.push(metodo);
-  chartData.tiemposMs.push(msVal);
-  chartData.comparaciones.push(kComp);
-
+  chartData.tiemposMs.push(Number((Number(tiempoNs) / 1e6).toFixed(2)));
+  chartData.comparaciones.push(Number((Number(comparaciones) / 1000).toFixed(1)));
   if (chartData.labels.length > 7) {
-    chartData.labels.shift();
-    chartData.tiemposMs.shift();
-    chartData.comparaciones.shift();
+    chartData.labels.shift(); chartData.tiemposMs.shift(); chartData.comparaciones.shift();
   }
   benchChart.update();
 }
-
 window.addEventListener("DOMContentLoaded", initChart);
-if (document.readyState !== "loading") initChart();
 
-/* ===============================================================
-   LÓGICA INNOVACIÓN 2: SEMÁFORO DE ALERTA AGROCLIMÁTICA
-   =============================================================== */
-function evaluarRiesgoAgroclimatico(r) {
-  const temp = Number(r.temperatura_promedio);
-  const prec = Number(r.precipitacion_mm);
-  const hum = Number(r.humedad_relativa);
-  const cultivo = String(r.tipo_cultivo_predominante || "");
+$("btnHist").onclick = () => {
+  $("tbH").innerHTML = st.hist.length ? st.hist.map((h, i) => `
+    <tr>
+      <td class="p-3">${i + 1}</td>
+      <td class="p-3">${esc(h.fase)}</td>
+      <td class="p-3 text-bio-400 font-bold">${esc(h.metodo)}</td>
+      <td class="p-3 text-atmo-300">${esc(h.campo)}</td>
+      <td class="p-3 text-phosphor-400">${h.ns === "-" ? "-" : fmt(h.ns)}</td>
+      <td class="p-3">${h.c === "-" ? "-" : fmt(h.c)}</td>
+      <td class="p-3">${h.m === "-" ? "-" : fmt(h.m)}</td>
+      <td class="p-3 text-slate-400">${esc(h.hora)}</td>
+    </tr>`).join("") : '<tr><td colspan="8" class="p-6 text-center text-slate-500">Sin registros aún.</td></tr>';
+  $("modal").classList.replace("hidden", "flex");
+};
+$("btnClose").onclick = () => $("modal").classList.replace("flex", "hidden");
 
-  if (temp <= 12) {
-    return {
-      nivel: "CRÍTICO // RIESGO DE HELADA",
-      color: "border-red-500/60 bg-red-500/15 text-red-200",
-      icon: "❄️",
-      detalle: `Temperatura registrada (${temp}°C) por debajo del umbral térmico foliar para ${cultivo}. Activar medidas preventivas.`
-    };
-  }
-  if (prec < 15 && temp > 32) {
-    return {
-      nivel: "ADVERTENCIA // ESTRÉS HÍDRICO",
-      color: "border-phosphor-500/60 bg-phosphor-500/15 text-phosphor-200",
-      icon: "☀️",
-      detalle: `Precipitación escasa (${prec} mm) y temperatura elevada (${temp}°C). Riesgo de deshidratación en ${cultivo}.`
-    };
-  }
-  if (hum > 85 && temp >= 22 && temp <= 28) {
-    return {
-      nivel: "PRECAUCIÓN // INCIDENCIA DE PLAGAS",
-      color: "border-yellow-500/60 bg-yellow-500/15 text-yellow-200",
-      icon: "🦗",
-      detalle: `Humedad de ${hum}% y ${temp}°C favorece patógenos (antracnosis en aguacate o gusano cogollero en maíz).`
-    };
-  }
-  return {
-    nivel: "ESTABLE // BIOCLIMA ÓPTIMO",
-    color: "border-bio-500/60 bg-bio-500/15 text-bio-200",
-    icon: "🌱",
-    detalle: `Variables microclimáticas estables para el rendimiento de ${cultivo}.`
-  };
-}
+$("btnCsv").onclick = () => {
+  if (!st.hist.length) return notify("Bitácora vacía.", "warning");
+  const csv = "No,Fase,Metodo,Campo,Tiempo_ns,Comparaciones,Movimientos,Hora\n" +
+    st.hist.map((h, i) => [i + 1, h.fase, `"${h.metodo}"`, h.campo, h.ns, h.c, h.m, h.hora].join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  a.download = "bitacora_benchmarking.csv";
+  a.click();
+};
 
-/* ===============================================================
-   LÓGICA INNOVACIÓN 3: EVENTO DE CAMBIO DE ESCENARIO
-   =============================================================== */
-const selCaso = document.getElementById("selCasoPrueba");
+$("btnGlobalReset").onclick = () => $("resetModal").classList.replace("hidden", "flex");
+$("btnCancelReset").onclick = () => $("resetModal").classList.replace("flex", "hidden");
+$("btnConfirmReset").onclick = () => {
+  $("resetModal").classList.replace("flex", "hidden");
+  st.hist = [];
+  vaciarMemoriaRam();
+};
+
+const selCaso = $("selCasoPrueba");
 if (selCaso) {
   selCaso.onchange = async () => {
-    if (!st.cargado) {
-      notify("Primero realiza la carga de 30,000 registros en RAM.", "warning");
-      selCaso.value = "aleatorio";
-      return;
-    }
-    try {
-      const resp = await api("/api/benchmarking/configurar-caso", "POST", {
-        tipo: selCaso.value,
-        campo: st.ordenadoPor || "id_estacion"
-      });
-      setMuestra(resp, false);
-      renderMuestra();
-      notify(resp.mensaje, "info");
-    } catch (e) {
-      notify("Fallo al aplicar escenario: " + e.message, "error");
-    }
+    if (!st.cargado) { selCaso.value = "aleatorio"; return notify("Carga primero los datos.", "warning"); }
+    const resp = await api("/api/benchmarking/configurar-caso", "POST", { tipo: selCaso.value, campo: st.ordenadoPor || "id_estacion" });
+    setMuestra(resp, false);
+    renderMuestra();
+    notify(resp.mensaje, "info");
   };
 }
 
-/* ===============================================================
-   CONTROL DE SESIÓN (LOGIN / REGISTRO)
-   =============================================================== */
+/* ==========================================
+   CONTROL DE SESIÓN Y MENÚ DESPLEGABLE
+   ========================================== */
 const SESSION_KEY = "agro_user";
 const TOKEN_KEY = "agro_token";
 let modoRegistro = false;
 
-function getToken() {
-  try { return localStorage.getItem(TOKEN_KEY); } catch (_) { return null; }
-}
-
 function getSesion() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (_) { return null; }
+  try { const raw = localStorage.getItem(SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch (_) { return null; }
 }
-
-const TAB_ON = "flex-1 rounded-lg border border-bio-500/30 bg-bio-500/20 py-1.5 font-mono text-xs font-semibold text-bio-400 transition";
-const TAB_OFF = "flex-1 rounded-lg border border-transparent py-1.5 font-mono text-xs font-semibold text-slate-400 transition hover:text-white";
 
 function setAuthError(msg) {
   const el = $("authError");
@@ -1705,27 +1789,19 @@ function setAuthError(msg) {
 function setModoAuth(registro) {
   modoRegistro = registro;
   setAuthError("");
-  $("authTitle").textContent = registro ? "Crear cuenta" : "Iniciar sesión";
-  $("btnAuthSubmit").textContent = registro ? "Crear cuenta" : "Ingresar al centro de control";
+  $("authTitle").textContent = registro ? "Crear Cuenta" : "Registro de Usuario";
+  $("btnAuthSubmit").textContent = registro ? "Crear Cuenta" : "➔ Ingresar";
+  $("btnLoginSinClave").classList.toggle("hidden", registro);
   $("fieldNombre").classList.toggle("hidden", !registro);
   $("authPassHint").classList.toggle("hidden", !registro);
-  $("authPass").autocomplete = registro ? "new-password" : "current-password";
-  $("tabLogin").className = registro ? TAB_OFF : TAB_ON;
-  $("tabRegister").className = registro ? TAB_ON : TAB_OFF;
-  $("tabLogin").setAttribute("aria-selected", String(!registro));
-  $("tabRegister").setAttribute("aria-selected", String(registro));
+  $("tabLogin").className = registro ? "flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold text-slate-400" : "flex-1 rounded-lg border border-bio-500/30 bg-bio-500/20 py-1.5 font-mono text-xs font-semibold text-bio-400";
+  $("tabRegister").className = registro ? "flex-1 rounded-lg border border-bio-500/30 bg-bio-500/20 py-1.5 font-mono text-xs font-semibold text-bio-400" : "flex-1 rounded-lg py-1.5 font-mono text-xs font-semibold text-slate-400";
 }
 
 function actualizarAuthConn() {
   const el = $("authConn");
-  if (st.simMode) {
-    el.innerHTML = '<span class="h-2 w-2 rounded-full bg-atmo-400 animate-pulse"></span>Emulador local activo';
-    $("btnAuthSim").textContent = "Usar servidor real";
-  } else {
-    const online = $("conn").textContent.includes("Online");
-    el.innerHTML = `<span class="h-2 w-2 rounded-full ${online ? "bg-bio-400 animate-pulse" : "bg-red-500"}"></span>${online ? "FastAPI en línea" : "FastAPI sin conexión"}`;
-    $("btnAuthSim").textContent = "Usar modo emulador";
-  }
+  const online = $("conn").textContent.includes("Online") || st.simMode;
+  el.innerHTML = `<span class="h-2 w-2 rounded-full ${online ? "bg-bio-400 animate-pulse" : "bg-red-500"}"></span>${st.simMode ? "Emulador activo" : (online ? "FastAPI en línea" : "FastAPI sin conexión")}`;
 }
 
 function verificarSesion() {
@@ -1734,93 +1810,108 @@ function verificarSesion() {
   $("authModal").classList.toggle("hidden", logueado);
   $("authModal").classList.toggle("flex", !logueado);
   $("userProfile").classList.toggle("hidden", !logueado);
-  $("userProfile").classList.toggle("flex", logueado);
   document.body.classList.toggle("overflow-hidden", !logueado);
-  // Mientras no haya sesión, el contenido de fondo no recibe foco ni clics
   if (logueado) $("appRoot").removeAttribute("inert"); else $("appRoot").setAttribute("inert", "");
   if (logueado) {
-    $("userProfileName").textContent = user.nombre || user.username || "Usuario";
-  } else {
-    setTimeout(() => $("authUser").focus(), 50);
+    $("userProfileName").textContent = user.nombre || user.username || "USUARIO";
+    $("userRoleLabel").textContent = user.rol || (user.invitado ? "Invitado (Sin clave)" : "Investigador");
   }
 }
 
-function cerrarSesion(expirada = false) {
-  try {
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem(TOKEN_KEY);
-  } catch (_) {}
-  // Limpia los datos en memoria para que la siguiente persona empiece desde cero
+function cerrarSesion() {
+  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  $("userDropdownMenu").classList.add("hidden");
   st.hist = [];
   vaciarMemoriaRam();
-  $("authPass").value = "";
   verificarSesion();
-  notify(expirada ? "Tu sesión expiró. Inicia sesión de nuevo." : "Sesión finalizada.", expirada ? "warning" : "info");
 }
+
+$("btnUserDropdown").onclick = e => {
+  e.stopPropagation();
+  $("userDropdownMenu").classList.toggle("hidden");
+};
+window.addEventListener("click", () => $("userDropdownMenu").classList.add("hidden"));
+
+function openInfoModal(title, html) {
+  $("infoModalTitle").textContent = title;
+  $("infoModalBody").innerHTML = html;
+  $("infoModal").classList.replace("hidden", "flex");
+}
+$("btnCloseInfoModal").onclick = () => $("infoModal").classList.replace("flex", "hidden");
+
+$("menuItemPerfil").onclick = () => {
+  const u = getSesion() || {};
+  openInfoModal("👤 Perfil de Usuario", `
+    <p><strong class="text-white">Nombre:</strong> ${esc(u.nombre || u.username)}</p>
+    <p><strong class="text-white">Usuario:</strong> ${esc(u.username)}</p>
+    <p><strong class="text-white">Modalidad:</strong> ${esc(u.rol || "Estándar")}</p>
+    <p class="text-bio-400 pt-2">Tus ejecuciones de ordenamiento suman puntos tanto a tu Método Alfa personal como al Método Alfa General.</p>
+  `);
+};
+
+$("menuItemConfig").onclick = () => {
+  openInfoModal("⚙️ Configuración del Sistema", `
+    <p><strong class="text-white">Dataset Activo:</strong> dataset_agroclimatico_30000.csv (30,000 filas)</p>
+    <p><strong class="text-white">Muestra Tabular:</strong> Primeros 60 y Últimos 60 registros</p>
+    <p><strong class="text-white">Modo Emulador:</strong> ${st.simMode ? "Activado (Local)" : "Desactivado (Backend FastAPI)"}</p>
+  `);
+};
+
+$("menuItemAyuda").onclick = () => {
+  openInfoModal("❓ Guía Rápida de Uso", `
+    <p><strong class="text-bio-400">1. Carga de Datos:</strong> Presiona "Cargar 30,000 Registros a RAM" para inicializar el arreglo.</p>
+    <p><strong class="text-atmo-400">2. Ordenación:</strong> Ejecuta el disparador aleatorio para probar algoritmos sobre uno de los 3 campos clave.</p>
+    <p><strong class="text-phosphor-400">3. Búsqueda:</strong> Realiza búsquedas binarias (requiere arreglo ordenado por ese campo) o lineales.</p>
+  `);
+};
 
 $("tabLogin").onclick = () => setModoAuth(false);
 $("tabRegister").onclick = () => setModoAuth(true);
-
 $("btnTogglePass").onclick = () => {
-  const visible = $("authPass").type === "text";
-  $("authPass").type = visible ? "password" : "text";
-  $("btnTogglePass").textContent = visible ? "Ver" : "Ocultar";
+  const vis = $("authPass").type === "text";
+  $("authPass").type = vis ? "password" : "text";
+  $("btnTogglePass").textContent = vis ? "Ver" : "Ocultar";
 };
-
 $("btnAuthSim").onclick = () => $("btnSimMode").click();
 
-$("authForm").onsubmit = async e => {
-  e.preventDefault();
+async function procesarIngreso(sinClave = false) {
   setAuthError("");
-  const username = $("authUser").value.trim();
-  const password = $("authPass").value;
+  const username = $("authUser").value.trim() || (sinClave ? "Invitado_" + Math.floor(100 + Math.random() * 900) : "");
+  const password = sinClave ? "" : $("authPass").value;
   const nombre = $("authNombre").value.trim();
 
-  if (!username || !password) return setAuthError("Escribe tu usuario y contraseña.");
-  if (modoRegistro && password.length < 6) return setAuthError("La contraseña debe tener al menos 6 caracteres.");
-
-  const btn = $("btnAuthSubmit");
-  const label = btn.textContent;
-  btn.disabled = true;
-  btn.innerHTML = '<span class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"></span><span>Procesando...</span>';
+  if (!username) return setAuthError("Escribe un nombre de usuario.");
+  if (modoRegistro && password.length < 4) return setAuthError("La contraseña debe tener al menos 4 caracteres.");
 
   try {
     if (modoRegistro) {
-      await api("/api/auth/registro", "POST", { username, password, nombre });
+      await api("/api/auth/registro", "POST", { username, password, nombre: nombre || username });
       setModoAuth(false);
-      $("authUser").value = username;
       $("authPass").value = "";
-      $("authPass").focus();
-      notify("Cuenta creada. Ahora inicia sesión.", "success");
+      notify("Cuenta creada. Ahora puedes ingresar.", "success");
     } else {
       const resp = await api("/api/auth/login", "POST", { username, password });
-      const usuario = resp.usuario || { username, nombre: username };
+      const usuario = resp.usuario || { username, nombre: username, invitado: sinClave };
       localStorage.setItem(SESSION_KEY, JSON.stringify(usuario));
-      const token = resp.token || resp.access_token;
-      if (token) localStorage.setItem(TOKEN_KEY, token);
+      if (resp.token) localStorage.setItem(TOKEN_KEY, resp.token);
       $("authPass").value = "";
       verificarSesion();
       notify(`Bienvenido/a, ${usuario.nombre || usuario.username}`, "success");
     }
   } catch (err) {
-    if (err.status === 401) setAuthError("Usuario o contraseña incorrectos.");
-    else if (err.status === undefined) setAuthError("No se pudo conectar con el servidor. Revisa FastAPI o usa el modo emulador.");
-    else setAuthError(err.message || "No se pudo completar la operación.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = label;
+    setAuthError(err.message || "Error al iniciar sesión.");
   }
-};
+}
 
-$("btnLogout").onclick = () => cerrarSesion(false);
+$("authForm").onsubmit = e => { e.preventDefault(); procesarIngreso(false); };
+$("btnLoginSinClave").onclick = () => procesarIngreso(true);
+$("btnLogout").onclick = cerrarSesion;
 
-// Mantiene sincronizado el estado de conexión mostrado en el modal
 setInterval(() => { if (!getSesion()) actualizarAuthConn(); }, 1000);
-
 setModoAuth(false);
 verificarSesion();
 actualizarAuthConn();
-
 refresh();
 </script>
 </body>
