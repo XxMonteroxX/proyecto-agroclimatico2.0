@@ -1,12 +1,14 @@
 """
 Capa de negocio: mantiene el estado en RAM (lista de diccionarios cargada desde
 el CSV), orquesta los algoritmos de algorithms.py, escribe las bitácoras con el
-formato exacto exigido y calcula el "Método Alfa".
+formato exacto exigido, calcula el "Método Alfa" y guarda métricas comparativas.
 """
 import csv
 import time
 from pathlib import Path
+from typing import Optional
 
+import auth
 from algorithms import (
     radix_sort,
     counting_sort,
@@ -47,6 +49,12 @@ CAMPOS_CLAVE = {
     3: "fecha_registro",
 }
 
+TIPOS_CAMPO_CLAVE = {
+    "id_estacion": "Entero (ID Único)",
+    "temperatura_promedio": "Entero (°C)",
+    "fecha_registro": "Entero (AAAAMMDD)",
+}
+
 ALGORITMOS_POR_CAMPO = {
     "id_estacion": ["Radix Sort", "Counting Sort"],
     "temperatura_promedio": ["Bucket Sort"],
@@ -74,6 +82,8 @@ class EstadoRAM:
         self.primera_ordenacion_hecha = False
         self.conteo_metodos = {}
         self.tiempo_carga_ns = None
+        # Guarda el mejor benchmark registrado por cada uno de los 3 campos clave
+        self.mejor_por_campo = {}
 
 
 estado = EstadoRAM()
@@ -92,7 +102,7 @@ def castear_valor(campo, valor):
 
 
 def cargar_csv():
-    """Lee dataset_agroclimatico_15000.csv completo a una lista de diccionarios
+    """Lee dataset_agroclimatico_30000.csv completo a una lista de diccionarios
     en RAM, midiendo el tiempo de carga en nanosegundos."""
     t0 = time.perf_counter_ns()
     registros = []
@@ -125,9 +135,9 @@ def cargar_csv():
     return tiempo_ns, len(registros)
 
 
-def ejecutar_ordenamiento(campo, metodo):
+def ejecutar_ordenamiento(campo, metodo, username: Optional[str] = None):
     """Ejecuta el algoritmo indicado sobre estado.registros, actualiza el
-    estado de la RAM, escribe la bitácora y genera el backup si aplica."""
+    estado de la RAM, persiste el Método Alfa en SQLite y escribe la bitácora."""
     funcion = _FUNCIONES_ORDENAMIENTO[metodo]
     ordenados, comparaciones, movimientos, tiempo_ns = funcion(estado.registros, campo)
 
@@ -135,6 +145,21 @@ def ejecutar_ordenamiento(campo, metodo):
     estado.campo_actualmente_ordenado = campo
     estado.ultimo_metodo = metodo
     estado.conteo_metodos[metodo] = estado.conteo_metodos.get(metodo, 0) + 1
+
+    # Persistir conteo Alfa (Usuario + General) en SQLite
+    auth.registrar_ejecucion_alfa(username, metodo)
+
+    # Actualizar mejor marca por campo clave para la tabla de Reportes
+    previo = estado.mejor_por_campo.get(campo)
+    if previo is None or tiempo_ns < previo["tiempo_ns"]:
+        estado.mejor_por_campo[campo] = {
+            "campo": campo,
+            "tipo_dato": TIPOS_CAMPO_CLAVE.get(campo, "Numérico"),
+            "metodo": metodo,
+            "tiempo_ns": tiempo_ns,
+            "comparaciones": comparaciones,
+            "movimientos": movimientos,
+        }
 
     total_reg = len(estado.registros)
     linea = (
@@ -152,9 +177,9 @@ def ejecutar_ordenamiento(campo, metodo):
 
     return comparaciones, movimientos, tiempo_ns
 
+
 def guardar_backup():
-    """Respaldo de la primera ordenación: los 15,000 registros ordenados en
-    registros_ordenados_backup.csv."""
+    """Respaldo de la primera ordenación en registros_ordenados_backup.csv."""
     with open(BACKUP_PATH, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CAMPOS)
         writer.writeheader()
@@ -162,11 +187,30 @@ def guardar_backup():
 
 
 def metodo_alfa():
-    """El método de ordenamiento más ejecutado hasta el momento ('Método Alfa')."""
+    """El método de ordenamiento más ejecutado hasta el momento en RAM."""
     if not estado.conteo_metodos:
         return None, 0
     nombre_alfa = max(estado.conteo_metodos, key=lambda k: estado.conteo_metodos[k])
     return nombre_alfa, estado.conteo_metodos[nombre_alfa]
+
+
+def obtener_reporte_comparativo():
+    """Devuelve la comparativa estructurada de los 3 campos clave para Reportes."""
+    filas = []
+    for clave, campo in CAMPOS_CLAVE.items():
+        dato = estado.mejor_por_campo.get(campo)
+        if dato:
+            filas.append(dato)
+        else:
+            filas.append({
+                "campo": campo,
+                "tipo_dato": TIPOS_CAMPO_CLAVE.get(campo, "Numérico"),
+                "metodo": "Sin ejecutar aún",
+                "tiempo_ns": None,
+                "comparaciones": None,
+                "movimientos": None,
+            })
+    return filas
 
 
 def ejecutar_busqueda(metodo, campo, valor):
@@ -202,21 +246,16 @@ def ejecutar_busqueda(metodo, campo, valor):
 
     return encontrado, idx, registro, comparaciones, tiempo_ns
 
+
 def configurar_caso_prueba(tipo: str, campo: str = "id_estacion"):
-    """
-    Modifica el orden de los registros en RAM para benchmarking:
-    - 'mejor': Orden ascendente (O(n) o menor esfuerzo)
-    - 'peor': Orden descendente inverso (fuerza el peor caso en algoritmos como Quick Sort)
-    - 'aleatorio': Carga el orden original del archivo CSV
-    """
+    """Modifica el orden de los registros en RAM para benchmarking."""
     if not estado.cargado:
         raise ValueError("No hay registros en RAM. Carga primero el dataset.")
 
     if tipo == "aleatorio":
         cargar_csv()
         return "Registros restablecidos al orden aleatorio original."
-    
-    # Ordenamiento rápido auxiliar en Python para preparar el caso de prueba
+
     estado.registros.sort(key=lambda x: x[campo], reverse=(tipo == "peor"))
     estado.campo_actualmente_ordenado = campo if tipo == "mejor" else None
     return f"Memoria RAM configurada en modo [{tipo.upper()}] según el campo [{campo}]."
