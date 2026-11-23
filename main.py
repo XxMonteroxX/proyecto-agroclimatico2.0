@@ -1,14 +1,11 @@
 """
 PROYECTO 1: Sistema de Monitoreo Agroclimático de Cultivos de Maíz y Aguacate
 Backend FastAPI con servicio de Frontend integrado para despliegue web.
-
-Ejecutar en local:
-    uvicorn main:app --reload --host 0.0.0.0 --port 8000
 """
 import os
 import random
 import sys
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,21 +18,18 @@ from storage import ALGORITMOS_POR_CAMPO, CAMPOS, CAMPOS_CLAVE, estado
 import auth
 from auth import RegistroRequest, LoginRequest
 
-# Límite de recursión por seguridad en algoritmos
 sys.setrecursionlimit(10000)
 
 app = FastAPI(
     title="Sistema de Monitoreo Agroclimático - Maíz y Aguacate",
     description=(
-        "API académica que procesa en RAM 15,000 registros agroclimáticos de "
-        "Jalisco, Michoacán, Sinaloa y Veracruz, implementando manualmente "
-        "Radix Sort, Counting Sort, Bucket Sort, Quick Sort, Merge Sort, "
-        "Heap Sort, Búsqueda Binaria y Búsqueda Lineal."
+        "API académica que procesa en RAM 30,000 registros agroclimáticos, "
+        "implementando manualmente Radix Sort, Counting Sort, Bucket Sort, "
+        "Quick Sort, Merge Sort, Heap Sort, Búsqueda Binaria y Búsqueda Lineal."
     ),
-    version="1.0.0",
+    version="2.0.0",
 )
 
-# Soporte CORS para permitir peticiones web
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -45,10 +39,34 @@ app.add_middleware(
 )
 
 
+class OrdenamientoPayload(BaseModel):
+    username: Optional[str] = None
+    forzar_campo: Optional[str] = None
+
+
 class BusquedaPayload(BaseModel):
     metodo: str
     campo: str
     valor: Any
+
+
+class CasoPruebaPayload(BaseModel):
+    tipo: str
+    campo: str = "id_estacion"
+
+
+# ---------------------------------------------------------------------------
+# AUTENTICACIÓN Y CONTROL DE ACCESO (CON O SIN CLAVE)
+# ---------------------------------------------------------------------------
+
+@app.post("/api/auth/registro")
+def api_registro(payload: RegistroRequest):
+    return auth.registrar_usuario(payload)
+
+
+@app.post("/api/auth/login")
+def api_login(payload: LoginRequest):
+    return auth.login_usuario(payload)
 
 
 # ---------------------------------------------------------------------------
@@ -68,7 +86,6 @@ def cargar():
 
     tiempo_ns, total = storage.cargar_csv()
 
-    # Rebanadas de 60 elementos
     primeros_60 = estado.registros[:60]
     ultimos_60 = estado.registros[-60:]
 
@@ -80,12 +97,10 @@ def cargar():
         ),
         "tiempo_ns": tiempo_ns,
         "total_registros": total,
-        # Nuevas llaves para 60 registros
         "muestra_primeros_60": primeros_60,
         "muestra_ultimos_60": ultimos_60,
         "primeros_60": primeros_60,
         "ultimos_60": ultimos_60,
-        # Llaves heredadas para que el frontend no falle si aún busca '30'
         "muestra_primeros_30": primeros_60,
         "muestra_ultimos_30": ultimos_60,
         "primeros_30": primeros_60,
@@ -96,34 +111,31 @@ def cargar():
 # ---------------------------------------------------------------------------
 # FASE 2: DISPARADOR ALEATORIO DE ORDENAMIENTO
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# AUTENTICACIÓN Y CONTROL DE ACCESO
-# ---------------------------------------------------------------------------
-
-@app.post("/api/auth/registro")
-def api_registro(payload: RegistroRequest):
-    return auth.registrar_usuario(payload)
-
-@app.post("/api/auth/login")
-def api_login(payload: LoginRequest):
-    return auth.login_usuario(payload)
 
 @app.post("/api/fase2/disparador-ordenamiento")
-def disparador_ordenamiento():
+def disparador_ordenamiento(payload: Optional[OrdenamientoPayload] = None):
     if not estado.cargado:
         raise HTTPException(
             status_code=400,
             detail="Los datos no han sido cargados en RAM. Ejecute antes /api/fase1/cargar.",
         )
 
-    clave = random.choice(list(CAMPOS_CLAVE.keys()))
-    campo = CAMPOS_CLAVE[clave]
+    username = payload.username if payload else None
+    forzar = payload.forzar_campo if payload else None
+
+    if forzar and forzar in ALGORITMOS_POR_CAMPO:
+        campo = forzar
+        clave = next(k for k, v in CAMPOS_CLAVE.items() if v == campo)
+    else:
+        clave = random.choice(list(CAMPOS_CLAVE.keys()))
+        campo = CAMPOS_CLAVE[clave]
+
     metodo = random.choice(ALGORITMOS_POR_CAMPO[campo])
 
-    comparaciones, movimientos, tiempo_ns = storage.ejecutar_ordenamiento(campo, metodo)
+    comparaciones, movimientos, tiempo_ns = storage.ejecutar_ordenamiento(campo, metodo, username=username)
     alfa_nombre, alfa_conteo = storage.metodo_alfa()
+    stats_alfa = auth.obtener_estadisticas_alfa(username)
 
-    # Rebanadas de 60 registros ordenados
     primeros_60 = estado.registros[:60]
     ultimos_60 = estado.registros[-60:]
 
@@ -145,20 +157,22 @@ def disparador_ordenamiento():
             "nombre": alfa_nombre,
             "veces_ejecutado": alfa_conteo,
             "historial_completo": dict(estado.conteo_metodos),
+            "usuario": stats_alfa["usuario"],
+            "general": stats_alfa["general"],
         },
-        # Claves actualizadas para 60 registros
         "muestra_primeros_60": primeros_60,
         "muestra_ultimos_60": ultimos_60,
         "primeros_60": primeros_60,
         "ultimos_60": ultimos_60,
-        # Claves anteriores para evitar errores si no se ha refrescado el frontend
         "muestra_primeros_30": primeros_60,
         "muestra_ultimos_30": ultimos_60,
         "primeros_30": primeros_60,
         "ultimos_30": ultimos_60,
     }
+
+
 # ---------------------------------------------------------------------------
-# FASE 3: DISPARADOR ALEATORIO DE BÚSQUEDA
+# FASE 3: DISPARADOR Y EJECUCIÓN DE BÚSQUEDA
 # ---------------------------------------------------------------------------
 
 @app.get("/api/fase3/disparador-busqueda")
@@ -188,21 +202,9 @@ def disparador_busqueda():
         "alerta_seguridad": False,
         "campo": random.choice(CAMPOS),
         "campos_disponibles": CAMPOS,
-        "mensaje": "Elija cualquier campo y el valor a buscar.",
-    }
-    return {
-        "metodo_seleccionado": metodo,
-        "metodo": metodo,
-        "alerta_seguridad": False,
-        "campo": random.choice(CAMPOS),
-        "campos_disponibles": CAMPOS,
         "mensaje": "Solicite al usuario que elija cualquiera de los 10 campos disponibles y el valor a buscar.",
     }
 
-
-# ---------------------------------------------------------------------------
-# FASE 3: EJECUCIÓN DE BÚSQUEDA
-# ---------------------------------------------------------------------------
 
 @app.post("/api/fase3/ejecutar-busqueda")
 def ejecutar_busqueda(payload: BusquedaPayload):
@@ -216,10 +218,10 @@ def ejecutar_busqueda(payload: BusquedaPayload):
         )
 
     if payload.metodo not in ("Búsqueda Binaria", "Búsqueda Lineal", "Búsqueda Secuencial"):
-     raise HTTPException(
-        status_code=422,
-        detail="Método inválido. Use 'Búsqueda Binaria' o 'Búsqueda Lineal / Secuencial'.",
-    )
+        raise HTTPException(
+            status_code=422,
+            detail="Método inválido. Use 'Búsqueda Binaria' o 'Búsqueda Lineal / Secuencial'.",
+        )
 
     try:
         encontrado, idx, registro, comparaciones, tiempo_ns = storage.ejecutar_busqueda(
@@ -247,15 +249,27 @@ def ejecutar_busqueda(payload: BusquedaPayload):
 
 
 # ---------------------------------------------------------------------------
-# ESTADO GENERAL Y MONTAJE FRONTEND
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# INNOVACIÓN 3: CONFIGURADOR DE CASOS DE PRUEBA
+# ENDPOINTS DE MÉTODO ALFA, REPORTES Y BENCHMARKING
 # ---------------------------------------------------------------------------
 
-class CasoPruebaPayload(BaseModel):
-    tipo: str  # 'aleatorio', 'mejor', 'peor'
-    campo: str = "id_estacion"
+@app.get("/api/alfa")
+def obtener_alfa(username: Optional[str] = None):
+    return auth.obtener_estadisticas_alfa(username)
+
+
+@app.delete("/api/alfa/{username}")
+def reiniciar_alfa(username: str):
+    return auth.reiniciar_alfa_usuario(username)
+
+
+@app.get("/api/reportes/comparativa")
+def reporte_comparativo():
+    return {
+        "comparativa_campos_clave": storage.obtener_reporte_comparativo(),
+        "total_registros": len(estado.registros),
+        "cargado": estado.cargado,
+    }
+
 
 @app.post("/api/benchmarking/configurar-caso")
 def configurar_caso(payload: CasoPruebaPayload):
@@ -263,31 +277,38 @@ def configurar_caso(payload: CasoPruebaPayload):
         mensaje = storage.configurar_caso_prueba(payload.tipo, payload.campo)
         return {
             "mensaje": mensaje,
-            "muestra_primeros_30": storage.estado.registros[:30],
-            "muestra_ultimos_30": storage.estado.registros[-30:]
+            "muestra_primeros_60": storage.estado.registros[:60],
+            "muestra_ultimos_60": storage.estado.registros[-60:],
+            "muestra_primeros_30": storage.estado.registros[:60],
+            "muestra_ultimos_30": storage.estado.registros[-60:],
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.get("/api/estado")
-def obtener_estado():
+def obtener_estado(username: Optional[str] = None):
     alfa_nombre, alfa_conteo = storage.metodo_alfa()
+    stats_alfa = auth.obtener_estadisticas_alfa(username)
     return {
         "datos_cargados": estado.cargado,
         "total_registros": len(estado.registros),
         "campo_actualmente_ordenado": estado.campo_actualmente_ordenado,
         "ultimo_metodo_usado": estado.ultimo_metodo,
-        "metodo_alfa": {"nombre": alfa_nombre, "veces_ejecutado": alfa_conteo},
+        "metodo_alfa": {
+            "nombre": alfa_nombre,
+            "veces_ejecutado": alfa_conteo,
+            "usuario": stats_alfa["usuario"],
+            "general": stats_alfa["general"],
+        },
         "historial_metodos": dict(estado.conteo_metodos),
     }
 
 
-# Montar carpeta static para CSS, JS y otros recursos
 if os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# Servir la interfaz web principal directamente en la raíz "/"
 @app.get("/")
 def raiz():
     ruta_index = os.path.join("static", "index.html")
@@ -298,4 +319,3 @@ def raiz():
         "documentacion": "/docs",
         "aviso": "Coloque index.html dentro de la carpeta static/ para ver la interfaz.",
     }
-
