@@ -173,7 +173,7 @@
     font-family: var(--font-mono);
     font-size: 10.5px;
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   .main-content {
@@ -310,7 +310,51 @@
     font-size: 12px;
   }
 
+  .btn-xs {
+    padding: 4px 9px;
+    font-size: 11px;
+    border-radius: 7px;
+    font-family: var(--font-mono);
+  }
+
   .w-full { width: 100%; }
+
+  /* DROPZONE DE EXCEL / CSV */
+  .dropzone {
+    border: 2px dashed rgba(34, 211, 238, 0.35);
+    border-radius: 14px;
+    background: rgba(7, 10, 13, 0.75);
+    padding: 22px 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--bio);
+    background: rgba(132, 204, 22, 0.07);
+  }
+  .dropzone.valid-file {
+    border-color: rgba(132, 204, 22, 0.55);
+    border-style: solid;
+    background: rgba(132, 204, 22, 0.06);
+  }
+  .dropzone.invalid-file {
+    border-color: rgba(239, 68, 68, 0.65);
+    border-style: solid;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .config-load-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(132, 204, 22, 0.3);
+    background: rgba(7, 10, 13, 0.9);
+    padding: 16px;
+    margin-top: 14px;
+    margin-bottom: 14px;
+  }
 
   /* CABECERA */
   .header-top {
@@ -670,8 +714,8 @@
     margin-bottom: 16px;
   }
   .alert-box.danger {
-    border-color: rgba(239, 68, 68, 0.5);
-    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.55);
+    background: rgba(239, 68, 68, 0.14);
     color: #fecaca;
   }
   .alert-box.success {
@@ -1068,7 +1112,7 @@
 <div id="appRoot" class="app-shell">
 
   <!-- ================================================== -->
-  <!-- MENÚ LATERAL IZQUIERDO FIJO (7 MÓDULOS - Pág. 2)   -->
+  <!-- MENÚ LATERAL IZQUIERDO FIJO (7 MÓDULOS)            -->
   <!-- ================================================== -->
   <aside class="sidebar">
     <div>
@@ -1112,8 +1156,8 @@
     </div>
 
     <div class="sidebar-footer">
-      <div>Dataset: <span class="text-white">30,000 reg.</span></div>
-      <div>Motor: <span class="text-bio">Python Puro</span></div>
+      <div>Archivo: <span id="sideFileName" class="text-white">Ninguno</span></div>
+      <div>En RAM: <span id="sideRamCount" class="text-bio">0 reg.</span></div>
     </div>
   </aside>
 
@@ -1131,7 +1175,7 @@
             <span id="conn" class="conn-pill"><span class="dot"></span>Verificando enlace...</span>
           </div>
           <h1>MONITOREO AGROCLIMÁTICO <span class="text-bio">//</span> MAÍZ Y AGUACATE</h1>
-          <p class="subtitle">Benchmarking en RAM de 30,000 registros • Sector Agroalimentario y Meteorológico</p>
+          <p class="subtitle">Ingesta dinámica de Excel (.xlsx) / CSV • Benchmarking en Memoria RAM</p>
         </div>
 
         <div class="header-actions">
@@ -1171,14 +1215,14 @@
         </div>
       </div>
 
-      <!-- HUD: MÉTRICAS DE ESTADO -->
+      <!-- HUD: MÉTRICAS DINÁMICAS DE ESTADO -->
       <div class="hud-grid">
         <div class="hud-card">
           <div class="hud-label">
             <span>BANCO DE MEMORIA RAM</span>
             <span id="ramPct" class="text-phosphor" style="font-weight:700;">0%</span>
           </div>
-          <div id="sumReg" class="hud-value">0 / 30,000</div>
+          <div id="sumReg" class="hud-value">0 / 0</div>
           <div id="ramBlocks" class="ram-blocks"></div>
         </div>
 
@@ -1222,22 +1266,22 @@
           <div class="box-dark">
             <h3 class="text-bio" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">¿QUÉ ES ESTE PROYECTO?</h3>
             <p style="font-size:14px; line-height:1.65; color:#cbd5e1; margin-bottom:10px;">
-              Este sistema implementa y visualiza de manera manual (sin librerías externas de ordenamiento ni búsqueda) los principales algoritmos de la ciencia de la computación aplicados a una base de datos real de <strong class="text-white">30,000 registros agroclimáticos</strong> de cultivos de maíz y aguacate en México.
+              Este sistema implementa y visualiza de manera manual (sin librerías externas de ordenamiento ni búsqueda) los principales algoritmos de la ciencia de la computación aplicados a conjuntos de datos reales en formato <strong class="text-white">Excel (.xlsx) o CSV</strong> de cultivos de maíz y aguacate en México.
             </p>
             <p style="font-size:14px; line-height:1.65; color:#cbd5e1;">
-              Permite inyectar los datos en memoria RAM, ejecutar disparos estocásticos de ordenamiento y búsqueda, y evaluar su eficiencia real en <strong class="text-phosphor">nanosegundos</strong>, comparaciones lógicas y movimientos de memoria.
+              Valida automáticamente la estructura del archivo subido, detecta la cantidad total de registros disponibles, permite elegir cuántos cargar a RAM y evalúa su eficiencia real en <strong class="text-phosphor">nanosegundos</strong>.
             </p>
           </div>
 
           <div class="box-dark">
             <h3 class="text-atmo" style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">¿QUÉ ENCONTRARÁS AQUÍ?</h3>
             <ul class="feature-list">
-              <li><span class="text-bio">✔</span> Carga masiva de 30,000 registros CSV (10 columnas) a RAM.</li>
+              <li><span class="text-bio">✔</span> Carga dinámica de archivos Excel (.xlsx) y CSV con validación de esquema.</li>
+              <li><span class="text-bio">✔</span> Detección automática del total de registros y selección de cantidad a cargar.</li>
               <li><span class="text-bio">✔</span> 6 Métodos de Ordenamiento: Radix, Counting, Bucket, Quick, Merge y Heap Sort.</li>
               <li><span class="text-bio">✔</span> Búsqueda Binaria (con validación de seguridad en RAM) y Búsqueda Lineal.</li>
               <li><span class="text-bio">✔</span> Reportes comparativos por los 3 campos clave y gráficas en vivo.</li>
               <li><span class="text-bio">✔</span> Evaluación del Método Alfa (Individual por Usuario vs. Global).</li>
-              <li><span class="text-bio">✔</span> Referencias bibliográficas en formato APA.</li>
             </ul>
           </div>
         </div>
@@ -1261,7 +1305,7 @@
             <div id="stepBadge1" class="step-badge">01</div>
             <div>
               <div id="stepStatus1" style="font-family:var(--font-mono); font-size:10px; color:var(--bio);">FASE ACTIVA</div>
-              <div style="font-size:14px; font-weight:600;">1. Carga a Memoria RAM</div>
+              <div style="font-size:14px; font-weight:600;">1. Archivo y Carga a RAM</div>
             </div>
           </button>
 
@@ -1283,14 +1327,14 @@
         </div>
       </div>
 
-      <!-- FASE 1 -->
+      <!-- FASE 1: SELECCIÓN DE EXCEL/CSV, VALIDACIÓN Y CANTIDAD A CARGAR -->
       <section id="secFase1" class="deck-panel deck-panel-active">
         <div class="sec-header">
           <div class="sec-title-wrap">
             <div class="sec-icon">F1</div>
             <div>
-              <h2 class="sec-title">Fase 1: Carga de Datos a Memoria RAM</h2>
-              <p class="sec-sub">Archivo: dataset_agroclimatico_30000.csv • 30,000 registros × 10 columnas</p>
+              <h2 class="sec-title">Fase 1: Carga de Datos desde Excel / CSV</h2>
+              <p class="sec-sub">Selecciona tu archivo (.xlsx o .csv), valida su estructura y define cuántos registros cargar a RAM</p>
             </div>
           </div>
 
@@ -1304,25 +1348,75 @@
                 <option value="peor">Peor Caso (Inverso)</option>
               </select>
             </div>
-            <button id="btn11" class="btn-deck btn-bio">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-              1.1 Cargar 30,000 Registros a RAM
-            </button>
           </div>
         </div>
 
-        <div id="out1" class="term-box">
-          <span class="text-muted">[SYS_IDLE] $ </span>Esperando orden de ingesta de datos en memoria principal...
+        <!-- ZONA DE SELECCIÓN DE ARCHIVO -->
+        <input type="file" id="fileInput" accept=".xlsx,.csv" class="hidden">
+        <div id="dropZone" class="dropzone">
+          <div style="font-size:28px; margin-bottom:6px;">📂</div>
+          <div style="font-size:15px; font-weight:700; color:#ffffff;">
+            Haz clic aquí para seleccionar tu archivo Excel (.xlsx) o CSV (.csv)
+          </div>
+          <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted); margin-top:4px;">
+            O arrastra y suelta el archivo directamente • Se validarán las 10 columnas agroclimáticas
+          </div>
+          <div style="margin-top:12px;">
+            <span class="btn-deck btn-atmo btn-sm">Seleccionar archivo</span>
+          </div>
         </div>
 
+        <!-- ALERTA DE ARCHIVO INVÁLIDO ("NADA QUE VER") -->
+        <div id="fileErrorBox" class="alert-box danger hidden" style="margin-top:14px; margin-bottom:0;"></div>
+
+        <!-- PANEL DE CONFIGURACIÓN TRAS DETECTAR ARCHIVO VÁLIDO -->
+        <div id="fileValidPanel" class="config-load-bar hidden">
+          <div>
+            <div style="font-family:var(--font-mono); font-size:11px; color:var(--bio); font-weight:700;">✔ ARCHIVO VALIDADO CORRECTAMENTE</div>
+            <div id="detectedFileInfo" style="font-family:var(--font-mono); font-size:13px; color:#fff; margin-top:4px;">
+              archivo.xlsx (0 KB)
+            </div>
+            <div id="detectedTotalText" style="font-family:var(--font-mono); font-size:13px; color:var(--atmo); margin-top:4px; font-weight:700;">
+              Registros detectados: 0
+            </div>
+          </div>
+
+          <div>
+            <label for="inpCantidadCargar" style="display:block; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); margin-bottom:6px;">
+              ¿Cuántos registros deseas cargar a RAM? (Máx: <span id="maxDetectadoSpan">0</span>)
+            </label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input id="inpCantidadCargar" type="number" min="1" class="inp-deck" placeholder="Ej. 15000">
+              <button id="btn11" class="btn-deck btn-bio" style="white-space:nowrap;">
+                Cargar a RAM
+              </button>
+            </div>
+            <div id="quickPresets" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+          </div>
+        </div>
+
+        <div id="out1" class="term-box" style="margin-top:14px;">
+          <span class="text-muted">[SYS_IDLE] $ </span>Selecciona un archivo Excel (.xlsx) o CSV para inspeccionar su contenido...
+        </div>
+
+        <!-- BARRA DE HERRAMIENTAS DE PREVISUALIZACIÓN (Mockup Pág. 6) -->
         <div class="table-toolbar">
           <div class="tabs-group">
-            <button class="tab-pill on" data-tab="p">Primeros 60 registros</button>
-            <button class="tab-pill" data-tab="u">Últimos 60 registros</button>
+            <button class="tab-pill on" data-tab="p">Primeros registros</button>
+            <button class="tab-pill" data-tab="u">Últimos registros</button>
           </div>
 
-          <div style="display:flex; align-items:center; gap:10px;">
-            <input id="localFilter" type="text" placeholder="Filtrar en vista actual..." class="inp-deck" style="width:230px; padding:6px 12px; font-size:12px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+            <div class="scenario-box">
+              <label class="text-muted">Mostrar:</label>
+              <select id="selPreviewCount">
+                <option value="10">10 filas</option>
+                <option value="30">30 filas</option>
+                <option value="60" selected>60 filas</option>
+                <option value="100">100 filas</option>
+              </select>
+            </div>
+            <input id="localFilter" type="text" placeholder="Filtrar en vista actual..." class="inp-deck" style="width:210px; padding:6px 12px; font-size:12px;">
             <span id="sampleCounter" style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">0 filas visibles</span>
           </div>
         </div>
@@ -1342,7 +1436,7 @@
             <div class="sec-icon atmo">F2</div>
             <div>
               <h2 class="sec-title">Fase 2: Disparador Aleatorio de Ordenación</h2>
-              <p class="sec-sub">Selección estocástica de atributo clave y algoritmo en RAM</p>
+              <p class="sec-sub">Selección estocástica de atributo clave y algoritmo sobre los registros en RAM</p>
             </div>
           </div>
 
@@ -1560,8 +1654,8 @@
             <tbody>
               <tr>
                 <td class="text-bio" style="font-weight:700;">Backend &amp; Algoritmos</td>
-                <td>Python 3 &amp; FastAPI</td>
-                <td>Implementación manual de algoritmos, API REST y medición en nanosegundos</td>
+                <td>Python 3, FastAPI &amp; OpenPyXL</td>
+                <td>Lectura de Excel/CSV, validación de esquema, algoritmos manuales y nanosegundos</td>
               </tr>
               <tr>
                 <td class="text-atmo" style="font-weight:700;">Frontend &amp; Diseño UI</td>
@@ -1580,8 +1674,8 @@
               </tr>
               <tr>
                 <td style="color:#34d399; font-weight:700;">Fuente de Datos</td>
-                <td>dataset_agroclimatico_30000.csv</td>
-                <td>30,000 registros meteorológicos y de cultivos de maíz y aguacate en México</td>
+                <td>Archivos Excel (.xlsx) / CSV</td>
+                <td>Datasets agroclimáticos dinámicos de maíz y aguacate en México</td>
               </tr>
             </tbody>
           </table>
@@ -1652,7 +1746,7 @@
   <div class="modal-card" style="border-color:rgba(239,68,68,0.5);">
     <h3 class="sec-title" style="margin-bottom:10px;">¿Purgar Memoria y Reiniciar Ciclo?</h3>
     <p style="font-size:14px; color:#cbd5e1; line-height:1.5; margin-bottom:20px;">
-      Esta acción vaciará los 30,000 registros en RAM y regresará la terminal al estado inicial de Fase 1.
+      Esta acción vaciará los registros en RAM y regresará la terminal al estado inicial de Fase 1.
     </p>
     <div style="display:flex; justify-content:flex-end; gap:10px;">
       <button id="btnCancelReset" class="btn-deck btn-ghost btn-sm">Cancelar</button>
@@ -1754,10 +1848,13 @@ const NUM = [
   "presion_atmosferica",
   "velocidad_viento"
 ];
-const TOTAL = 30000;
 const $ = id => document.getElementById(id);
 
 const st = {
+  archivoValidado: false,
+  archivoNombre: "",
+  totalDisponible: 0,
+  totalCargado: 0,
   cargado: false,
   ordenadoPor: null,
   ultimoMetodoOrd: null,
@@ -1770,9 +1867,11 @@ const st = {
   origP: [],
   origU: [],
   tab: "p",
+  previewLimit: 60,
   sorteo: null,
   filterText: "",
-  simMode: false
+  simMode: false,
+  mockDataset: []
 };
 
 const esc = str => {
@@ -1792,6 +1891,12 @@ const pick = (o, ...k) => {
 
 const fmt = n => (n === undefined || n === null || n === "" || isNaN(Number(n))) ? "0" : Number(n).toLocaleString("es-MX");
 const ms = ns => (Number(ns || 0) / 1e6).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+
+const formatBytes = bytes => {
+  if (!bytes) return "0 KB";
+  const kb = bytes / 1024;
+  return kb >= 1024 ? (kb / 1024).toFixed(2) + " MB" : kb.toFixed(1) + " KB";
+};
 
 const getClaveNum = campo => {
   if (campo === "id_estacion") return "1";
@@ -1848,46 +1953,158 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 });
 
 /* ==========================================
-   EMULADOR LOCAL SINCRONIZADO
+   SUBIDA E INSPECCIÓN DE EXCEL (.XLSX) / CSV
    ========================================== */
-function generateMockRow(idx) {
-  const estados = ["Michoacán", "Jalisco", "Sinaloa", "Veracruz"];
-  const muns = ["Uruapan", "Zapotlán", "Guasave", "Perote"];
-  const i = idx % estados.length;
-  return {
-    id_estacion: 10000 + idx,
-    temperatura_promedio: 14 + ((idx * 7) % 24),
-    fecha_registro: 20260101 + (idx % 28),
-    estado: estados[i],
-    municipio: muns[i],
-    humedad_relativa: 45 + (idx % 45),
-    precipitacion_mm: Number(((idx * 3) % 120 + 0.5).toFixed(1)),
-    tipo_cultivo_predominante: idx % 2 === 0 ? "Aguacate Hass" : "Maíz Blanco",
-    presion_atmosferica: 1008 + (idx % 20),
-    velocidad_viento: Number((5 + (idx % 28) * 1.2).toFixed(1))
-  };
+const dropZone = $("dropZone");
+const fileInput = $("fileInput");
+
+dropZone.onclick = () => fileInput.click();
+dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add("dragover"); };
+dropZone.ondragleave = () => dropZone.classList.remove("dragover");
+dropZone.ondrop = e => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    procesarArchivoSeleccionado(e.dataTransfer.files[0]);
+  }
+};
+fileInput.onchange = e => {
+  if (e.target.files && e.target.files[0]) {
+    procesarArchivoSeleccionado(e.target.files[0]);
+  }
+};
+
+function generarBotonesPresupuesto(totalDisp) {
+  const cont = $("quickPresets");
+  const opciones = [1000, 5000, 10000, 15000, 20000].filter(n => n < totalDisp);
+  let html = opciones.map(n =>
+    `<button type="button" class="btn-deck btn-ghost btn-xs" onclick="setCantidadInput(${n})">${fmt(n)}</button>`
+  ).join("");
+  html += `<button type="button" class="btn-deck btn-atmo btn-xs" onclick="setCantidadInput(${totalDisp})">Todos (${fmt(totalDisp)})</button>`;
+  cont.innerHTML = html;
 }
 
+window.setCantidadInput = val => {
+  $("inpCantidadCargar").value = val;
+};
+
+async function procesarArchivoSeleccionado(file) {
+  $("fileErrorBox").classList.add("hidden");
+  $("fileValidPanel").classList.add("hidden");
+  dropZone.classList.remove("valid-file", "invalid-file");
+  $("out1").textContent = `[INSPECT] Analizando archivo '${file.name}' (${formatBytes(file.size)})...`;
+
+  try {
+    let info;
+    if (st.simMode) {
+      info = await inspeccionarEnEmulador(file);
+    } else {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch(API_BASE_URL + "/api/fase1/inspeccionar", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Archivo no compatible con el sistema.");
+      info = data;
+    }
+
+    // Archivo válido
+    st.archivoValidado = true;
+    st.archivoNombre = info.archivo;
+    st.totalDisponible = info.total_disponible;
+
+    dropZone.classList.add("valid-file");
+    $("detectedFileInfo").textContent = `${info.archivo} (${formatBytes(info.tamano_bytes)})`;
+    $("detectedTotalText").textContent = `✔ Registros detectados en el archivo: ${fmt(info.total_disponible)}`;
+    $("maxDetectadoSpan").textContent = fmt(info.total_disponible);
+
+    const inp = $("inpCantidadCargar");
+    inp.max = info.total_disponible;
+    inp.value = info.total_disponible;
+    generarBotonesPresupuesto(info.total_disponible);
+
+    $("fileValidPanel").classList.remove("hidden");
+    $("out1").textContent = `[OK_SCHEMA] Archivo '${info.archivo}' validado (${fmt(info.total_disponible)} registros detectados). Elige cuántos registros deseas cargar a la memoria RAM y presiona [Cargar a RAM].`;
+    notify(`Archivo válido: ${fmt(info.total_disponible)} registros detectados.`, "success");
+    refresh();
+  } catch (err) {
+    st.archivoValidado = false;
+    st.totalDisponible = 0;
+    dropZone.classList.add("invalid-file");
+    $("fileErrorBox").innerHTML = `<strong>❌ ARCHIVO RECHAZADO:</strong> ${esc(err.message)}`;
+    $("fileErrorBox").classList.remove("hidden");
+    $("out1").textContent = `[ERROR_SCHEMA] El archivo '${file.name}' no cumple con la estructura requerida.`;
+    notify("El archivo seleccionado no corresponde al proyecto.", "error");
+    refresh();
+  }
+}
+
+async function inspeccionarEnEmulador(file) {
+  const lower = file.name.toLowerCase();
+  if (!lower.endsWith(".csv") && !lower.endsWith(".xlsx")) {
+    throw new Error(`Formato no soportado ('${file.name}'). Solo se permiten archivos .xlsx o .csv.`);
+  }
+  if (lower.endsWith(".csv")) {
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+    if (lines.length < 2) throw new Error("El archivo CSV está vacío.");
+    const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
+    const faltantes = CAMPOS.filter(c => !headers.includes(c));
+    if (faltantes.length) {
+      throw new Error(`El archivo '${file.name}' no corresponde al proyecto. Faltan columnas: ${faltantes.join(", ")}.`);
+    }
+    const idxMap = Object.fromEntries(CAMPOS.map(c => [c, headers.indexOf(c)]));
+    const parsed = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(",");
+      if (cols.length < headers.length) continue;
+      parsed.push({
+        id_estacion: Number(cols[idxMap.id_estacion]),
+        temperatura_promedio: Math.round(Number(cols[idxMap.temperatura_promedio])),
+        fecha_registro: Number(cols[idxMap.fecha_registro]),
+        estado: cols[idxMap.estado].trim(),
+        municipio: cols[idxMap.municipio].trim(),
+        humedad_relativa: Number(cols[idxMap.humedad_relativa]),
+        precipitacion_mm: Number(cols[idxMap.precipitacion_mm]),
+        tipo_cultivo_predominante: cols[idxMap.tipo_cultivo_predominante].trim(),
+        presion_atmosferica: Number(cols[idxMap.presion_atmosferica]),
+        velocidad_viento: Number(cols[idxMap.velocidad_viento])
+      });
+    }
+    st.mockDataset = parsed;
+    return { archivo: file.name, tamano_bytes: file.size, total_disponible: parsed.length };
+  }
+  // Si suben .xlsx en modo emulador sin backend, avisar que desactiven emulador
+  throw new Error("Para leer archivos Excel (.xlsx) reales desactiva el 'Modo Emulador' en la parte superior para usar el servidor FastAPI.");
+}
+
+/* ==========================================
+   EMULADOR Y CLIENTE API
+   ========================================== */
 async function mockApi(path, method, body) {
-  await new Promise(r => setTimeout(r, 250));
+  await new Promise(r => setTimeout(r, 200));
   if (path === "/api/auth/registro") return { status: "success" };
   if (path === "/api/auth/login") {
     const sinClave = !body.password;
     return {
       status: "success",
-      usuario: {
-        username: body.username.toLowerCase(),
-        nombre: body.username,
-        rol: sinClave ? "Invitado (Sin clave)" : "Investigador Agroclimático",
-        invitado: sinClave
-      },
+      usuario: { username: body.username.toLowerCase(), nombre: body.username, rol: sinClave ? "Invitado (Sin clave)" : "Investigador", invitado: sinClave },
       token: "mock-token"
     };
   }
   if (path === "/api/fase1/cargar") {
-    const p = Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1));
-    const u = Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i));
-    return { tiempo_ns: 4829100, estructura: "ArrayList", muestra_primeros_60: p, muestra_ultimos_60: u };
+    const lim = body?.limite || st.mockDataset.length;
+    const sub = st.mockDataset.slice(0, lim);
+    const n = Math.min(100, sub.length);
+    return {
+      tiempo_ns: 3450200,
+      total_registros: sub.length,
+      total_disponible: st.mockDataset.length,
+      muestra_primeros: sub.slice(0, n),
+      muestra_ultimos: sub.slice(-n)
+    };
   }
   if (path === "/api/fase2/disparador-ordenamiento") {
     const mapa = {
@@ -1898,31 +2115,31 @@ async function mockApi(path, method, body) {
     const camposClave = Object.keys(mapa);
     const c = body?.forzar_campo || camposClave[Math.floor(Math.random() * camposClave.length)];
     const m = mapa[c][Math.floor(Math.random() * mapa[c].length)];
-    const sortedP = [...(st.origP.length ? st.origP : Array.from({ length: 60 }, (_, i) => generateMockRow(i + 1)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
-    const sortedU = [...(st.origU.length ? st.origU : Array.from({ length: 60 }, (_, i) => generateMockRow(TOTAL - 59 + i)))].sort((a, b) => (a[c] > b[c] ? 1 : -1));
+    const sortedP = [...st.p].sort((a, b) => (a[c] > b[c] ? 1 : -1));
+    const sortedU = [...st.u].sort((a, b) => (a[c] > b[c] ? 1 : -1));
     return {
       campo_seleccionado: c,
       clave: getClaveNum(c),
       metodo_asignado: m,
-      tiempo_ns: Math.floor(12000000 + Math.random() * 25000000),
-      comparaciones: Math.floor(185000 + Math.random() * 90000),
-      movimientos: Math.floor(95000 + Math.random() * 60000),
-      muestra_primeros_60: sortedP,
-      muestra_ultimos_60: sortedU
+      total_registros: st.totalCargado,
+      tiempo_ns: Math.floor(8000000 + Math.random() * 15000000),
+      comparaciones: Math.floor(st.totalCargado * 12),
+      movimientos: Math.floor(st.totalCargado * 6),
+      muestra_primeros: sortedP,
+      muestra_ultimos: sortedU
     };
   }
   if (path === "/api/fase3/disparador-busqueda") {
     const met = Math.random() > 0.5 ? "Búsqueda Binaria" : "Búsqueda Lineal";
-    const campo = st.ordenadoPor || "id_estacion";
-    return { metodo_seleccionado: met, campo_requerido: campo };
+    return { metodo_seleccionado: met, campo_requerido: st.ordenadoPor || "id_estacion" };
   }
   if (path === "/api/fase3/ejecutar-busqueda") {
     const pool = [...st.p, ...st.u];
     const found = pool.find(r => String(r[body.campo]).toLowerCase() === String(body.valor).toLowerCase());
     return {
       encontrado: !!found,
-      tiempo_ns: /binari/i.test(body.metodo) ? 14200 : 894300,
-      comparaciones: /binari/i.test(body.metodo) ? 14 : 4320,
+      tiempo_ns: /binari/i.test(body.metodo) ? 12400 : 654000,
+      comparaciones: /binari/i.test(body.metodo) ? 14 : 2100,
       indice_ram: found ? 1 : -1,
       registro: found || null
     };
@@ -1932,32 +2149,19 @@ async function mockApi(path, method, body) {
     const entries = Object.entries(st.cont);
     const total = entries.reduce((a, b) => a + b[1], 0);
     const lider = entries.length ? [...entries].sort((a, b) => b[1] - a[1])[0] : null;
-    const obj = {
-      nombre: lider ? lider[0] : null,
-      veces_ejecutado: lider ? lider[1] : 0,
-      porcentaje: lider && total ? Math.round((lider[1] * 100) / total) : 0,
-      total_ejecuciones: total,
-      desglose: { ...st.cont }
-    };
+    const obj = { nombre: lider ? lider[0] : null, veces_ejecutado: lider ? lider[1] : 0, porcentaje: lider && total ? Math.round((lider[1] * 100) / total) : 0, total_ejecuciones: total, desglose: { ...st.cont } };
     return { usuario: obj, general: obj };
   }
   if (path === "/api/reportes/comparativa") {
     return {
       comparativa_campos_clave: ["id_estacion", "temperatura_promedio", "fecha_registro"].map(c => {
         const hit = [...st.hist].reverse().find(h => h.fase === "Ordenación" && h.campo === c);
-        return {
-          campo: c,
-          tipo_dato: "Entero",
-          metodo: hit ? hit.metodo : "Sin ejecutar aún",
-          tiempo_ns: hit ? hit.ns : null,
-          comparaciones: hit ? hit.c : null,
-          movimientos: hit ? hit.m : null
-        };
+        return { campo: c, tipo_dato: "Entero", metodo: hit ? hit.metodo : "Sin ejecutar aún", tiempo_ns: hit ? hit.ns : null, comparaciones: hit ? hit.c : null, movimientos: hit ? hit.m : null };
       })
     };
   }
   if (path === "/api/benchmarking/configurar-caso") {
-    return { mensaje: `Escenario [${body.tipo.toUpperCase()}] aplicado en emulador.`, muestra_primeros_60: st.p, muestra_ultimos_60: st.u };
+    return { mensaje: `Escenario [${body.tipo.toUpperCase()}] aplicado.`, muestra_primeros: st.p, muestra_ultimos: st.u };
   }
 }
 
@@ -1971,10 +2175,7 @@ async function api(path, method = "GET", body) {
   });
   if (!r.ok) {
     let detalle = "";
-    try {
-      const j = await r.json();
-      if (typeof j.detail === "string") detalle = j.detail;
-    } catch (_) {}
+    try { const j = await r.json(); if (typeof j.detail === "string") detalle = j.detail; } catch (_) {}
     const err = new Error(detalle || ("HTTP " + r.status));
     err.status = r.status;
     throw err;
@@ -1997,16 +2198,19 @@ async function run(btn, label, fn) {
 }
 
 /* ==========================================
-   MONITOR DE CONEXIÓN Y RAM
+   MONITOR DE CONEXIÓN Y BLOQUES RAM
    ========================================== */
 function renderRamBlocks() {
   const container = $("ramBlocks");
+  const ratio = st.totalDisponible > 0 ? (st.totalCargado / st.totalDisponible) : 0;
+  const bloquesEncendidos = st.cargado ? Math.max(1, Math.round(ratio * 30)) : 0;
+
   let html = "";
   for (let i = 0; i < 30; i++) {
-    html += `<div class="ram-block ${st.cargado ? "on" : ""}"></div>`;
+    html += `<div class="ram-block ${i < bloquesEncendidos ? "on" : ""}"></div>`;
   }
   container.innerHTML = html;
-  $("ramPct").textContent = st.cargado ? "100%" : "0%";
+  $("ramPct").textContent = st.cargado ? Math.round(ratio * 100) + "%" : "0%";
 }
 
 async function ping() {
@@ -2029,7 +2233,7 @@ $("btnSimMode").onclick = () => {
   $("simLabel").textContent = st.simMode ? "Emulador: ON" : "Emulador: OFF";
   ping();
   actualizarAuthConn();
-  notify(st.simMode ? "Modo Emulador activado." : "Modo Emulador desactivado.", "info");
+  notify(st.simMode ? "Modo Emulador activado (soporta .csv local)." : "Modo Emulador desactivado (servidor FastAPI).", "info");
 };
 
 /* ==========================================
@@ -2080,7 +2284,7 @@ document.querySelectorAll(".step-btn").forEach(btn => {
   btn.onclick = () => {
     const target = Number(btn.dataset.goto);
     if (target > 1 && !st.cargado) {
-      notify("Primero debes cargar los 30,000 registros en la Fase 1.", "warning");
+      notify("Primero selecciona un archivo y carga los datos a RAM en Fase 1.", "warning");
       return;
     }
     focusPhase(target);
@@ -2088,10 +2292,13 @@ document.querySelectorAll(".step-btn").forEach(btn => {
 });
 
 /* ==========================================
-   REFRESCO GENERAL DE INTERFAZ
+   REFRESCO GENERAL DE INTERFAZ Y TABLA
    ========================================== */
 function refresh() {
-  $("sumReg").textContent = (st.cargado ? fmt(TOTAL) : "0") + " / 30,000";
+  $("sumReg").textContent = `${fmt(st.totalCargado)} / ${fmt(st.totalDisponible)}`;
+  $("sideFileName").textContent = st.archivoNombre || "Ninguno";
+  $("sideRamCount").textContent = `${fmt(st.totalCargado)} reg.`;
+
   $("sumOrd").textContent = st.ordenadoPor ? "Ordenado por " + st.ordenadoPor : "No ordenado";
   $("sumOrdSub").textContent = st.ordenadoPor ? `Algoritmo: ${st.ultimoMetodoOrd || "Estocástico"}` : "Secuencia original";
   $("ordTag").textContent = st.ordenadoPor ? "SORTED_RAM" : "RAW_STATE";
@@ -2154,17 +2361,21 @@ function renderAlfa() {
 
 function renderMuestra() {
   $("thM").innerHTML = '<tr><th class="text-bio">#</th>' + CAMPOS.map(c => `<th>${esc(c)}</th>`).join("") + "</tr>";
-  const rawRows = st[st.tab] || [];
-  const ini = st.tab === "p" ? 1 : TOTAL - rawRows.length + 1;
+  const fullPool = st[st.tab] || [];
+  const sliceRows = st.tab === "p"
+    ? fullPool.slice(0, st.previewLimit)
+    : fullPool.slice(-st.previewLimit);
+
+  const ini = st.tab === "p" ? 1 : Math.max(1, st.totalCargado - sliceRows.length + 1);
   const q = st.filterText.trim().toLowerCase();
 
-  const indexedRows = rawRows.map((r, i) => ({ row: r, idx: ini + i }));
+  const indexedRows = sliceRows.map((r, i) => ({ row: r, idx: ini + i }));
   const filtered = q ? indexedRows.filter(item => CAMPOS.some(c => String(item.row[c] ?? "").toLowerCase().includes(q))) : indexedRows;
 
   $("sampleCounter").textContent = `${filtered.length} filas visibles`;
 
-  if (!rawRows.length) {
-    $("tbM").innerHTML = '<tr><td colspan="11" style="text-align:center; padding:28px; color:var(--text-muted);">Memoria RAM vacía. Ejecuta [1.1 Cargar 30,000 Registros a RAM].</td></tr>';
+  if (!sliceRows.length) {
+    $("tbM").innerHTML = '<tr><td colspan="11" style="text-align:center; padding:28px; color:var(--text-muted);">Memoria RAM vacía. Sube un archivo Excel (.xlsx) o CSV y presiona [Cargar a RAM].</td></tr>';
     return;
   }
 
@@ -2182,10 +2393,10 @@ function renderMuestra() {
 }
 
 function setMuestra(res, saveAsOriginal = false) {
-  const p = pick(res, "muestra_primeros_60", "primeros_60", "muestra_primeros_30", "primeros_30");
-  const u = pick(res, "muestra_ultimos_60", "ultimos_60", "muestra_ultimos_30", "ultimos_30");
-  if (Array.isArray(p) && p.length) { st.p = p; if (saveAsOriginal) st.origP = JSON.parse(JSON.stringify(p)); }
-  if (Array.isArray(u) && u.length) { st.u = u; if (saveAsOriginal) st.origU = JSON.parse(JSON.stringify(u)); }
+  const p = pick(res, "muestra_primeros", "muestra_primeros_60", "primeros_60");
+  const u = pick(res, "muestra_ultimos", "muestra_ultimos_60", "ultimos_60");
+  if (Array.isArray(p)) { st.p = p; if (saveAsOriginal) st.origP = JSON.parse(JSON.stringify(p)); }
+  if (Array.isArray(u)) { st.u = u; if (saveAsOriginal) st.origU = JSON.parse(JSON.stringify(u)); }
 }
 
 document.querySelectorAll(".tab-pill").forEach(b => {
@@ -2196,6 +2407,11 @@ document.querySelectorAll(".tab-pill").forEach(b => {
   };
 });
 
+$("selPreviewCount").onchange = e => {
+  st.previewLimit = Number(e.target.value) || 60;
+  renderMuestra();
+};
+
 $("localFilter").oninput = e => { st.filterText = e.target.value; renderMuestra(); };
 
 function log(fase, metodo, campo, ns, c, m) {
@@ -2203,24 +2419,34 @@ function log(fase, metodo, campo, ns, c, m) {
 }
 
 /* ==========================================
-   FASE 1, 2 Y 3
+   FASE 1: CARGA CONFIGURABLE A RAM
    ========================================== */
-$("btn11").onclick = () => run($("btn11"), "Ingestando en RAM", async () => {
-  const r = await api("/api/fase1/cargar", "POST");
+$("btn11").onclick = () => run($("btn11"), "Cargando en RAM", async () => {
+  if (!st.archivoValidado) {
+    throw new Error("Primero selecciona un archivo Excel (.xlsx) o CSV válido.");
+  }
+  const limite = Number($("inpCantidadCargar").value);
+  if (!limite || limite < 1 || limite > st.totalDisponible) {
+    throw new Error(`Elige una cantidad válida entre 1 y ${fmt(st.totalDisponible)} registros.`);
+  }
+
+  const r = await api("/api/fase1/cargar", "POST", { limite });
   const ns = pick(r, "tiempo_ns", "nanosegundos") ?? 0;
+  st.totalCargado = pick(r, "total_registros") ?? limite;
   st.cargado = true;
   st.ordenadoPor = null;
   st.ultimoMetodoOrd = null;
   setMuestra(r, true);
 
-  $("out1").textContent = `[OK_RAM_ALLOC] Se realizó la carga de los 30,000 registros con sus 10 columnas a la estructura [ArrayList] y le tomó [${fmt(ns)}] nanosegundos (${ms(ns)} ms) completar la acción.`;
-  log("Carga", "ArrayList", "-", ns, "-", "-");
-  notify("30,000 registros cargados en memoria RAM.", "success");
+  $("out1").textContent = `[OK_RAM_ALLOC] Se cargaron ${fmt(st.totalCargado)} de ${fmt(st.totalDisponible)} registros del archivo '${st.archivoNombre}' a [ArrayList] en [${fmt(ns)}] nanosegundos (${ms(ns)} ms).`;
+  log("Carga", `ArrayList (${fmt(st.totalCargado)} reg.)`, "-", ns, "-", "-");
+  notify(`${fmt(st.totalCargado)} registros cargados en memoria RAM.`, "success");
   focusPhase(2, false);
 });
 
 function vaciarMemoriaRam() {
   st.cargado = false;
+  st.totalCargado = 0;
   st.ordenadoPor = null;
   st.ultimoMetodoOrd = null;
   st.p = []; st.u = []; st.origP = []; st.origU = [];
@@ -2237,6 +2463,9 @@ function vaciarMemoriaRam() {
 }
 $("btnResetRam").onclick = vaciarMemoriaRam;
 
+/* ==========================================
+   FASE 2 Y FASE 3
+   ========================================== */
 async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
   const user = getSesion();
   const payload = {
@@ -2268,7 +2497,7 @@ async function ejecutarDisparadorOrdenamiento(campoSugerido = null) {
   `;
 
   $("out2").classList.remove("hidden");
-  $("out2").textContent = `Se ordenaron 30,000 registros por el campo [${campo}] usando el método [${met}] en [${fmt(ns)}] nanosegundos. Comparaciones: [${fmt(c)}], Movimientos: [${fmt(m)}]`;
+  $("out2").textContent = `Se ordenaron ${fmt(st.totalCargado)} registros por el campo [${campo}] usando el método [${met}] en [${fmt(ns)}] nanosegundos. Comparaciones: [${fmt(c)}], Movimientos: [${fmt(m)}]`;
 
   const cardMetric = (t, v, s, col) => `
     <div class="metric-card">
@@ -2337,7 +2566,7 @@ function renderPanelFase3() {
       <div class="grid-3">
         <div style="grid-column: span 2;">
           <label style="display:block; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); margin-bottom:6px;">Valor a localizar en [${esc(campo)}]:</label>
-          <input id="valor" class="inp-deck" type="number" placeholder="Ej. 10005" ${listo ? "" : "disabled"}>
+          <input id="valor" class="inp-deck" type="number" placeholder="Escribe el valor..." ${listo ? "" : "disabled"}>
         </div>
         <div style="display:flex; align-items:flex-end;">
           <button id="btnBus" class="btn-deck btn-bio w-full" ${!listo ? "disabled" : ""}>Ejecutar Búsqueda Binaria</button>
@@ -2417,7 +2646,7 @@ async function ejecutarBusqueda() {
   log("Búsqueda", s.met, campo, ns, c, "-");
 
   if (!ok || !reg) {
-    $("res3").innerHTML = `<div class="alert-box danger" style="margin-bottom:0;">Registro no encontrado con <strong>${esc(campo)} = ${esc(valor)}</strong> (${fmt(c)} comparaciones en ${fmt(ns)} ns).</div>`;
+    $("res3").innerHTML = `<div class="alert-box danger" style="margin-bottom:0;">Registro no encontrado en los ${fmt(st.totalCargado)} datos cargados con <strong>${esc(campo)} = ${esc(valor)}</strong> (${fmt(c)} comparaciones en ${fmt(ns)} ns).</div>`;
     $("res3").classList.remove("hidden");
     return;
   }
@@ -2700,15 +2929,15 @@ $("menuItemPerfil").onclick = () => {
 
 $("menuItemConfig").onclick = () => {
   openInfoModal("⚙️ Configuración del Sistema", `
-    <p><strong class="text-white">Dataset Activo:</strong> dataset_agroclimatico_30000.csv (30,000 filas)</p>
-    <p><strong class="text-white">Muestra Tabular:</strong> Primeros 60 y Últimos 60 registros</p>
+    <p><strong class="text-white">Archivo Cargado:</strong> ${esc(st.archivoNombre || "Ninguno")}</p>
+    <p><strong class="text-white">Registros en RAM:</strong> ${fmt(st.totalCargado)} de ${fmt(st.totalDisponible)}</p>
     <p><strong class="text-white">Modo Emulador:</strong> ${st.simMode ? "Activado (Local)" : "Desactivado (Backend FastAPI)"}</p>
   `);
 };
 
 $("menuItemAyuda").onclick = () => {
   openInfoModal("❓ Guía Rápida de Uso", `
-    <p><strong class="text-bio">1. Carga de Datos:</strong> Presiona "Cargar 30,000 Registros a RAM" para inicializar el arreglo.</p>
+    <p><strong class="text-bio">1. Carga de Datos:</strong> Selecciona un archivo Excel (.xlsx) o CSV válido, indica cuántos registros deseas cargar y presiona "Cargar a RAM".</p>
     <p><strong class="text-atmo">2. Ordenación:</strong> Ejecuta el disparador aleatorio para probar algoritmos sobre uno de los 3 campos clave.</p>
     <p><strong class="text-phosphor">3. Búsqueda:</strong> Realiza búsquedas binarias (requiere arreglo ordenado por ese campo) o lineales.</p>
   `);
