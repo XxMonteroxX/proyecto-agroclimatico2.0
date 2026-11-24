@@ -1,13 +1,14 @@
 """
 PROYECTO 1: Sistema de Monitoreo Agroclimático de Cultivos de Maíz y Aguacate
-Backend FastAPI con servicio de Frontend integrado para despliegue web.
+Backend FastAPI con carga dinámica de Excel/CSV, validación de esquema y selección
+de cantidad de registros a cargar en memoria RAM.
 """
 import os
 import random
 import sys
 from typing import Any, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -18,16 +19,16 @@ from storage import ALGORITMOS_POR_CAMPO, CAMPOS, CAMPOS_CLAVE, estado
 import auth
 from auth import RegistroRequest, LoginRequest
 
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(15000)
 
 app = FastAPI(
     title="Sistema de Monitoreo Agroclimático - Maíz y Aguacate",
     description=(
-        "API académica que procesa en RAM 30,000 registros agroclimáticos, "
-        "implementando manualmente Radix Sort, Counting Sort, Bucket Sort, "
-        "Quick Sort, Merge Sort, Heap Sort, Búsqueda Binaria y Búsqueda Lineal."
+        "API académica que recibe archivos Excel (.xlsx) o CSV, valida su estructura "
+        "de 10 columnas, permite elegir cuántos registros cargar en RAM y ejecuta "
+        "algoritmos manuales de ordenamiento y búsqueda."
     ),
-    version="2.0.0",
+    version="3.0.0",
 )
 
 app.add_middleware(
@@ -37,6 +38,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+class CargarPayload(BaseModel):
+    limite: Optional[int] = None
 
 
 class OrdenamientoPayload(BaseModel):
@@ -55,6 +60,17 @@ class CasoPruebaPayload(BaseModel):
     campo: str = "id_estacion"
 
 
+def _obtener_muestras(registros: list, ventana: int = 100):
+    """Devuelve hasta `ventana` primeros y últimos registros sin duplicar si hay pocos."""
+    total = len(registros)
+    if total == 0:
+        return [], []
+    n = min(ventana, total)
+    primeros = registros[:n]
+    ultimos = registros[-n:]
+    return primeros, ultimos
+
+
 # ---------------------------------------------------------------------------
 # AUTENTICACIÓN Y CONTROL DE ACCESO (CON O SIN CLAVE)
 # ---------------------------------------------------------------------------
@@ -70,41 +86,49 @@ def api_login(payload: LoginRequest):
 
 
 # ---------------------------------------------------------------------------
-# FASE 1: CARGA A MEMORIA RAM
+# FASE 1: INSPECCIÓN DE EXCEL/CSV Y CARGA CONFIGURABLE A RAM
 # ---------------------------------------------------------------------------
 
+@app.post("/api/fase1/inspeccionar")
+async def inspeccionar_archivo(file: UploadFile = File(...)):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No se recibió ningún archivo.")
+
+    contenido = await file.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El archivo seleccionado está vacío (0 bytes).")
+
+    try:
+        info = storage.inspeccionar_archivo(file.filename, contenido)
+        return info
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.post("/api/fase1/cargar")
-def cargar():
-    if not storage.DATASET_PATH.exists():
-        raise HTTPException(
-            status_code=404,
-            detail=(
-                f"No se encontró el archivo '{storage.DATASET_PATH.name}' junto "
-                f"a main.py. Coloque el dataset de 30,000 registros en esa ruta."
-            ),
-        )
+def cargar(payload: Optional[CargarPayload] = None):
+    limite = payload.limite if payload else None
 
-    tiempo_ns, total = storage.cargar_csv()
+    try:
+        tiempo_ns, total_cargado, total_disponible = storage.cargar_en_ram(limite)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-    primeros_60 = estado.registros[:60]
-    ultimos_60 = estado.registros[-60:]
+    primeros, ultimos = _obtener_muestras(estado.registros, ventana=100)
 
     return {
         "mensaje": (
-            f"Se realizó la carga de los {total} registros con sus 10 columnas a la "
-            f"estructura [ArrayList/Lista de Objetos] y le tomó [{tiempo_ns}] "
-            f"nanosegundos completar la acción."
+            f"Se realizó la carga de {total_cargado:,} de {total_disponible:,} registros "
+            f"del archivo '{estado.archivo_nombre}' a [ArrayList] en [{tiempo_ns}] nanosegundos."
         ),
         "tiempo_ns": tiempo_ns,
-        "total_registros": total,
-        "muestra_primeros_60": primeros_60,
-        "muestra_ultimos_60": ultimos_60,
-        "primeros_60": primeros_60,
-        "ultimos_60": ultimos_60,
-        "muestra_primeros_30": primeros_60,
-        "muestra_ultimos_30": ultimos_60,
-        "primeros_30": primeros_60,
-        "ultimos_30": ultimos_60,
+        "total_registros": total_cargado,
+        "total_disponible": total_disponible,
+        "archivo_nombre": estado.archivo_nombre,
+        "muestra_primeros": primeros,
+        "muestra_ultimos": ultimos,
+        "muestra_primeros_60": primeros[:60],
+        "muestra_ultimos_60": ultimos[-60:],
     }
 
 
@@ -117,7 +141,7 @@ def disparador_ordenamiento(payload: Optional[OrdenamientoPayload] = None):
     if not estado.cargado:
         raise HTTPException(
             status_code=400,
-            detail="Los datos no han sido cargados en RAM. Ejecute antes /api/fase1/cargar.",
+            detail="Los datos no han sido cargados en RAM. Sube un archivo y ejecuta la carga en Fase 1.",
         )
 
     username = payload.username if payload else None
@@ -136,8 +160,8 @@ def disparador_ordenamiento(payload: Optional[OrdenamientoPayload] = None):
     alfa_nombre, alfa_conteo = storage.metodo_alfa()
     stats_alfa = auth.obtener_estadisticas_alfa(username)
 
-    primeros_60 = estado.registros[:60]
-    ultimos_60 = estado.registros[-60:]
+    total_cargado = len(estado.registros)
+    primeros, ultimos = _obtener_muestras(estado.registros, ventana=100)
 
     return {
         "campo_seleccionado": {"clave": clave, "nombre": campo},
@@ -145,13 +169,13 @@ def disparador_ordenamiento(payload: Optional[OrdenamientoPayload] = None):
         "clave": clave,
         "metodo_asignado": metodo,
         "metodo": metodo,
+        "total_registros": total_cargado,
         "tiempo_ns": tiempo_ns,
         "comparaciones": comparaciones,
         "movimientos": movimientos,
         "mensaje_benchmarking": (
-            f"Ordenamiento '{metodo}' sobre el campo '{campo}' completado en "
-            f"{tiempo_ns} ns, con {comparaciones} comparaciones y {movimientos} "
-            f"movimientos/asignaciones de memoria."
+            f"Ordenamiento '{metodo}' sobre {total_cargado:,} registros por el campo '{campo}' "
+            f"completado en {tiempo_ns} ns, con {comparaciones} comparaciones y {movimientos} movimientos."
         ),
         "metodo_alfa": {
             "nombre": alfa_nombre,
@@ -160,14 +184,10 @@ def disparador_ordenamiento(payload: Optional[OrdenamientoPayload] = None):
             "usuario": stats_alfa["usuario"],
             "general": stats_alfa["general"],
         },
-        "muestra_primeros_60": primeros_60,
-        "muestra_ultimos_60": ultimos_60,
-        "primeros_60": primeros_60,
-        "ultimos_60": ultimos_60,
-        "muestra_primeros_30": primeros_60,
-        "muestra_ultimos_30": ultimos_60,
-        "primeros_30": primeros_60,
-        "ultimos_30": ultimos_60,
+        "muestra_primeros": primeros,
+        "muestra_ultimos": ultimos,
+        "muestra_primeros_60": primeros[:60],
+        "muestra_ultimos_60": ultimos[-60:],
     }
 
 
@@ -180,7 +200,7 @@ def disparador_busqueda():
     if not estado.cargado:
         raise HTTPException(
             status_code=400,
-            detail="Los datos no han sido cargados en RAM. Ejecute antes /api/fase1/cargar.",
+            detail="Los datos no han sido cargados en RAM. Ejecute antes la carga en Fase 1.",
         )
 
     metodo = random.choice(["Búsqueda Binaria", "Búsqueda Lineal"])
@@ -220,7 +240,7 @@ def ejecutar_busqueda(payload: BusquedaPayload):
     if payload.metodo not in ("Búsqueda Binaria", "Búsqueda Lineal", "Búsqueda Secuencial"):
         raise HTTPException(
             status_code=422,
-            detail="Método inválido. Use 'Búsqueda Binaria' o 'Búsqueda Lineal / Secuencial'.",
+            detail="Método inválido. Use 'Búsqueda Binaria' o 'Búsqueda Lineal'.",
         )
 
     try:
@@ -235,14 +255,15 @@ def ejecutar_busqueda(payload: BusquedaPayload):
         "indice_ram": idx,
         "indice": idx,
         "registro": registro,
+        "total_registros": len(estado.registros),
         "tiempo_ns": tiempo_ns,
         "comparaciones": comparaciones,
         "benchmarking": {
             "tiempo_ns": tiempo_ns,
             "comparaciones": comparaciones,
             "mensaje": (
-                f"Búsqueda '{payload.metodo}' sobre el campo '{payload.campo}' "
-                f"completada en {tiempo_ns} ns con {comparaciones} comparaciones."
+                f"Búsqueda '{payload.metodo}' sobre {len(estado.registros):,} registros en el campo "
+                f"'{payload.campo}' completada en {tiempo_ns} ns con {comparaciones} comparaciones."
             ),
         },
     }
@@ -267,6 +288,7 @@ def reporte_comparativo():
     return {
         "comparativa_campos_clave": storage.obtener_reporte_comparativo(),
         "total_registros": len(estado.registros),
+        "total_disponible": len(estado.registros_disponibles),
         "cargado": estado.cargado,
     }
 
@@ -275,12 +297,14 @@ def reporte_comparativo():
 def configurar_caso(payload: CasoPruebaPayload):
     try:
         mensaje = storage.configurar_caso_prueba(payload.tipo, payload.campo)
+        primeros, ultimos = _obtener_muestras(estado.registros, ventana=100)
         return {
             "mensaje": mensaje,
-            "muestra_primeros_60": storage.estado.registros[:60],
-            "muestra_ultimos_60": storage.estado.registros[-60:],
-            "muestra_primeros_30": storage.estado.registros[:60],
-            "muestra_ultimos_30": storage.estado.registros[-60:],
+            "total_registros": len(estado.registros),
+            "muestra_primeros": primeros,
+            "muestra_ultimos": ultimos,
+            "muestra_primeros_60": primeros[:60],
+            "muestra_ultimos_60": ultimos[-60:],
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -292,6 +316,8 @@ def obtener_estado(username: Optional[str] = None):
     stats_alfa = auth.obtener_estadisticas_alfa(username)
     return {
         "datos_cargados": estado.cargado,
+        "archivo_nombre": estado.archivo_nombre,
+        "total_disponible": len(estado.registros_disponibles),
         "total_registros": len(estado.registros),
         "campo_actualmente_ordenado": estado.campo_actualmente_ordenado,
         "ultimo_metodo_usado": estado.ultimo_metodo,
@@ -317,5 +343,4 @@ def raiz():
     return {
         "proyecto": "Sistema de Monitoreo Agroclimático - Maíz y Aguacate",
         "documentacion": "/docs",
-        "aviso": "Coloque index.html dentro de la carpeta static/ para ver la interfaz.",
     }
