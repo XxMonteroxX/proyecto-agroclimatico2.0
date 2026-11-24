@@ -1,12 +1,16 @@
 """
-Capa de negocio: mantiene el estado en RAM (lista de diccionarios cargada desde
-el CSV), orquesta los algoritmos de algorithms.py, escribe las bitácoras con el
-formato exacto exigido, calcula el "Método Alfa" y guarda métricas comparativas.
+Capa de negocio: recibe archivos Excel (.xlsx) o CSV subidos por el usuario,
+valida que cumplan exactamente con la estructura agroclimática de 10 columnas,
+detecta el total real de registros, carga en RAM la cantidad elegida por el
+usuario y orquesta los algoritmos de ordenamiento y búsqueda.
 """
 import csv
+import io
 import time
 from pathlib import Path
 from typing import Optional
+
+from openpyxl import load_workbook
 
 import auth
 from algorithms import (
@@ -22,7 +26,6 @@ from algorithms import (
 
 BASE_DIR = Path(__file__).parent
 
-DATASET_PATH = BASE_DIR / "dataset_agroclimatico_30000.csv"
 BITACORA_ORDEN_PATH = BASE_DIR / "bitacora_ordenacion.txt"
 BITACORA_BUSQUEDA_PATH = BASE_DIR / "bitacora_busqueda.txt"
 BACKUP_PATH = BASE_DIR / "registros_ordenados_backup.csv"
@@ -40,6 +43,7 @@ CAMPOS = [
     "velocidad_viento",
 ]
 
+CAMPOS_SET = set(CAMPOS)
 CAMPOS_ENTEROS = {"id_estacion", "temperatura_promedio", "fecha_registro"}
 CAMPOS_FLOTANTES = {"humedad_relativa", "precipitacion_mm", "presion_atmosferica", "velocidad_viento"}
 
@@ -72,9 +76,15 @@ _FUNCIONES_ORDENAMIENTO = {
 
 
 class EstadoRAM:
-    """Representa el estado único y global de la 'RAM' simulada del sistema."""
+    """Representa el estado único de la 'RAM' simulada y el archivo subido."""
 
     def __init__(self):
+        # Archivo inspeccionado listo para cargarse
+        self.archivo_nombre = None
+        self.archivo_tamano_bytes = 0
+        self.registros_disponibles = []
+
+        # Datos activos cargados en memoria RAM
         self.registros = []
         self.cargado = False
         self.campo_actualmente_ordenado = None
@@ -82,7 +92,6 @@ class EstadoRAM:
         self.primera_ordenacion_hecha = False
         self.conteo_metodos = {}
         self.tiempo_carga_ns = None
-        # Guarda el mejor benchmark registrado por cada uno de los 3 campos clave
         self.mejor_por_campo = {}
 
 
@@ -93,7 +102,7 @@ def castear_valor(campo, valor):
     """Convierte el valor recibido por JSON al tipo nativo de forma segura."""
     try:
         if campo in CAMPOS_ENTEROS:
-            return int(valor)
+            return int(float(valor))
         if campo in CAMPOS_FLOTANTES:
             return float(valor)
     except (ValueError, TypeError):
@@ -101,38 +110,151 @@ def castear_valor(campo, valor):
     return str(valor)
 
 
-def cargar_csv():
-    """Lee dataset_agroclimatico_30000.csv completo a una lista de diccionarios
-    en RAM, midiendo el tiempo de carga en nanosegundos."""
+def _normalizar_fila(fila_dict: dict, num_fila: int) -> dict:
+    """Valida y convierte los tipos de una fila individual."""
+    try:
+        return {
+            "id_estacion": int(float(fila_dict["id_estacion"])),
+            "temperatura_promedio": int(float(fila_dict["temperatura_promedio"])),
+            "fecha_registro": int(float(fila_dict["fecha_registro"])),
+            "estado": str(fila_dict["estado"]).strip(),
+            "municipio": str(fila_dict["municipio"]).strip(),
+            "humedad_relativa": float(fila_dict["humedad_relativa"]),
+            "precipitacion_mm": float(fila_dict["precipitacion_mm"]),
+            "tipo_cultivo_predominante": str(fila_dict["tipo_cultivo_predominante"]).strip(),
+            "presion_atmosferica": float(fila_dict["presion_atmosferica"]),
+            "velocidad_viento": float(fila_dict["velocidad_viento"]),
+        }
+    except (ValueError, TypeError, KeyError) as e:
+        raise ValueError(
+            f"Archivo incompatible: error de formato en la fila {num_fila} ({e}). "
+            f"Asegúrate de subir un dataset agroclimático válido."
+        )
+
+
+def inspeccionar_archivo(nombre_archivo: str, contenido_bytes: bytes) -> dict:
+    """
+    Valida la extensión (.xlsx o .csv), comprueba que tenga las 10 columnas
+    requeridas y parsea todos los registros para reportar el total disponible.
+    """
+    nombre_lower = nombre_archivo.lower()
+    if not (nombre_lower.endswith(".xlsx") or nombre_lower.endswith(".csv")):
+        raise ValueError(
+            f"Formato no soportado ('{nombre_archivo}'). Solo se permiten archivos Excel (.xlsx) o CSV (.csv)."
+        )
+
+    registros_parseados = []
+
+    if nombre_lower.endswith(".xlsx"):
+        try:
+            wb = load_workbook(filename=io.BytesIO(contenido_bytes), read_only=True, data_only=True)
+            ws = wb.active
+            filas_iter = ws.iter_rows(values_only=True)
+            primera_fila = next(filas_iter, None)
+        except Exception as e:
+            raise ValueError(f"No se pudo leer el archivo Excel. Verifica que no esté dañado ({e}).")
+
+        if not primera_fila:
+            raise ValueError("El archivo Excel está completamente vacío.")
+
+        encabezados = [str(c).strip() if c is not None else "" for c in primera_fila]
+        faltantes = [c for c in CAMPOS if c not in encabezados]
+        if faltantes:
+            raise ValueError(
+                f"El archivo '{nombre_archivo}' no corresponde al proyecto agroclimático. "
+                f"Faltan las columnas obligatorias: {', '.join(faltantes)}."
+            )
+
+        indices = {col: encabezados.index(col) for col in CAMPOS}
+
+        for idx, row in enumerate(filas_iter, start=2):
+            if not row or all(v is None or str(v).strip() == "" for v in row):
+                continue
+            fila_dict = {col: row[indices[col]] for col in CAMPOS}
+            registros_parseados.append(_normalizar_fila(fila_dict, idx))
+
+        wb.close()
+
+    else:  # .csv
+        try:
+            texto = contenido_bytes.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            try:
+                texto = contenido_bytes.decode("latin-1")
+            except Exception:
+                raise ValueError("Codificación de archivo CSV no válida. Guárdalo en UTF-8.")
+
+        lector = csv.DictReader(io.StringIO(texto))
+        if not lector.fieldnames:
+            raise ValueError("El archivo CSV está vacío o no tiene encabezados.")
+
+        encabezados = [c.strip() for c in lector.fieldnames]
+        faltantes = [c for c in CAMPOS if c not in encabezados]
+        if faltantes:
+            raise ValueError(
+                f"El archivo '{nombre_archivo}' no corresponde al proyecto agroclimático. "
+                f"Faltan las columnas obligatorias: {', '.join(faltantes)}."
+            )
+
+        for idx, fila in enumerate(lector, start=2):
+            if not fila or all(v is None or str(v).strip() == "" for v in fila.values()):
+                continue
+            fila_limpia = {k.strip(): v for k, v in fila.items() if k}
+            registros_parseados.append(_normalizar_fila(fila_limpia, idx))
+
+    if len(registros_parseados) == 0:
+        raise ValueError(f"El archivo '{nombre_archivo}' tiene los encabezados correctos pero 0 registros de datos.")
+
+    # Guardar en zona de preparación (staging)
+    estado.archivo_nombre = nombre_archivo
+    estado.archivo_tamano_bytes = len(contenido_bytes)
+    estado.registros_disponibles = registros_parseados
+
+    return {
+        "status": "valid",
+        "archivo": nombre_archivo,
+        "tamano_bytes": len(contenido_bytes),
+        "total_disponible": len(registros_parseados),
+        "columnas": CAMPOS,
+    }
+
+
+def cargar_en_ram(limite: Optional[int] = None):
+    """
+    Carga en estado.registros (RAM activa) la cantidad exacta de registros
+    solicitada por el usuario desde estado.registros_disponibles.
+    """
+    total_disp = len(estado.registros_disponibles)
+    if total_disp == 0:
+        raise ValueError("No hay ningún archivo validado. Selecciona y valida un archivo Excel o CSV primero.")
+
+    if limite is None:
+        cantidad = total_disp
+    else:
+        if limite < 1:
+            raise ValueError("Debes cargar al menos 1 registro a la memoria RAM.")
+        if limite > total_disp:
+            raise ValueError(
+                f"Solicitaste cargar {limite:,} registros, pero el archivo '{estado.archivo_nombre}' "
+                f"solo contiene {total_disp:,} registros."
+            )
+        cantidad = limite
+
     t0 = time.perf_counter_ns()
-    registros = []
-
-    with open(DATASET_PATH, "r", encoding="utf-8") as f:
-        lector = csv.DictReader(f)
-        for fila in lector:
-            registros.append({
-                "id_estacion": int(fila["id_estacion"]),
-                "temperatura_promedio": int(fila["temperatura_promedio"]),
-                "fecha_registro": int(fila["fecha_registro"]),
-                "estado": fila["estado"],
-                "municipio": fila["municipio"],
-                "humedad_relativa": float(fila["humedad_relativa"]),
-                "precipitacion_mm": float(fila["precipitacion_mm"]),
-                "tipo_cultivo_predominante": fila["tipo_cultivo_predominante"],
-                "presion_atmosferica": float(fila["presion_atmosferica"]),
-                "velocidad_viento": float(fila["velocidad_viento"]),
-            })
-
+    # Copia efectiva a la estructura activa en RAM
+    subconjunto = [dict(reg) for reg in estado.registros_disponibles[:cantidad]]
     t1 = time.perf_counter_ns()
-    tiempo_ns = t1 - t0
 
-    estado.registros = registros
+    tiempo_ns = t1 - t0
+    estado.registros = subconjunto
     estado.cargado = True
     estado.campo_actualmente_ordenado = None
     estado.ultimo_metodo = None
     estado.tiempo_carga_ns = tiempo_ns
+    estado.primera_ordenacion_hecha = False
+    estado.mejor_por_campo = {}
 
-    return tiempo_ns, len(registros)
+    return tiempo_ns, len(subconjunto), total_disp
 
 
 def ejecutar_ordenamiento(campo, metodo, username: Optional[str] = None):
@@ -146,10 +268,8 @@ def ejecutar_ordenamiento(campo, metodo, username: Optional[str] = None):
     estado.ultimo_metodo = metodo
     estado.conteo_metodos[metodo] = estado.conteo_metodos.get(metodo, 0) + 1
 
-    # Persistir conteo Alfa (Usuario + General) en SQLite
     auth.registrar_ejecucion_alfa(username, metodo)
 
-    # Actualizar mejor marca por campo clave para la tabla de Reportes
     previo = estado.mejor_por_campo.get(campo)
     if previo is None or tiempo_ns < previo["tiempo_ns"]:
         estado.mejor_por_campo[campo] = {
@@ -250,11 +370,12 @@ def ejecutar_busqueda(metodo, campo, valor):
 def configurar_caso_prueba(tipo: str, campo: str = "id_estacion"):
     """Modifica el orden de los registros en RAM para benchmarking."""
     if not estado.cargado:
-        raise ValueError("No hay registros en RAM. Carga primero el dataset.")
+        raise ValueError("No hay registros en RAM. Carga primero los datos del archivo.")
 
+    cantidad_actual = len(estado.registros)
     if tipo == "aleatorio":
-        cargar_csv()
-        return "Registros restablecidos al orden aleatorio original."
+        cargar_en_ram(cantidad_actual)
+        return f"Los {cantidad_actual:,} registros fueron restablecidos al orden original del archivo."
 
     estado.registros.sort(key=lambda x: x[campo], reverse=(tipo == "peor"))
     estado.campo_actualmente_ordenado = campo if tipo == "mejor" else None
